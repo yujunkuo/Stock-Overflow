@@ -8,5 +8,3 @@ pandas
 numpy
 matplotlib
 seaborn
-functools
-
