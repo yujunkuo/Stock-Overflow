@@ -2,3 +2,11 @@ Flask
 line-bot-sdk
 python-dotenv
 gunicorn
+requests
+bs4
+pandas
+numpy
+matplotlib
+seaborn
+functools
+
