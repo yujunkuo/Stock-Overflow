@@ -1,3 +1,5 @@
+from __future__ import unicode_literals
+
 import requests
 from bs4 import BeautifulSoup
 import datetime
@@ -26,7 +28,6 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessagep
 
-from __future__ import unicode_literals
 import os
 from dotenv import load_dotenv
 
