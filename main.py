@@ -68,7 +68,8 @@ def echo(event):
 
 
 if __name__ == "__main__":
-    app.run(host='0.0.0.0')
+    port = int(os.getenv('PORT', 5000))
+    app.run(host='0.0.0.0', port=port)
 
 
 # # 全域設定
