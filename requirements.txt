@@ -1,2 +1,4 @@
-html5lib
-TA-Lib
+Flask
+line-bot-sdk
+python-dotenv
+gunicorn
