@@ -17,9 +17,9 @@ import twse
 import tpex
 import other
 
-import fundamental_stratregy
+import fundamental_strategy
 import technical_strategy
-import chip_stratregy
+import chip_strategy
 
 import helper
 
