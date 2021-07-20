@@ -13,7 +13,7 @@ def scheduled_job():
     return r.status_code
 
 # 週一至週五 16:30 更新資料
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=19, minute=30)
+@sched.scheduled_job('cron', day_of_week='mon-fri', hour=19, minute=35)
 def scheduled_update():
     r = requests.get(update_url)
     return r.status_code

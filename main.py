@@ -161,7 +161,7 @@ def update():
 
 
 # 進行全好友推播
-@app.route("/broadcast", method=["GET"])
+@app.route("/broadcast", methods=["GET"])
 def broadcast():
     try:
         # 取得推薦清單
