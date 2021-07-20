@@ -123,6 +123,17 @@ def echo(event):
         )
 
 
+# 喚醒 Dyno
+@app.route("/wakeup", methods=['GET'])
+def wakeup():
+    try:
+        print("Wakeup Sucess!")
+        return Response(status=200)
+    except:
+        print("Wakeup Error!")
+        return Response(status=500)
+
+
 # 更新今日推薦股票
 @app.route("/update", methods=['GET'])
 def update():
