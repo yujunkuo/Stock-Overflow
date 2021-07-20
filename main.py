@@ -98,7 +98,7 @@ chip_mask = [
     # 三大法人合計買超
     chip_strategy.total_institutional_buy_positive_check_df(final_df),
     # 三大法人合計買超股數超過成交量的 10% 或 單一法人至少買超 10%
-    chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=10) | single_institutional_buy_check_df(final_df, single_volume_threshold=10)
+    chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=10) | chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10)
 ]
 
 ####################################################
