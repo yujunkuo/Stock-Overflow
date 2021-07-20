@@ -14,14 +14,14 @@ def scheduled_job():
     return r.status_code
 
 # 週一至週五 16:30 更新資料
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=20, minute=37)
+@sched.scheduled_job('cron', day_of_week='mon-fri', hour=21, minute=45)
 def scheduled_update():
     update()
     return 
 
 
 # 週一至週五 17:30 發送推播
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=21, minute=30)
+@sched.scheduled_job('cron', day_of_week='mon-fri', hour=22, minute=5)
 def scheduled_broadcast():
     broadcast()
     return

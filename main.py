@@ -165,24 +165,19 @@ def update():
 # 進行全好友推播
 # @app.route("/broadcast", methods=["GET"])
 def broadcast():
-    try:
-        # 取得推薦清單
-        final_filter = helper.df_mask_helper(final_df, fundimental_mask + technical_mask + chip_mask)
-        final_filter = final_filter.sort_values(by=['成交股數'], ascending=False)
-        # 轉換為字串回傳
-        final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照成交量由大到小排序)\n"
-        for i, v in final_filter.iterrows():
-            final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
-        final_recommendation_text += f"此清單係依據台股於 {str(final_date)} 成交資料所做之推薦\nKuo."
-        # 透過 LINE API 進行推播
-        line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
-        print("Broadcast Sucess!")
-        # return Response(status=200)
-        return 
-    except:
-        print("Broadcast Error!")
-        # return Response(status=500)
-        return
+    # 取得推薦清單
+    final_filter = helper.df_mask_helper(final_df, fundimental_mask + technical_mask + chip_mask)
+    final_filter = final_filter.sort_values(by=['成交股數'], ascending=False)
+    # 轉換為字串回傳
+    final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照成交量由大到小排序)\n"
+    for i, v in final_filter.iterrows():
+        final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
+    final_recommendation_text += f"此清單係依據台股於 {str(final_date)} 成交資料所做之推薦\nKuo."
+    # 透過 LINE API 進行推播
+    line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
+    print("Broadcast Sucess!")
+    # return Response(status=200)
+    return 
 
 
 # 取得今日股市資料表
