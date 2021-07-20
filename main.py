@@ -70,35 +70,35 @@ fundimental_mask = [
 # 股票技術面篩選條件
 technical_mask = [
     # MA1 > MA5
-    technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", days=1),
+    technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", days=1),
     # 今天 K9 > 昨天 K9
-    technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="k9", indicator_2="k9", direction="more", threshold=1, days=1),
+    technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="k9", indicator_2="k9", direction="more", threshold=1, days=1),
     # 今天 OSC > 昨天 OSC
-    technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="osc", indicator_2="osc", direction="more", threshold=1, days=1),
+    technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="osc", indicator_2="osc", direction="more", threshold=1, days=1),
     # 今天最低 > 昨天最低
-    technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="最低", indicator_2="最低", direction="more", threshold=1, days=1),
+    technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="最低", indicator_2="最低", direction="more", threshold=1, days=1),
     # |今天D9 - 今天K9| < 20
-    technical_indicator_difference_one_day_check_df(final_df, indicator_1="k9", indicator_2="d9", difference_threshold=20, days=1),
+    technical_strategy.technical_indicator_difference_one_day_check_df(final_df, indicator_1="k9", indicator_2="d9", difference_threshold=20, days=1),
     # 今天的 K9 要介於 20~80 之間
-    technical_indicator_constant_check_df(final_df, indicator="k9", direction="more", threshold=20, days=1),
-    technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=80, days=1),
+    technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="more", threshold=20, days=1),
+    technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=80, days=1),
     # (今天 k9-d9) 大於等於 (昨天 k9-d9)
-    technical_indicator_difference_greater_two_day_check_df(final_df, indicator_1="k9", indicator_2="d9", days=1),
+    technical_strategy.technical_indicator_difference_greater_two_day_check_df(final_df, indicator_1="k9", indicator_2="d9", days=1),
     # 今天成交量 > 500 張 (1000張)
-    volume_greater_check_df(final_df, shares_threshold=1000, days=1),
+    technical_strategy.volume_greater_check_df(final_df, shares_threshold=1000, days=1),
     # 今天成交量不能是 3 天內最低量
-    today_volume_is_not_min_check_df(final_df, days=3),
+    technical_strategy.today_volume_is_not_min_check_df(final_df, days=3),
     # 今天收盤 < 1.08 * 昨天收盤
-    technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="less", threshold=1.08, days=1),
+    technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="less", threshold=1.08, days=1),
 ]
 
 
 # 股票籌碼面篩選條件
 chip_mask = [
     # 三大法人合計買超
-    total_institutional_buy_positive_check_df(final_df),
+    chip_strategy.total_institutional_buy_positive_check_df(final_df),
     # 三大法人合計買超股數超過成交量的 10% 或 單一法人至少買超 10%
-    total_institutional_buy_check_df(final_df, total_volume_threshold=10) | single_institutional_buy_check_df(final_df, single_volume_threshold=10)
+    chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=10) | single_institutional_buy_check_df(final_df, single_volume_threshold=10)
 ]
 
 ####################################################
