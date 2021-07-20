@@ -170,10 +170,15 @@ def broadcast():
     final_filter = final_filter.sort_values(by=['成交股數'], ascending=False)
     # 轉換為字串回傳
     final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照成交量由大到小排序)\n"
+    print(f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照成交量由大到小排序)\n")
     for i, v in final_filter.iterrows():
         final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
+        if len(final_recommendation_text) > 4500:
+            break
     final_recommendation_text += f"此清單係依據台股於 {str(final_date)} 成交資料所做之推薦\nKuo."
     # 透過 LINE API 進行推播
+    print(final_recommendation_text)
+    print(len(final_recommendation_text))
     line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
     print("Broadcast Sucess!")
     # return Response(status=200)
