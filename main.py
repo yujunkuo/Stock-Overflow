@@ -44,8 +44,16 @@ line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 
 
-# 股票當日交易紀錄資料表
-final_df = pd.DataFrame()
+# 初始化股票當日交易紀錄資料表
+final_df = pd.DataFrame(columns=['名稱', '產業別', '股票類型', '收盤', '漲跌', '開盤', '最高', '最低', '成交股數', '本益比',
+       '股利年度', '殖利率(%)', '股價淨值比', '融資買進', '融資賣出', '融資前日餘額', '融資今日餘額', '融券買進',
+       '融券賣出', '融券前日餘額', '融券今日餘額', '資券互抵', '融資變化量', '融券變化量', '券資比(%)',
+       '外資買賣超股數', '投信買賣超股數', '自營商買賣超股數', '三大法人買賣超股數', '外資持股比率(%)',
+       '(月)營收月增率(%)', '(月)營收年增率(%)', '(月)累積營收年增率(%)', 'k9', 'd9', 'dif',
+       'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume',
+       'daily_k'])
+
+
 # 最新資料表的日期
 final_date = None
 
