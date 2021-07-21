@@ -41,7 +41,7 @@ def get_tpex_final(date):
 
 # 取得當日收盤價格相關資料
 def _get_tpex_price(date) -> pd.DataFrame:
-    try:
+    # try:
         year = date.year - 1911  # 轉換成民國
         month = date.month
         day = date.day
@@ -72,13 +72,13 @@ def _get_tpex_price(date) -> pd.DataFrame:
         # 新增類別（tpex）
         df["股票類型"] = "tpex"
         return df
-    except:
-        return pd.DataFrame(columns=['代號', '名稱', '收盤', '漲跌', '開盤', '最高', '最低', '成交股數', '股票類型'])
+    # except:
+    #     return pd.DataFrame(columns=['代號', '名稱', '收盤', '漲跌', '開盤', '最高', '最低', '成交股數', '股票類型'])
 
 
 # 取得公司基本面相關資料
 def _get_tpex_fundamental(date) -> pd.DataFrame:
-    try:
+    # try:
         year = date.year - 1911  # 轉換成民國
         month = date.month
         day = date.day
@@ -112,13 +112,13 @@ def _get_tpex_fundamental(date) -> pd.DataFrame:
         # 新增類別（tpex）
         df["股票類型"] = "tpex"
         return df
-    except:
-        return pd.DataFrame(columns=['代號', '名稱', '本益比', '股利年度', '殖利率(%)', '股價淨值比', '股票類型'])
+    # except:
+    #     return pd.DataFrame(columns=['代號', '名稱', '本益比', '股利年度', '殖利率(%)', '股價淨值比', '股票類型'])
 
 
 # 取得當日收盤融資融券相關資料
 def _get_tpex_margin_trading(date) -> pd.DataFrame:
-    try:
+    # try:
         year = date.year - 1911  # 轉換成民國
         month = date.month
         day = date.day
@@ -158,14 +158,14 @@ def _get_tpex_margin_trading(date) -> pd.DataFrame:
         # 新增類別（tpex）
         df["股票類型"] = "tpex"
         return df
-    except:
-        return pd.DataFrame(columns=["代號", "名稱", "融資買進", "融資賣出", "融資前日餘額", "融資今日餘額", 
+    # except:
+    #     return pd.DataFrame(columns=["代號", "名稱", "融資買進", "融資賣出", "融資前日餘額", "融資今日餘額", 
                                      "融券買進", "融券賣出", "融券前日餘額", "融券今日餘額", "資券互抵", "融資變化量", "融券變化量", "券資比(%)", "股票類型"])
 
 
 # 取得當日收盤三大法人買賣超相關資料
 def _get_tpex_institutional(date) -> pd.DataFrame:
-    try:
+    # try:
         year = date.year - 1911  # 轉換成民國
         month = date.month
         day = date.day
@@ -199,8 +199,8 @@ def _get_tpex_institutional(date) -> pd.DataFrame:
         # 新增類別（tpex）
         df["股票類型"] = "tpex"
         return df
-    except:
-        return pd.DataFrame(columns=['代號', '名稱', '外資買賣超股數', '投信買賣超股數', '自營商買賣超股數', '三大法人買賣超股數', '股票類型'])
+    # except:
+    #     return pd.DataFrame(columns=['代號', '名稱', '外資買賣超股數', '投信買賣超股數', '自營商買賣超股數', '三大法人買賣超股數', '股票類型'])
 
 
 # 取得外資持股比率資料

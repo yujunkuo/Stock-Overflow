@@ -14,7 +14,7 @@ def scheduled_job():
     return r.status_code
 
 # 週一至週五 16:30 更新資料
-@sched.scheduled_job('cron', day_of_week='mon-fri', hour=20, minute=10)
+@sched.scheduled_job('cron', day_of_week='mon-fri', hour=20, minute=20)
 def scheduled_update():
     update()
     return 
