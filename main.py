@@ -197,7 +197,7 @@ def get_all_final(date) -> pd.DataFrame:
     # 先移除重複的股票
     df = df[~df.index.duplicated(keep='first')]
     # 補上技術指標
-    df = other.get_technical_indicators(df)
+    # df = other.get_technical_indicators(df)
     # 再次移除重複的股票
     df = df[~df.index.duplicated(keep='first')]
     # 重新按股票代碼排序

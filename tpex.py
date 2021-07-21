@@ -32,6 +32,7 @@ def get_tpex_final(date):
         _end_time = time.time()
         _spent_time = _end_time - _start_time
         print(f"取得上櫃資料表花費時間: {datetime.timedelta(seconds=int(_spent_time))}")
+        print(df.head())
         return df
     except:
         print("Bug!")
