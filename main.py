@@ -101,7 +101,7 @@ def wakeup():
 # 更新今日推薦股票
 # @app.route("/update", methods=['GET'])
 def update():
-    try:
+    # try:
         # 欲查詢日期
         search_date = datetime.date.today()
         # 取得資料表
@@ -112,10 +112,10 @@ def update():
         print("Update Sucess!")
         # return Response(status=200)
         return
-    except:
-        print("Update Error!")
-        # return Response(status=500)
-        return
+    # except:
+    #     print("Update Error!")
+    #     # return Response(status=500)
+    #     return
 
 
 # 進行全好友推播
