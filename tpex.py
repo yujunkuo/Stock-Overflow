@@ -48,10 +48,10 @@ def _get_tpex_price(date) -> pd.DataFrame:
         new_date = f"{year}/{month:02}/{day:02}"  # 生成符合 url query 的日期字串
         r = requests.get(f"https://www.tpex.org.tw/web/stock/aftertrading/otc_quotes_no1430/stk_wn1430_result.php?l=zh-tw&o=csv&d={new_date}&se=AL&s=0,asc,0")
         # 整理資料，變成表格
-        print(r.text)
         df = pd.read_csv(StringIO(r.text), header=3)
         # 去除各個欄位名稱後方的多餘空格
         df.columns = [each.strip() for each in df.columns]
+        print(df.columns)
         # 更新名稱與代號欄位的資料型態
         df["名稱"] = df["名稱"].astype(str)
         df["代號"] = df["代號"].astype(str)
