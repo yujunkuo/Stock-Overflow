@@ -51,6 +51,7 @@ def _get_twse_price(date) -> pd.DataFrame:
             header=["證券代號" in l for l in r.text.split("\n")].index(True)-1)
         # 去除各個欄位名稱後方的多餘空格
         df.columns = [each.strip() for each in df.columns]
+        print(df.columns)
         # 更新名稱與代號欄位的資料型態
         df["證券名稱"] = df["證券名稱"].astype(str)
         df["證券代號"] = df["證券代號"].astype(str)
