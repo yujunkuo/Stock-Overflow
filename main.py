@@ -154,6 +154,8 @@ def update():
         final_df = get_all_final(search_date)
         final_date = search_date
         print("Update Sucess!")
+        print(f"final_date: {final_date}")
+        print(final_df.head())
         # return Response(status=200)
         return
     except:
@@ -177,8 +179,6 @@ def broadcast():
             break
     final_recommendation_text += f"此清單係依據台股於 {str(final_date)} 成交資料所做之推薦\nKuo."
     # 透過 LINE API 進行推播
-    print(final_recommendation_text)
-    print(len(final_recommendation_text))
     line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
     print("Broadcast Sucess!")
     # return Response(status=200)
@@ -203,7 +203,7 @@ def get_all_final(date) -> pd.DataFrame:
     # 先移除重複的股票
     df = df[~df.index.duplicated(keep='first')]
     # 補上技術指標
-    df = other.get_technical_indicators(df)
+    # df = other.get_technical_indicators(df)
     # 再次移除重複的股票
     df = df[~df.index.duplicated(keep='first')]
     # 重新按股票代碼排序
