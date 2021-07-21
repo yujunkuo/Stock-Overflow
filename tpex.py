@@ -19,7 +19,7 @@ def get_tpex_final(date):
     tpex_margin_trading_df = _get_tpex_margin_trading(date)
     tpex_institutional = _get_tpex_institutional(date)
     tpex_hold_percentage_df = _get_tpex_hold_percentage(date)
-    try:
+    # try:
         df = pd.merge(tpex_price_df, tpex_fundamental_df, how="left", on=["代號", "名稱", "股票類型"])
         df = pd.merge(df, tpex_margin_trading_df, how="left", on=["代號", "名稱", "股票類型"])
         df = pd.merge(df, tpex_institutional, how="left", on=["代號", "名稱", "股票類型"])
@@ -34,9 +34,9 @@ def get_tpex_final(date):
         print(f"取得上櫃資料表花費時間: {datetime.timedelta(seconds=int(_spent_time))}")
         print(df.head())
         return df
-    except:
-        print("Bug!")
-        return None
+    # except:
+    #     print("Bug!")
+    #     return None
 
 
 # 取得當日收盤價格相關資料
