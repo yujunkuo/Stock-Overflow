@@ -67,9 +67,22 @@ def _today_price_is_not_min_check_row(row, price_type, days) -> bool:
     except:
         return False
 
+
+# 5. (Public) 今天某類型價格不是 N 天中最高 (price_type=開盤/最高/最低／收盤)
+def today_price_is_not_max_check_df(df, price_type="收盤", days=3):
+    return df.apply(_today_price_is_not_max_check_row, price_type=price_type, days=days, axis=1)
+
+def _today_price_is_not_max_check_row(row, price_type, days) -> bool:
+    try:
+        last_n_days_data = row["daily_k"][-1:(-1-days):-1]
+        last_n_days_price = [each[1][price_type] for each in last_n_days_data]
+        return last_n_days_price[0] != max(last_n_days_price)
+    except:
+        return False
+
 ##### 技術指標 #####
 
-# 5. (Public) 今天的 X 指標「大於」今天的 Y 指標 (ex. MA1 > MA5 or K9 > D9) 並持續至少 N 天
+# 6. (Public) 今天的 X 指標「大於」今天的 Y 指標 (ex. MA1 > MA5 or K9 > D9) 並持續至少 N 天
 #  (indicator = 'k9', 'd9', 'dif', 'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume', '開盤', '收盤', '最高', '最低')
 def technical_indicator_greater_one_day_check_df(df, indicator_1="收盤", indicator_2="mean5", days=1):
     return df.apply(_technical_indicator_greater_one_day_check_row, indicator_1=indicator_1, indicator_2=indicator_2, days=days, axis=1)
@@ -89,7 +102,7 @@ def _technical_indicator_greater_one_day_check_row(row, indicator_1, indicator_2
         return False
 
 
-# 6. (Public) 今天的 X 指標與今天的 Y 指標差距小於 Z (ex. |D9-K9| < 10) 並持續至少 N 天
+# 7. (Public) 今天的 X 指標與今天的 Y 指標差距小於 Z (ex. |D9-K9| < 10) 並持續至少 N 天
 #  (indicator = 'k9', 'd9', 'dif', 'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume', '開盤', '收盤', '最高', '最低')
 def technical_indicator_difference_one_day_check_df(df, indicator_1="k9", indicator_2="d9", difference_threshold=10, days=1):
     return df.apply(_technical_indicator_difference_one_day_check_row, indicator_1=indicator_1, indicator_2=indicator_2, difference_threshold=difference_threshold, days=days, axis=1)
@@ -109,7 +122,7 @@ def _technical_indicator_difference_one_day_check_row(row, indicator_1, indicato
         return False
 
 
-# 7. (Public) 今天的 X 指標「大於或小於」(k * 昨天的 Y 指標) (ex. K9 > K9 or OSC > OSC or 今收 < 1.08昨收) 並持續至少 N 天
+# 8. (Public) 今天的 X 指標「大於或小於」(k * 昨天的 Y 指標) (ex. K9 > K9 or OSC > OSC or 今收 < 1.08昨收) 並持續至少 N 天
 #  (indicator = 'k9', 'd9', 'dif', 'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume', '開盤', '收盤', '最高', '最低')
 def technical_indicator_greater_or_less_two_day_check_df(df, indicator_1="k9", indicator_2="k9", direction="more", threshold=1, days=1):
     return df.apply(_technical_indicator_greater_or_less_two_day_check_row, indicator_1=indicator_1, indicator_2=indicator_2, direction=direction, threshold=threshold, days=days, axis=1)

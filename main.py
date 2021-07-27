@@ -124,10 +124,10 @@ def broadcast():
 
     # 股票基本面篩選條件
     fundimental_mask = [
-        # 月營收月增率 > 10% 或 月營收年增率 > 10%
-        (final_df["(月)營收月增率(%)"] > 10) | (final_df["(月)營收年增率(%)"] > 10),
-        # 累積營收年增率 > 0%
-        final_df["(月)累積營收年增率(%)"] > 0,
+        # 月營收年增率 > 5%
+        final_df["(月)營收年增率(%)"] > 5,
+        # 累積營收年增率 > 5%
+        final_df["(月)累積營收年增率(%)"] > 5,
     ]
 
     # 股票技術面篩選條件
@@ -147,20 +147,24 @@ def broadcast():
         technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=80, days=1),
         # (今天 k9-d9) 大於等於 (昨天 k9-d9)
         technical_strategy.technical_indicator_difference_greater_two_day_check_df(final_df, indicator_1="k9", indicator_2="d9", days=1),
-        # 今天成交量 > 500 張 (1000張)
+        # 今天成交量 > 1000 張
         technical_strategy.volume_greater_check_df(final_df, shares_threshold=1000, days=1),
-        # 今天成交量不能是 3 天內最低量
-        technical_strategy.today_volume_is_not_min_check_df(final_df, days=3),
-        # 今天收盤 < 1.08 * 昨天收盤
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="less", threshold=1.08, days=1),
+        # 今天成交量不能是 2 天內最低量 (今天成交量要比昨天高)
+        technical_strategy.today_volume_is_not_min_check_df(final_df, days=2),
+        # 今天收盤 < 1.08 * 昨天收盤 (只抓今日漲幅 8% 以內的股票) (要留嗎？)
+        # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="less", threshold=1.08, days=1),
+        # 今天最高價不是半年內的最高 (不追高)
+        technical_strategy.today_price_is_not_max_check_df(final_df, price_type="最高", days=120),
+        # OSC 必須要大於0 (經驗顯示 OSC 大於 0 後勢出現強勁漲幅的機會較高) (要留嗎？)
+        # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="osc", direction="more", threshold=0, days=1),
     ]
 
     # 股票籌碼面篩選條件
     chip_mask = [
-        # 三大法人合計買超
-        chip_strategy.total_institutional_buy_positive_check_df(final_df),
-        # 三大法人合計買超股數超過成交量的 10% 或 單一法人至少買超 10%
-        chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=10) | chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10)
+        # 單一法人至少買超成交量的 10%
+        chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10),
+        # 三大法人合計買超至少超過成交量的 10%
+        chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=10),
     ]
 
     # 取得推薦清單
