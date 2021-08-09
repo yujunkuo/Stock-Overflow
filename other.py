@@ -65,9 +65,9 @@ def get_mom_yoy() -> pd.DataFrame:
 def get_technical_indicators(input_df: pd.DataFrame) -> pd.DataFrame:
     df = input_df.copy()
     start_time_ = time.time()
-    new_column_list = ["k9", "d9", "dif", "macd", "osc", "mean5", "mean10", "mean20", "mean60", "volume", "daily_k"]
+    new_column_list = ["k9", "d9", "dif", "macd", "osc", "mean5", "mean10", "mean20", "mean60", "volume", "mean_5_volume", "mean_20_volume", "daily_k"]
     df[new_column_list] = None
-    df[["k9", "d9", "dif", "macd", "osc", "mean5", "mean10", "mean20", "mean60", "volume", "daily_k"]] = df[["k9", "d9", "dif", "macd", "osc", "mean5", "mean10", "mean20", "mean60", "volume", "daily_k"]].astype('object')
+    df[["k9", "d9", "dif", "macd", "osc", "mean5", "mean10", "mean20", "mean60", "volume", "mean_5_volume", "mean_20_volume", "daily_k"]] = df[["k9", "d9", "dif", "macd", "osc", "mean5", "mean10", "mean20", "mean60", "volume", "mean_5_volume", "mean_20_volume", "daily_k"]].astype('object')
     # 先從台積電判斷日期是否為今天（必須要是最新資料才回傳）
     test_data = _get_technical_indicators_from_stock_id("2330")
     test_date = test_data["daily_k"][-1][0]
@@ -109,10 +109,13 @@ def _get_technical_indicators_from_stock_id(stock_id: str) -> dict:
         mean20 = _make_technical_pretty_list(json.loads(technical_data["Mean20"]))
         mean60 = _make_technical_pretty_list(json.loads(technical_data["Mean60"]))
         volume = _make_technical_pretty_list(json.loads(technical_data["Volume"]))
+        mean_5_volume = _make_technical_pretty_list(json.loads(technical_data["Mean5Volume"]))
+        mean_20_volume = _make_technical_pretty_list(json.loads(technical_data["Mean20Volume"]))
         daily_k = _make_daily_k_pretty_list(json.loads(technical_data["DailyK"]))
         return {"k9": k9, "d9": d9, "dif": dif, "macd": macd, "osc": osc,
                 "mean5": mean5, "mean10": mean10, "mean20": mean20, "mean60": mean60,
-                "volume": volume, "daily_k": daily_k}
+                "volume": volume, "mean_5_volume": mean_5_volume, "mean_20_volume": mean_20_volume,
+                "daily_k": daily_k}
     except:
         return None
 
