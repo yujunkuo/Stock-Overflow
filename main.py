@@ -101,6 +101,10 @@ def wakeup():
 # 更新今日推薦股票
 # @app.route("/update", methods=['GET'])
 def update():
+    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,0)):
+        print("Not yet Update!")
+        return Response(status=200)
+
     try:
         # 欲查詢日期
         search_date = datetime.date.today()
@@ -110,17 +114,19 @@ def update():
         final_df = get_all_final(search_date)
         final_date = search_date
         print("Update Sucess!")
-        # return Response(status=200)
-        return
+        return Response(status=200)
+
     except:
         print("Update Error!")
-        # return Response(status=500)
-        return
+        return Response(status=500)
 
 
 # 進行全好友推播
 # @app.route("/broadcast", methods=["GET"])
 def broadcast():
+    if not helper.check_time_between(datetime.time(17,0), datetime.time(17,30)):
+        print("Not yet broadcast!")
+        return Response(status=200)
 
     # 股票基本面篩選條件
     fundimental_mask = [
@@ -185,8 +191,7 @@ def broadcast():
     # 透過 LINE API 進行推播
     line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
     print("Broadcast Sucess!")
-    # return Response(status=200)
-    return 
+    return Response(status=200)
 
 
 # 取得今日股市資料表
