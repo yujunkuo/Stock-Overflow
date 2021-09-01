@@ -92,6 +92,8 @@ def echo(event):
 def wakeup():
     try:
         print("Wakeup Sucess!")
+        update()
+        broadcast()
         return Response(status=200)
     except:
         print("Wakeup Error!")
@@ -99,12 +101,11 @@ def wakeup():
 
 
 # 更新今日推薦股票
-# @app.route("/update", methods=['GET'])
+@app.route("/update", methods=['GET'])
 def update():
-    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,0)):
+    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
         print("Not yet Update!")
         return Response(status=200)
-
     try:
         # 欲查詢日期
         search_date = datetime.date.today()
@@ -115,83 +116,85 @@ def update():
         final_date = search_date
         print("Update Sucess!")
         return Response(status=200)
-
     except:
         print("Update Error!")
         return Response(status=500)
 
 
 # 進行全好友推播
-# @app.route("/broadcast", methods=["GET"])
+@app.route("/broadcast", methods=["GET"])
 def broadcast():
-    if not helper.check_time_between(datetime.time(17,0), datetime.time(17,30)):
+    if not helper.check_time_between(datetime.time(17,30), datetime.time(18,30)):
         print("Not yet broadcast!")
         return Response(status=200)
+    try:
+        # 股票基本面篩選條件
+        fundimental_mask = [
+            # 月營收年增率 > 5%
+            # final_df["(月)營收年增率(%)"] > 5,
+            # 累積營收年增率 > 5%
+            # final_df["(月)累積營收年增率(%)"] > 5,
+        ]
 
-    # 股票基本面篩選條件
-    fundimental_mask = [
-        # 月營收年增率 > 5%
-        # final_df["(月)營收年增率(%)"] > 5,
-        # 累積營收年增率 > 5%
-        # final_df["(月)累積營收年增率(%)"] > 5,
-    ]
+        # 股票技術面篩選條件
+        technical_mask = [
+            # MA1 > MA5
+            technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", days=1),
+            # 今天 K9 > 昨天 K9
+            technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="k9", indicator_2="k9", direction="more", threshold=1, days=1),
+            # 今天 OSC > 昨天 OSC
+            technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="osc", indicator_2="osc", direction="more", threshold=1, days=1),
+            # 今天最低 > 昨天最低
+            technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="最低", indicator_2="最低", direction="more", threshold=1, days=1),
+            # |今天D9 - 今天K9| < 20
+            technical_strategy.technical_indicator_difference_one_day_check_df(final_df, indicator_1="k9", indicator_2="d9", difference_threshold=20, days=1),
+            # 今天的 K9 要介於 20~80 之間
+            technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="more", threshold=20, days=1),
+            technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=80, days=1),
+            # (今天 k9-d9) 大於等於 (昨天 k9-d9)
+            technical_strategy.technical_indicator_difference_greater_two_day_check_df(final_df, indicator_1="k9", indicator_2="d9", days=1),
+            # 今天收盤 < 1.08 * 昨天收盤 (只抓今日漲幅 8% 以內的股票) (要留嗎？)
+            # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="less", threshold=1.08, days=1),
+            # 今天最高價不是半年內的最高 (不追高)
+            technical_strategy.today_price_is_not_max_check_df(final_df, price_type="最高", days=120),
+            # OSC 必須要大於0 (經驗顯示 OSC 大於 0 後勢出現強勁漲幅的機會較高) (要留嗎？)
+            # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="osc", direction="more", threshold=0, days=1),
+        ]
 
-    # 股票技術面篩選條件
-    technical_mask = [
-        # MA1 > MA5
-        technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", days=1),
-        # 今天 K9 > 昨天 K9
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="k9", indicator_2="k9", direction="more", threshold=1, days=1),
-        # 今天 OSC > 昨天 OSC
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="osc", indicator_2="osc", direction="more", threshold=1, days=1),
-        # 今天最低 > 昨天最低
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="最低", indicator_2="最低", direction="more", threshold=1, days=1),
-        # |今天D9 - 今天K9| < 20
-        technical_strategy.technical_indicator_difference_one_day_check_df(final_df, indicator_1="k9", indicator_2="d9", difference_threshold=20, days=1),
-        # 今天的 K9 要介於 20~80 之間
-        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="more", threshold=20, days=1),
-        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=80, days=1),
-        # (今天 k9-d9) 大於等於 (昨天 k9-d9)
-        technical_strategy.technical_indicator_difference_greater_two_day_check_df(final_df, indicator_1="k9", indicator_2="d9", days=1),
-        # 今天收盤 < 1.08 * 昨天收盤 (只抓今日漲幅 8% 以內的股票) (要留嗎？)
-        # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="less", threshold=1.08, days=1),
-        # 今天最高價不是半年內的最高 (不追高)
-        technical_strategy.today_price_is_not_max_check_df(final_df, price_type="最高", days=120),
-        # OSC 必須要大於0 (經驗顯示 OSC 大於 0 後勢出現強勁漲幅的機會較高) (要留嗎？)
-        # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="osc", direction="more", threshold=0, days=1),
-    ]
+        # 股票籌碼面篩選條件
+        chip_mask = [
+            # 今天成交量 > 2000 張
+            technical_strategy.volume_greater_check_df(final_df, shares_threshold=2000, days=1),
+            # 今天成交量不能是 2 天內最低量 (今天成交量要比昨天高)
+            technical_strategy.today_volume_is_not_min_check_df(final_df, days=2),
+            # 今量 > 5日均量
+            technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", days=1),
+            # 5日均量 > 20日均量
+            technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", days=1),
+            # 5日均量 > 1000 (持續兩天)
+            technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=2),
+            # 單一法人至少買超成交量的 10%
+            chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10),
+            # 三大法人合計買超至少超過成交量的 10%
+            chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=10),
+        ]
 
-    # 股票籌碼面篩選條件
-    chip_mask = [
-        # 今天成交量 > 2000 張
-        technical_strategy.volume_greater_check_df(final_df, shares_threshold=2000, days=1),
-        # 今天成交量不能是 2 天內最低量 (今天成交量要比昨天高)
-        technical_strategy.today_volume_is_not_min_check_df(final_df, days=2),
-        # 今量 > 5日均量
-        technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", days=1),
-        # 5日均量 > 20日均量
-        technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", days=1),
-        # 5日均量 > 1000 (持續兩天)
-        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=2),
-        # 單一法人至少買超成交量的 10%
-        chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10),
-        # 三大法人合計買超至少超過成交量的 10%
-        chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=10),
-    ]
-
-    # 取得推薦清單
-    final_filter = helper.df_mask_helper(final_df, fundimental_mask + technical_mask + chip_mask)
-    final_filter = final_filter.sort_values(by=['成交股數'], ascending=False)
-    # 轉換為字串回傳
-    final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照成交量由大到小排序)\n\n"
-    print(f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照成交量由大到小排序)\n")
-    for i, v in final_filter.iterrows():
-        final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
-    final_recommendation_text += f"\n此清單係依據台股於 {str(final_date)} 成交資料所做之推薦"
-    # 透過 LINE API 進行推播
-    line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
-    print("Broadcast Sucess!")
-    return Response(status=200)
+        # 取得推薦清單
+        final_filter = helper.df_mask_helper(final_df, fundimental_mask + technical_mask + chip_mask)
+        final_filter = final_filter.sort_values(by=['成交股數'], ascending=False)
+        # 轉換為字串回傳
+        final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照成交量由大到小排序)\n\n"
+        print(f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照成交量由大到小排序)\n")
+        for i, v in final_filter.iterrows():
+            final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
+        final_recommendation_text += f"\n此清單係依據台股於 {str(final_date)} 成交資料所做之推薦"
+        # 透過 LINE API 進行推播
+        line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
+        print("Broadcast Sucess!")
+        return Response(status=200)
+    except:
+        print("Broadcast Error!")
+        return Response(status=500)
 
 
 # 取得今日股市資料表
