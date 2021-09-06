@@ -100,10 +100,10 @@ def wakeup():
         return Response(status=500)
 
 
-# 更新今日推薦股票
+# 更新今日推薦股票(1630-1730)
 @app.route("/update", methods=['GET'])
 def update():
-    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
+    if not helper.check_time_between(datetime.time(23,30), datetime.time(23,50)):
         print("Not yet Update!")
         return Response(status=200)
     try:
@@ -121,10 +121,10 @@ def update():
         return Response(status=500)
 
 
-# 進行全好友推播
+# 進行全好友推播(1730-1830)
 @app.route("/broadcast", methods=["GET"])
 def broadcast():
-    if not helper.check_time_between(datetime.time(17,30), datetime.time(18,30)):
+    if not helper.check_time_between(datetime.time(0,0), datetime.time(2,0)):
         print("Not yet broadcast!")
         return Response(status=200)
     try:
