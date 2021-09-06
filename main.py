@@ -29,6 +29,8 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import os
 from dotenv import load_dotenv
 
+import threading
+
 #################### 全域變數設定 ####################
 
 # API Interface
@@ -92,8 +94,12 @@ def echo(event):
 def wakeup():
     try:
         print("Wakeup Sucess!")
-        update()
-        broadcast()
+        # 透過 Thread 指派更新
+        update_thread = threading.Thread(target=update)
+        update_thread.start()
+        # 透過 Thread 指派推播
+        broadcast_thread = threading.Thread(target=broadcast)
+        broadcast_thread.start()
         return Response(status=200)
     except:
         print("Wakeup Error!")
@@ -101,11 +107,10 @@ def wakeup():
 
 
 # 更新今日推薦股票(1630-1730)
-@app.route("/update", methods=['GET'])
 def update():
-    if not helper.check_time_between(datetime.time(23,30), datetime.time(23,50)):
+    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
         print("Not yet Update!")
-        return Response(status=200)
+        return
     try:
         # 欲查詢日期
         search_date = datetime.date.today()
@@ -115,18 +120,17 @@ def update():
         final_df = get_all_final(search_date)
         final_date = search_date
         print("Update Sucess!")
-        return Response(status=200)
+        return
     except:
         print("Update Error!")
-        return Response(status=500)
+        return
 
 
 # 進行全好友推播(1730-1830)
-@app.route("/broadcast", methods=["GET"])
 def broadcast():
-    if not helper.check_time_between(datetime.time(0,0), datetime.time(2,0)):
+    if not helper.check_time_between(datetime.time(17,30), datetime.time(18,30)):
         print("Not yet broadcast!")
-        return Response(status=200)
+        return
     try:
         # 股票基本面篩選條件
         fundimental_mask = [
@@ -191,10 +195,10 @@ def broadcast():
         # 透過 LINE API 進行推播
         line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
         print("Broadcast Sucess!")
-        return Response(status=200)
+        return
     except:
         print("Broadcast Error!")
-        return Response(status=500)
+        return
 
 
 # 取得今日股市資料表
