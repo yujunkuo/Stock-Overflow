@@ -108,7 +108,7 @@ def wakeup():
 
 # 更新今日推薦股票(1630-1730)
 def update():
-    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
+    if not helper.check_time_between(datetime.time(23,0), datetime.time(23,5)):
         print("Not yet Update!")
         return
     try:
@@ -128,7 +128,7 @@ def update():
 
 # 進行全好友推播(1730-1830)
 def broadcast():
-    if not helper.check_time_between(datetime.time(17,30), datetime.time(18,30)):
+    if not helper.check_time_between(datetime.time(0,0), datetime.time(1,0)):
         print("Not yet broadcast!")
         return
     try:
