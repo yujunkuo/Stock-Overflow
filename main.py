@@ -100,8 +100,6 @@ def wakeup():
         # 透過 Thread 指派推播
         broadcast_thread = threading.Thread(target=broadcast)
         broadcast_thread.start()
-        update_thread.join()
-        broadcast_thread.join()
         return Response(status=200)
     except:
         print("Wakeup Error!")
