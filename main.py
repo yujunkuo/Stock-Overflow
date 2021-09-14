@@ -100,6 +100,8 @@ def wakeup():
         # 透過 Thread 指派推播
         broadcast_thread = threading.Thread(target=broadcast)
         broadcast_thread.start()
+        update_thread.join()
+        broadcast_thread.join()
         return Response(status=200)
     except:
         print("Wakeup Error!")
@@ -108,7 +110,7 @@ def wakeup():
 
 # 更新今日推薦股票(1630-1730)
 def update():
-    if not helper.check_time_between(datetime.time(3,0), datetime.time(3,10)):
+    if not helper.check_time_between(datetime.time(3,50), datetime.time(4,0)):
         print("Not yet Update!")
         return
     try:
@@ -120,6 +122,8 @@ def update():
         final_df = get_all_final(search_date)
         final_date = search_date
         print("Update Sucess!")
+        print(f"Final date is {str(final_date)}")
+        print(final_df.head())
         return
     except:
         print("Update Error!")
@@ -128,10 +132,12 @@ def update():
 
 # 進行全好友推播(1730-1830)
 def broadcast():
-    if not helper.check_time_between(datetime.time(3,10), datetime.time(8,0)):
+    if not helper.check_time_between(datetime.time(4,0), datetime.time(8,0)):
         print("Not yet broadcast!")
         return
     try:
+        print(f"Final date is {str(final_date)}")
+        print(final_df.head())
         # 股票基本面篩選條件
         fundimental_mask = [
             # 月營收年增率 > 5%
