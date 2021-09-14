@@ -17,7 +17,10 @@ def df_mask_helper(df, mask_list):
 
 
 # 計算當前時間是否介於兩時間之間
-def check_time_between(begin_time, end_time, check_time=datetime.datetime.now().time()):
+def check_time_between(begin_time, end_time):
+    # 當前時間
+    check_time = datetime.datetime.now().time()
+    # 判斷區間
     if begin_time < end_time:
         return check_time >= begin_time and check_time < end_time
     else: # 跨過午夜
