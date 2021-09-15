@@ -108,7 +108,7 @@ def wakeup():
 
 # 更新今日推薦股票(1630-1730)
 def update():
-    if not helper.check_time_between(datetime.time(21,0), datetime.time(22,0)):
+    if not helper.check_time_between(datetime.time(3,0), datetime.time(7,0)):
         print("Not yet Update!")
         return
     try:
@@ -174,15 +174,15 @@ def broadcast():
         # 股票籌碼面篩選條件
         chip_mask = [
             # 今天成交量 > 2000 張
-            technical_strategy.volume_greater_check_df(final_df, shares_threshold=2000, days=1),
+            # technical_strategy.volume_greater_check_df(final_df, shares_threshold=2000, days=1),
             # 今天成交量不能是 2 天內最低量 (今天成交量要比昨天高)
             technical_strategy.today_volume_is_not_min_check_df(final_df, days=2),
             # 今量 > 5日均量
-            technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", days=1),
+            # technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", days=1),
             # 5日均量 > 20日均量
-            technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", days=1),
+            # technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", days=1),
             # 5日均量 > 1000 (持續兩天)
-            technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=2),
+            # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=2),
             # 單一法人至少買超成交量的 10%
             chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10),
             # 三大法人合計買超至少超過成交量的 10%
