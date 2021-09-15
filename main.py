@@ -98,8 +98,8 @@ def wakeup():
         update_thread = threading.Thread(target=update)
         update_thread.start()
         # 透過 Thread 指派推播
-        broadcast_thread = threading.Thread(target=broadcast)
-        broadcast_thread.start()
+        # broadcast_thread = threading.Thread(target=broadcast)
+        # broadcast_thread.start()
         return Response(status=200)
     except:
         print("Wakeup Error!")
@@ -108,7 +108,7 @@ def wakeup():
 
 # 更新今日推薦股票(1630-1730)
 def update():
-    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
+    if not helper.check_time_between(datetime.time(21,0), datetime.time(22,0)):
         print("Not yet Update!")
         return
     try:
@@ -122,6 +122,8 @@ def update():
         print("Update Sucess!")
         print(f"Final date is {str(final_date)}")
         print(final_df.head())
+        print("Start Broadcast!")
+        broadcast()
         return
     except:
         print("Update Error!")
@@ -130,9 +132,9 @@ def update():
 
 # 進行全好友推播(1730-1830)
 def broadcast():
-    if not helper.check_time_between(datetime.time(17,30), datetime.time(18,30)):
-        print("Not yet broadcast!")
-        return
+    # if not helper.check_time_between(datetime.time(17,30), datetime.time(18,30)):
+    #     print("Not yet broadcast!")
+    #     return
     try:
         print(f"Final date is {str(final_date)}")
         print(final_df.head())
