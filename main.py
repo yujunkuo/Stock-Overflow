@@ -108,7 +108,7 @@ def wakeup():
 
 # 更新今日推薦股票(1630-1730)
 def update():
-    if not helper.check_time_between(datetime.time(3,0), datetime.time(7,0)):
+    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
         print("Not yet Update!")
         return
     try:
@@ -178,7 +178,7 @@ def broadcast():
             # 今天成交量不能是 2 天內最低量 (今天成交量要比昨天高)
             technical_strategy.today_volume_is_not_min_check_df(final_df, days=2),
             # 今量 > 5日均量
-            # technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", days=1),
+            technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", days=1),
             # 5日均量 > 20日均量
             # technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", days=1),
             # 5日均量 > 1000 (持續兩天)
