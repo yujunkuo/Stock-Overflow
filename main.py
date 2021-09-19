@@ -150,6 +150,8 @@ def broadcast():
         technical_mask = [
             # MA1 > MA5
             technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", days=1),
+            # MA1 > MA20
+            technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", days=1),
             # 今天 K9 > 昨天 K9
             technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="k9", indicator_2="k9", direction="more", threshold=1, days=1),
             # 今天 OSC > 昨天 OSC
@@ -165,8 +167,8 @@ def broadcast():
             technical_strategy.technical_indicator_difference_greater_two_day_check_df(final_df, indicator_1="k9", indicator_2="d9", days=1),
             # 今天收盤 < 1.08 * 昨天收盤 (只抓今日漲幅 8% 以內的股票) (要留嗎？)
             # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="less", threshold=1.08, days=1),
-            # 今天最高價不是半年內的最高 (不追高)
-            technical_strategy.today_price_is_not_max_check_df(final_df, price_type="最高", days=120),
+            # 今天最高價不是一年內的最高 (不追高)
+            technical_strategy.today_price_is_not_max_check_df(final_df, price_type="最高", days=240),
             # OSC 必須要大於0 (經驗顯示 OSC 大於 0 後勢出現強勁漲幅的機會較高) (要留嗎？)
             # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="osc", direction="more", threshold=0, days=1),
         ]
@@ -174,19 +176,19 @@ def broadcast():
         # 股票籌碼面篩選條件
         chip_mask = [
             # 今天成交量 > 2000 張
-            # technical_strategy.volume_greater_check_df(final_df, shares_threshold=2000, days=1),
+            technical_strategy.volume_greater_check_df(final_df, shares_threshold=2000, days=1),
             # 今天成交量不能是 2 天內最低量 (今天成交量要比昨天高)
             technical_strategy.today_volume_is_not_min_check_df(final_df, days=2),
             # 今量 > 5日均量
             technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", days=1),
             # 5日均量 > 20日均量
-            # technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", days=1),
+            technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", days=1),
             # 5日均量 > 1000 (持續兩天)
-            # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=2),
-            # 單一法人至少買超成交量的 10%
-            chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10),
+            technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=2),
+            # 單一法人至少買超成交量的 20%
+            chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=20),
             # 三大法人合計買超至少超過成交量的 10%
-            chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=10),
+            # chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=10),
         ]
 
         # 取得推薦清單
