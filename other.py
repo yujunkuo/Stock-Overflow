@@ -71,8 +71,8 @@ def get_technical_indicators(input_df: pd.DataFrame) -> pd.DataFrame:
     # 先從台積電判斷日期是否為今天（必須要是最新資料才回傳）
     test_data = _get_technical_indicators_from_stock_id("2330")
     test_date = test_data["daily_k"][-1][0]
-    # if test_date != datetime.date.today():
-    #     return df
+    if test_date != datetime.date.today():
+        return df
     total_ = len(df.index)
     current_finish_ = 0
     for i, row in df.iterrows():
