@@ -203,6 +203,7 @@ def broadcast():
         final_filter = helper.df_mask_helper(final_df, fundimental_mask + technical_mask + chip_mask)
         final_filter = final_filter.sort_values(by=['成交股數'], ascending=False)
         # 轉換為字串回傳
+        final_recommendation_text = None
         if not final_filter.shape[0]:
             final_recommendation_text = f"今日無推薦之股票 {str(final_date)}"
             print("今日無推薦之股票")
