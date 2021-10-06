@@ -200,6 +200,8 @@ def broadcast():
         for i, v in final_filter.iterrows():
             final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
         final_recommendation_text += f"\n此清單係依據台股於 {str(final_date)} 成交資料所做之推薦"
+    # 加上版權聲明
+    final_recommendation_text += f"\nCopyright © 2021 John Kuo"
     # 透過 LINE API 進行推播
     line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
     print("Broadcast Success!")
