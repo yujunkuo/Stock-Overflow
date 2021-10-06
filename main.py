@@ -135,7 +135,7 @@ def broadcast():
     # if not helper.check_time_between(datetime.time(17,30), datetime.time(18,30)):
     #     print("Not yet broadcast!")
     #     return
-    try:
+    # try:
         print(f"Final date is {str(final_date)}")
         print(final_df.head())
         # 股票基本面篩選條件
@@ -217,9 +217,9 @@ def broadcast():
         line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
         print("Broadcast Sucess!")
         return
-    except:
-        print("Broadcast Error!")
-        return
+    # except:
+        # print("Broadcast Error!")
+        # return
 
 
 # 取得今日股市資料表
