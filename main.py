@@ -108,26 +108,26 @@ def wakeup():
 
 # 更新今日推薦股票(1630-1730)
 def update():
-    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
+    if not helper.check_time_between(datetime.time(16,30), datetime.time(19,30)):
         print("Not yet Update!")
         return
-    try:
-        # 欲查詢日期
-        search_date = datetime.date.today()
-        # 取得資料表
-        global final_df
-        global final_date
-        final_df = get_all_final(search_date)
-        final_date = search_date
-        print("Update Sucess!")
-        print(f"Final date is {str(final_date)}")
-        print(final_df.head())
-        print("Start Broadcast!")
-        broadcast()
-        return
-    except:
-        print("Update Error!")
-        return
+    # try:
+    # 欲查詢日期
+    search_date = datetime.date.today()
+    # 取得資料表
+    global final_df
+    global final_date
+    final_df = get_all_final(search_date)
+    final_date = search_date
+    print("Update Sucess!")
+    print(f"Final date is {str(final_date)}")
+    print(final_df.head())
+    print("Start Broadcast!")
+    broadcast()
+    return
+    # except:
+    #     print("Update Error!")
+    #     return
 
 
 # 進行全好友推播(1730-1830)
