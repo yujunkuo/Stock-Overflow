@@ -125,37 +125,46 @@ def broadcast():
     # 顯示目前狀態
     print(f"Final date is {str(final_date)}")
     # print(final_df.head())
+
+    ### 以下為根據 20211217 以前「買過與觀察過之個股」所設定的 Rules ###
+
     # 股票基本面篩選條件
     fundimental_mask = [
-        # 月營收年增率 > 0%
-        final_df["(月)營收年增率(%)"] > 0,
-        # # 累積營收年增率 > 10%
-        # final_df["(月)累積營收年增率(%)"] > 10,
+        ## 不用看 MOM
+        # 月營收年增率 > 20%
+        final_df["(月)營收年增率(%)"] > 20,
+        # 累積營收年增率 > 10%
+        final_df["(月)累積營收年增率(%)"] > 10,
     ]
 
     # 股票技術面篩選條件
     technical_mask = [
+        ## 收盤價站上 5, 10, 20 均線
         # MA1 > MA5
         technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", days=1),
-        # # MA1 > MA20
-        # technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", days=1),
-        # 今天開盤價 > 昨天收盤價 (主力表態拉抬)
+        # MA1 > MA10
+        technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean10", days=1),
+        # MA1 > MA20
+        technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", days=1),
+        # # MA1 > MA60
+        # technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean60", days=1),
+        ## 今天開盤價 > 昨天收盤價 (開高表示主力表態拉抬)
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1),
+        ## 今天最低 > 昨天最低 (微寬鬆限制 threshold = 0.994)?
+        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="最低", indicator_2="最低", direction="more", threshold=0.994, days=1),
         # 今天 K9 > 昨天 K9
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="k9", indicator_2="k9", direction="more", threshold=1, days=1),
-        # 今天 OSC > 昨天 OSC
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="osc", indicator_2="osc", direction="more", threshold=1, days=1),
-        # 今天最低 > 昨天最低
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="最低", indicator_2="最低", direction="more", threshold=1, days=1),
+        # # 今天 OSC > 昨天 OSC
+        # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="osc", indicator_2="osc", direction="more", threshold=1, days=1),
         # |今天D9 - 今天K9| < 20
         technical_strategy.technical_indicator_difference_one_day_check_df(final_df, indicator_1="k9", indicator_2="d9", difference_threshold=20, days=1),
-        # 今天的 K9 要介於 20~80 之間
+        # 今天的 K9 要大於 20
         technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="more", threshold=20, days=1),
-        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=80, days=1),
-        # (今天 k9-d9) 大於等於 (昨天 k9-d9)
-        technical_strategy.technical_indicator_difference_greater_two_day_check_df(final_df, indicator_1="k9", indicator_2="d9", days=1),
-        # 月線趨勢向上 (MA20 趨勢向上)
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="mean20", indicator_2="mean20", direction="more", threshold=1, days=1),
+        # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=80, days=1),
+        # # (今天 k9-d9) 大於等於 (昨天 k9-d9)
+        # technical_strategy.technical_indicator_difference_greater_two_day_check_df(final_df, indicator_1="k9", indicator_2="d9", days=1),
+        # # 5 日線趨勢向上 (MA5 趨勢向上)
+        # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="mean5", indicator_2="mean5", direction="more", threshold=1, days=1),
         # # 今天收盤 < 1.08 * 昨天收盤 (只抓今日漲幅 8% 以內的股票) (要留嗎？)
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="less", threshold=1.08, days=1),
         # # 今天最高價不是一年內的最高 (不追高)
@@ -166,12 +175,12 @@ def broadcast():
 
     # 股票籌碼面篩選條件
     chip_mask = [
-        # # 今天成交量 > 2000 張
-        # technical_strategy.volume_greater_check_df(final_df, shares_threshold=2000, days=1),
+        # 今天成交量 > 2000 張
+        technical_strategy.volume_greater_check_df(final_df, shares_threshold=2000, days=1),
         # # 今天成交量不能是 2 天內最低量 (今天成交量要比昨天高)
         # technical_strategy.today_volume_is_not_min_check_df(final_df, days=2),
-        # 今天成交量要大於 2 倍的昨天成交量
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="volume", indicator_2="volume", direction="more", threshold=2, days=1),
+        # 今天成交量要大於昨天成交量
+        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="volume", indicator_2="volume", direction="more", threshold=1, days=1),
         # 今量 > 5日均量
         technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", days=1),
         # # 5日均量 > 20日均量
@@ -181,9 +190,13 @@ def broadcast():
         # 20日均量 > 1000
         technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_20_volume", direction="more", threshold=1000, days=1),
         # 單一法人至少買超成交量的 10%
-        chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10),
-        # # 三大法人合計買超至少超過成交量的 10%
-        # chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=10),
+        # chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10),
+        # 三大法人合計買超至少超過成交量的 1%
+        # chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=1),
+        # 外資買超至少超過 200 張
+        chip_strategy.foreign_buy_positive_check_df(final_df, threshold=2e5),
+        # 投信買超至少超過 50 張
+        chip_strategy.investment_buy_positive_check_df(final_df, threshold=5e4),
     ]
 
     # 取得推薦清單

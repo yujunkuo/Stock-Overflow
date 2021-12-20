@@ -55,27 +55,34 @@ def foreign_hold_percentage_check_df(df, hold_percentage_threshold=30):
     return df["外資持股比率(%)"] >= hold_percentage_threshold
 
 
-# 5. (Public) 三大法人合計總買超量大於 0
-def total_institutional_buy_positive_check_df(df):
-    return df["三大法人買賣超股數"] > 0
+# 5. (Public) 三大法人合計總買超量大於 N 股
+def total_institutional_buy_positive_check_df(df, threshold=1e5):
+    return df["三大法人買賣超股數"] > threshold
 
+# 6. (Public) 外資買賣超股數大於 N 股 (Default=100張)
+def foreign_buy_positive_check_df(df, threshold=1e5):
+    return df["外資買賣超股數"] > threshold
 
-# 6. (Public) 外資買超量大於 0
-def foreign_buy_positive_check_df(df):
-    return df["外資買賣超股數"] > 0
+# 7. (Public) 投信買賣超股數大於 N 股 (Default=100張)
+def investment_buy_positive_check_df(df, threshold=1e5):
+    return df["投信買賣超股數"] > threshold
+
+# 8. (Public) 自營商買賣超股數大於 N 股 (Default=100張)
+def dealer_buy_positive_check_df(df, threshold=1e5):
+    return df["自營商買賣超股數"] > threshold
 
 ##### 散戶動向 #####
 
-# 7. (Public) 融資增加張數大於等於總成交量的 N%
+# 9. (Public) 融資增加張數大於等於總成交量的 N%
 def margin_trading_check_df(df, margin_trading_threshold=1):
     return df["融資變化量"] >= (df["成交股數"] * (margin_trading_threshold / 100))
 
 
-# 8. (Public) 融券減少張數大於等於總成交量的 N%
+# 10. (Public) 融券減少張數大於等於總成交量的 N%
 def short_selling_check_df(df, short_selling_threshold=1):
     return -(df["融券變化量"]) >= (df["成交股數"] * (short_selling_threshold / 100))
 
 
-# 9. (Public) 券資比大於等於 N%
+# 11. (Public) 券資比大於等於 N%
 def short_margin_ratio_check_df(df, short_margin_ratio_threshold=5):
     return df["券資比(%)"] >= short_margin_ratio_threshold
