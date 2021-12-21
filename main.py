@@ -102,7 +102,7 @@ def wakeup():
 
 # 更新今日推薦股票(1630-1730)
 def update():
-    if not helper.check_time_between(datetime.time(17,30), datetime.time(18,30)):
+    if not helper.check_time_between(datetime.time(17,30), datetime.time(21,30)):
         print("Not yet Update!")
         return
     else:
@@ -148,6 +148,8 @@ def broadcast():
         technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", days=1),
         # # MA1 > MA60
         # technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean60", days=1),
+        # 今天收紅 K 棒 (收盤價 > 開盤價)
+        technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="開盤", days=1),
         # ## 今天開盤價 > 昨天收盤價 (開高表示主力表態拉抬)
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1),
         ## 今天最高 > 昨天最高（頭頭高）
