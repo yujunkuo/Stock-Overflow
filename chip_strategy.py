@@ -71,6 +71,10 @@ def investment_buy_positive_check_df(df, threshold=1e5):
 def dealer_buy_positive_check_df(df, threshold=1e5):
     return df["自營商買賣超股數"] > threshold
 
+# 9. (Public) 自定義法人買超張數篩選
+def buy_positive_check_df(df):
+    return (df["外資買賣超股數"] >= 300) or (df["投信買賣超股數"] >= 300) or (df["自營商買賣超股數"] >= 100)
+
 ##### 散戶動向 #####
 
 # 9. (Public) 融資增加張數大於等於總成交量的 N%

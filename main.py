@@ -148,25 +148,25 @@ def broadcast():
         technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", days=1),
         # # MA1 > MA60
         # technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean60", days=1),
-        ## 今天開盤價 > 昨天收盤價 (開高表示主力表態拉抬)
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1),
-        ## 今天最低 > 昨天最低 (微寬鬆限制 threshold = 0.994)?
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="最低", indicator_2="最低", direction="more", threshold=0.994, days=1),
-        # 今天 K9 > 昨天 K9
+        # ## 今天開盤價 > 昨天收盤價 (開高表示主力表態拉抬)
+        # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1),
+        ## 今天最高 > 昨天最高（頭頭高）
+        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="最高", indicator_2="最高", direction="more", threshold=1, days=1),
+        ## 今天 K9 > 昨天 K9
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="k9", indicator_2="k9", direction="more", threshold=1, days=1),
         # # 今天 OSC > 昨天 OSC
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="osc", indicator_2="osc", direction="more", threshold=1, days=1),
-        # |今天D9 - 今天K9| < 20
+        ## |今天D9 - 今天K9| < 20
         technical_strategy.technical_indicator_difference_one_day_check_df(final_df, indicator_1="k9", indicator_2="d9", difference_threshold=20, days=1),
-        # 今天的 K9 要大於 20
+        ## 今天的 K9 要大於 20
         technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="more", threshold=20, days=1),
         # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=80, days=1),
         # # (今天 k9-d9) 大於等於 (昨天 k9-d9)
         # technical_strategy.technical_indicator_difference_greater_two_day_check_df(final_df, indicator_1="k9", indicator_2="d9", days=1),
         # # 5 日線趨勢向上 (MA5 趨勢向上)
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="mean5", indicator_2="mean5", direction="more", threshold=1, days=1),
-        # # 今天收盤 < 1.08 * 昨天收盤 (只抓今日漲幅 8% 以內的股票) (要留嗎？)
-        # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="less", threshold=1.08, days=1),
+        ## 今天收盤 > 1.01 * 昨天收盤 (只抓今日漲幅 1% 以上的股票)
+        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="more", threshold=1.01, days=1),
         # # 今天最高價不是一年內的最高 (不追高)
         # technical_strategy.today_price_is_not_max_check_df(final_df, price_type="最高", days=240),
         # # OSC 必須要大於0 (經驗顯示 OSC 大於 0 後勢出現強勁漲幅的機會較高) (要留嗎？)
@@ -193,15 +193,17 @@ def broadcast():
         # chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10),
         # 三大法人合計買超至少超過成交量的 1%
         # chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=1),
-        # 外資買超至少超過 200 張
-        chip_strategy.foreign_buy_positive_check_df(final_df, threshold=2e5),
-        # 投信買超至少超過 50 張
-        chip_strategy.investment_buy_positive_check_df(final_df, threshold=5e4),
+        # # 外資買超至少超過 200 張
+        # chip_strategy.foreign_buy_positive_check_df(final_df, threshold=2e5),
+        # # 投信買超至少超過 50 張
+        # chip_strategy.investment_buy_positive_check_df(final_df, threshold=5e4),
+        # 自定義法人買超張數篩選
+        chip_strategy.buy_positive_check_df(final_df),
     ]
 
     # 取得推薦清單
     final_filter = helper.df_mask_helper(final_df, fundimental_mask + technical_mask + chip_mask)
-    final_filter = final_filter.sort_values(by=['成交股數'], ascending=False)
+    final_filter = final_filter.sort_values(by=["收盤"], ascending=False)
     # 轉換為字串回傳
     final_recommendation_text = None
     if not final_filter.shape[0]:
