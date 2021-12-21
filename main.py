@@ -102,7 +102,7 @@ def wakeup():
 
 # 更新今日推薦股票(1630-1730)
 def update():
-    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
+    if not helper.check_time_between(datetime.time(17,30), datetime.time(18,30)):
         print("Not yet Update!")
         return
     else:
@@ -199,6 +199,8 @@ def broadcast():
         # chip_strategy.investment_buy_positive_check_df(final_df, threshold=5e4),
         # 自定義法人買超張數篩選
         chip_strategy.buy_positive_check_df(final_df),
+        # 三大法人合計買超為正值
+        chip_strategy.total_institutional_buy_positive_check_df(final_df, threshold=0),
     ]
 
     # 取得推薦清單
