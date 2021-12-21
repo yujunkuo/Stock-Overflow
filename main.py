@@ -210,18 +210,18 @@ def broadcast():
 
     # 取得推薦清單
     final_filter = helper.df_mask_helper(final_df, fundimental_mask + technical_mask + chip_mask)
-    final_filter = final_filter.sort_values(by=["收盤"], ascending=False)
+    final_filter = final_filter.sort_values(by=["產業別"], ascending=False)
     # 轉換為字串回傳
     final_recommendation_text = None
     if not final_filter.shape[0]:
         final_recommendation_text = f"今日無推薦之股票 {str(final_date)}"
         print("今日無推薦之股票")
     else:
-        final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照成交量由大到小排序)\n\n"
-        print(f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照成交量由大到小排序)\n")
+        final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔\n\n"
+        print(f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照產業別排序)\n")
         for i, v in final_filter.iterrows():
             final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
-        final_recommendation_text += f"\n此清單係依據台股於 {str(final_date)} 成交資料所做之推薦"
+        final_recommendation_text += f"\n此清單依據台股 {str(final_date)} 成交資料推薦"
     # 加上版權聲明
     final_recommendation_text += f"\nCopyright © 2021 John Kuo"
     # 透過 LINE API 進行推播
