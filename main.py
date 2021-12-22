@@ -141,15 +141,15 @@ def broadcast():
     technical_mask = [
         ## 收盤價站上 5, 10, 20 均線
         # MA1 > MA5
-        technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", days=1),
+        technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", direction="more", threshold=1, days=1),
         # MA1 > MA10
-        technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean10", days=1),
+        technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean10", direction="more", threshold=1, days=1),
         # MA1 > MA20
-        technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", days=1),
+        technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", direction="more", threshold=1, days=1),
         # # MA1 > MA60
-        # technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean60", days=1),
+        # technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean60", direction="more", threshold=1, days=1),
         # 今天收紅 K 棒 (收盤價 > 開盤價)
-        technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="收盤", indicator_2="開盤", days=1),
+        technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="開盤", direction="more", threshold=1, days=1),
         ## K 棒底底高
         (technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="開盤", direction="more", threshold=1, days=1) |\
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1)),
@@ -172,6 +172,10 @@ def broadcast():
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="mean5", indicator_2="mean5", direction="more", threshold=1, days=1),
         ## 今天收盤 > 1.01 * 昨天收盤 (只抓今日漲幅 1% 以上的股票)
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="more", threshold=1.01, days=1),
+        ## 今天收盤 < 1.1 * Mean5 or Mean10 or Mean20 (不抓取乖離過大的股票)
+        technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", direction="less", threshold=1.1, days=1) |\
+        technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean10", direction="less", threshold=1.1, days=1) |\
+        technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", direction="less", threshold=1.1, days=1),
         # # 今天最高價不是一年內的最高 (不追高)
         # technical_strategy.today_price_is_not_max_check_df(final_df, price_type="最高", days=240),
         # # OSC 必須要大於0 (經驗顯示 OSC 大於 0 後勢出現強勁漲幅的機會較高) (要留嗎？)
@@ -187,9 +191,9 @@ def broadcast():
         # 今天成交量要大於昨天成交量
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="volume", indicator_2="volume", direction="more", threshold=1, days=1),
         # 今量 > 5日均量
-        technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", days=1),
+        technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", direction="more", threshold=1, days=1),
         # # 5日均量 > 20日均量
-        # technical_strategy.technical_indicator_greater_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", days=1),
+        # technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", direction="more", threshold=1, days=1),
         # 5日均量 > 1000
         technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=1),
         # 20日均量 > 1000

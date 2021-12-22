@@ -82,12 +82,12 @@ def _today_price_is_not_max_check_row(row, price_type, days) -> bool:
 
 ##### 技術指標 #####
 
-# 6. (Public) 今天的 X 指標「大於」今天的 Y 指標 (ex. MA1 > MA5 or K9 > D9) 並持續至少 N 天
+# 6. (Public) 今天的 X 指標「大於或小於」(k * 今天的 Y 指標) (ex. MA1 > MA5 or K9 > D9) 並持續至少 N 天
 #  (indicator = 'k9', 'd9', 'dif', 'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume', '開盤', '收盤', '最高', '最低')
-def technical_indicator_greater_one_day_check_df(df, indicator_1="收盤", indicator_2="mean5", days=1):
-    return df.apply(_technical_indicator_greater_one_day_check_row, indicator_1=indicator_1, indicator_2=indicator_2, days=days, axis=1)
+def technical_indicator_greater_or_less_one_day_check_df(df, indicator_1="收盤", indicator_2="mean5", direction="more", threshold=1, days=1):
+    return df.apply(_technical_indicator_greater_or_less_one_day_check_row, indicator_1=indicator_1, indicator_2=indicator_2, direction=direction, threshold=threshold, days=days, axis=1)
 
-def _technical_indicator_greater_one_day_check_row(row, indicator_1, indicator_2, days) -> bool:
+def _technical_indicator_greater_or_less_one_day_check_row(row, indicator_1, indicator_2, direction, threshold, days) -> bool:
     try:
         if indicator_1 in ['開盤', '收盤', '最高', '最低']:
             last_n_days_indicator_1 = [each[1][indicator_1] for each in row["daily_k"][-1:(-1-days):-1]]
@@ -97,7 +97,10 @@ def _technical_indicator_greater_one_day_check_row(row, indicator_1, indicator_2
             last_n_days_indicator_2 = [each[1][indicator_2] for each in row["daily_k"][-1:(-1-days):-1]]
         else:
             last_n_days_indicator_2 = [each[1] for each in row[indicator_2][-1:(-1-days):-1]]
-        return all(i_1 > i_2 for i_1, i_2 in zip(last_n_days_indicator_1, last_n_days_indicator_2))
+        if direction == "more":
+            return all(i_1 > (threshold * i_2) for i_1, i_2 in zip(last_n_days_indicator_1, last_n_days_indicator_2))
+        else:
+            return all(i_1 < (threshold * i_2) for i_1, i_2 in zip(last_n_days_indicator_1, last_n_days_indicator_2))
     except:
         return False
 
