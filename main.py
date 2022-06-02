@@ -105,6 +105,9 @@ def update():
     if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
         print("Not yet Update!")
         return
+    if not helper.check_weekday():
+        print("Today is not weekday!")
+        return
     else:
         print("Start Update...")
         # 欲查詢日期
@@ -176,8 +179,8 @@ def broadcast():
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", direction="less", threshold=1.1, days=1) |\
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean10", direction="less", threshold=1.1, days=1) |\
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", direction="less", threshold=1.1, days=1),
-        # # 今天最高價不是一年內的最高 (不追高)
-        # technical_strategy.today_price_is_not_max_check_df(final_df, price_type="最高", days=240),
+        # 今天最高價不是一年內的最高 (不追高)
+        technical_strategy.today_price_is_not_max_check_df(final_df, price_type="最高", days=240),
         # # OSC 必須要大於0 (經驗顯示 OSC 大於 0 後勢出現強勁漲幅的機會較高) (要留嗎？)
         # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="osc", direction="more", threshold=0, days=1),
     ]

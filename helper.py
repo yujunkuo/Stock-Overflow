@@ -25,5 +25,15 @@ def check_time_between(begin_time, end_time):
         return check_time >= begin_time and check_time < end_time
     else: # 跨過午夜
         return check_time >= begin_time or check_time < end_time
-    
+
+
+# 計算今天是否為工作日
+def check_weekday():
+    # 當前日期
+    check_date = datetime.datetime.now().date()
+    # 當前工作日計數 (Monday=0, Tuesday=1, ... ,Sunday=6)
+    weekday_count = check_date.weekday()
+    # 判斷是否為工作日
+    is_weekday = False if weekday_count in [5, 6] else True
+    return is_weekday
     
