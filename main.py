@@ -142,15 +142,15 @@ def broadcast():
 
     # 股票技術面篩選條件
     technical_mask = [
-        ## 收盤價站上 5, 10, 20 均線
+        ## 收盤價站上 5, 10, 20, 60 均線 (必要條件 @ 20220603)
         # MA1 > MA5
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", direction="more", threshold=1, days=1),
         # MA1 > MA10
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean10", direction="more", threshold=1, days=1),
         # MA1 > MA20
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", direction="more", threshold=1, days=1),
-        # # MA1 > MA60
-        # technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean60", direction="more", threshold=1, days=1),
+        # MA1 > MA60
+        technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean60", direction="more", threshold=1, days=1),
         # 今天收紅 K 棒 (收盤價 > 開盤價)
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="開盤", direction="more", threshold=1, days=1),
         ## K 棒底底高
