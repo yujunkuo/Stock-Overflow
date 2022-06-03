@@ -33,6 +33,13 @@ import threading
 
 #################### 全域變數設定 ####################
 
+# 版本年份
+YEAR = "2022"
+
+# 版本號
+VERSION = "v1.2"
+
+
 # API Interface
 app = Flask(__name__)
 
@@ -221,16 +228,20 @@ def broadcast():
     # 轉換為字串回傳
     final_recommendation_text = None
     if not final_filter.shape[0]:
-        final_recommendation_text = f"今日無推薦之股票 {str(final_date)}"
+        final_recommendation_text = f"今日無推薦之股票\n"
         print("今日無推薦之股票")
     else:
-        final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔\n\n"
+        final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔\n"
+        final_recommendation_text += "\n##########\n\n"
         print(f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照產業別排序)\n")
         for i, v in final_filter.iterrows():
             final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
-        final_recommendation_text += f"\n此清單依據台股 {str(final_date)} 成交資料推薦"
+    # 加上末尾分隔線
+    final_recommendation_text += "\n##########\n\n"
+    # 加上資料來源說明
+    final_recommendation_text += f"資料來源: 台股 {str(final_date)}"
     # 加上版權聲明
-    final_recommendation_text += f"\nCopyright © 2021 John Kuo"
+    final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
     # 透過 LINE API 進行推播
     line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
     print("Broadcast Success!")
