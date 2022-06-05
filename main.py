@@ -85,15 +85,14 @@ def callback():
     return 'OK'
 
 
-# LINE Bot 自動回覆
-@handler.add(MessageEvent, message=TextMessage)
-def echo(event):
-    
-    if event.source.user_id != "Udeadbeefdeadbeefdeadbeefdeadbeef":
-        line_bot_api.reply_message(
-            event.reply_token,
-            TextSendMessage(text="買股票賺大錢！")
-        )
+# # LINE Bot 自動回覆
+# @handler.add(MessageEvent, message=TextMessage)
+# def echo(event):
+#     if event.source.user_id != "Udeadbeefdeadbeefdeadbeefdeadbeef":
+#         line_bot_api.reply_message(
+#             event.reply_token,
+#             TextSendMessage(text="買股票賺大錢！")
+#         )
 
 
 # 喚醒 Dyno
