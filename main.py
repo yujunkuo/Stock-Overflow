@@ -37,7 +37,7 @@ import threading
 YEAR = "2022"
 
 # 版本號
-VERSION = "v1.2"
+VERSION = "v1.3"
 
 
 # API Interface
@@ -160,12 +160,12 @@ def broadcast():
         # 今天收紅 K 棒 (收盤價 > 開盤價)
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="開盤", direction="more", threshold=1, days=1),
         ## K 棒底底高
-        (technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="開盤", direction="more", threshold=1, days=1) |\
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1)),
+        # (technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="開盤", direction="more", threshold=1, days=1) |\
+        # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1)),
         # ## 今天開盤價 > 昨天收盤價 (開高表示主力表態拉抬)
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1),
-        ## 今天最高 > 昨天最高（頭頭高）
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="最高", indicator_2="最高", direction="more", threshold=1, days=1),
+        ## 今天收盤 > 昨天最高（頭頭高）
+        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="最高", direction="more", threshold=1, days=1),
         ## 今天 K9 > 昨天 K9
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="k9", indicator_2="k9", direction="more", threshold=1, days=1),
         # # 今天 OSC > 昨天 OSC
@@ -203,8 +203,8 @@ def broadcast():
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", direction="more", threshold=1, days=1),
         # # 5日均量 > 20日均量
         # technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", direction="more", threshold=1, days=1),
-        # 5日均量 > 1000
-        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=1),
+        # # 5日均量 > 1000
+        # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=1),
         # # 20日均量 > 1000
         # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_20_volume", direction="more", threshold=1000, days=1),
         # 單一法人至少買超成交量的 10%
