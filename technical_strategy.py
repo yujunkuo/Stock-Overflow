@@ -148,29 +148,32 @@ def _technical_indicator_greater_or_less_two_day_check_row(row, indicator_1, ind
         return False
 
 
-# # 8. (Public) (今天的 X 指標 - 今天的 Y 指標) 小於 (k * 昨天的 Z 指標) (ex. (今收-今開) < (0.08*昨收)) 並持續至少 N 天
-# #  (indicator = 'k9', 'd9', 'dif', 'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume', '開盤', '收盤', '最高', '最低')
-# def technical_indicator_difference_two_day_check_df(df, indicator_1="收盤", indicator_2="開盤", difference_threshold=0.08, indicator_3="收盤", days=1):
-#     return df.apply(_technical_indicator_difference_two_day_check_row, indicator_1=indicator_1, indicator_2=indicator_2, difference_threshold=difference_threshold, indicator_3=indicator_3, days=days, axis=1)
+# **. (Public) (今天的 X 指標 - 今天的 Y 指標)「大於或小於」(k * 昨天的 Z 指標) (ex. (今高-今收) < (0.035*昨收)) 並持續至少 N 天
+#  (indicator = 'k9', 'd9', 'dif', 'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume', '開盤', '收盤', '最高', '最低')
+def technical_indicator_difference_two_day_check_df(df, indicator_1="最高", indicator_2="收盤", direction="less", threshold=0.035, indicator_3="收盤", days=1):
+    return df.apply(_technical_indicator_difference_two_day_check_row, indicator_1=indicator_1, indicator_2=indicator_2, direction=direction, threshold=threshold, indicator_3=indicator_3, days=days, axis=1)
 
-# def _technical_indicator_difference_two_day_check_row(row, indicator_1, indicator_2, difference_threshold, indicator_3, days) -> bool:
-#     try:
-#         if indicator_1 in ['開盤', '收盤', '最高', '最低']:
-#             last_n_days_indicator_1 = [each[1][indicator_1] for each in row["daily_k"][-1:(-2-days):-1]]
-#         else:
-#             last_n_days_indicator_1 = [each[1] for each in row[indicator_1][-1:(-2-days):-1]]
-#         if indicator_2 in ['開盤', '收盤', '最高', '最低']:
-#             last_n_days_indicator_2 = [each[1][indicator_2] for each in row["daily_k"][-1:(-2-days):-1]]
-#         else:
-#             last_n_days_indicator_2 = [each[1] for each in row[indicator_2][-1:(-2-days):-1]]
-#         if indicator_3 in ['開盤', '收盤', '最高', '最低']:
-#             last_n_days_indicator_3 = [each[1][indicator_3] for each in row["daily_k"][-1:(-2-days):-1]]
-#         else:
-#             last_n_days_indicator_3 = [each[1] for each in row[indicator_3][-1:(-2-days):-1]]
-#         difference_ = [i_1 - i_2 for i_1, i_2 in zip(last_n_days_indicator_1, last_n_days_indicator_2)]
-#         return all(difference_[i] < (difference_threshold * last_n_days_indicator_3[i+1]) for i in range(days))
-#     except:
-#         return False
+def _technical_indicator_difference_two_day_check_row(row, indicator_1, indicator_2, direction, threshold, indicator_3, days) -> bool:
+    try:
+        if indicator_1 in ['開盤', '收盤', '最高', '最低']:
+            last_n_days_indicator_1 = [each[1][indicator_1] for each in row["daily_k"][-1:(-2-days):-1]]
+        else:
+            last_n_days_indicator_1 = [each[1] for each in row[indicator_1][-1:(-2-days):-1]]
+        if indicator_2 in ['開盤', '收盤', '最高', '最低']:
+            last_n_days_indicator_2 = [each[1][indicator_2] for each in row["daily_k"][-1:(-2-days):-1]]
+        else:
+            last_n_days_indicator_2 = [each[1] for each in row[indicator_2][-1:(-2-days):-1]]
+        if indicator_3 in ['開盤', '收盤', '最高', '最低']:
+            last_n_days_indicator_3 = [each[1][indicator_3] for each in row["daily_k"][-1:(-2-days):-1]]
+        else:
+            last_n_days_indicator_3 = [each[1] for each in row[indicator_3][-1:(-2-days):-1]]
+        difference_ = [i_1 - i_2 for i_1, i_2 in zip(last_n_days_indicator_1, last_n_days_indicator_2)]
+        if direction == "more":
+            return all(difference_[i] > (threshold * last_n_days_indicator_3[i+1]) for i in range(days))
+        else:
+            return all(difference_[i] < (threshold * last_n_days_indicator_3[i+1]) for i in range(days))
+    except:
+        return False
 
 
 # 9. (Public) 今天的 X-Y 指標「大於等於」昨天的 X-Y 指標 (ex. 今天(k9-d9) >= 昨天(k9-d9)) 並持續至少 N 天
