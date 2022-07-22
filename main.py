@@ -216,10 +216,10 @@ def broadcast():
         # chip_strategy.foreign_buy_positive_check_df(final_df, threshold=2e5),
         # # 投信買超至少超過 50 張
         # chip_strategy.investment_buy_positive_check_df(final_df, threshold=5e4),
-        # 自定義法人買超張數篩選
-        chip_strategy.buy_positive_check_df(final_df),
-        # 三大法人合計買超為正值
-        chip_strategy.total_institutional_buy_positive_check_df(final_df, threshold=0),
+        ## (不改的條件 @ 20220723) 自定義法人買超張數篩選 (法人買賣常常跟起漲點相反)
+        # chip_strategy.buy_positive_check_df(final_df),
+        ## (不改的條件 @ 20220723) 三大法人合計買超為正值 (法人買賣常常跟起漲點相反)
+        # chip_strategy.total_institutional_buy_positive_check_df(final_df, threshold=0),
     ]
 
     # 取得推薦清單
