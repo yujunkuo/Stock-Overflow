@@ -167,21 +167,21 @@ def broadcast():
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1),
         ## (不改的條件 @ 20220723) 今天收盤 > 昨天最高（頭頭高）
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="最高", direction="more", threshold=1, days=1),
-        ## 今天 K9 > 昨天 K9
+        ## (不改的條件 @ 20220724) 今天 K9 > 昨天 K9
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="k9", indicator_2="k9", direction="more", threshold=1, days=1),
         # # 今天 OSC > 昨天 OSC
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="osc", indicator_2="osc", direction="more", threshold=1, days=1),
-        ## |今天D9 - 今天K9| < 20
-        technical_strategy.technical_indicator_difference_one_day_check_df(final_df, indicator_1="k9", indicator_2="d9", difference_threshold=20, days=1),
-        ## 今天的 K9 要大於 20
-        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="more", threshold=20, days=1),
-        # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=80, days=1),
-        # # (今天 k9-d9) 大於等於 (昨天 k9-d9)
+        ## |今天D9 - 今天K9| < 22
+        technical_strategy.technical_indicator_difference_one_day_check_df(final_df, indicator_1="k9", indicator_2="d9", difference_threshold=22, days=1),
+        ## (不改的條件 @ 20220724) 今天的 K9 要介於 27 ~ 87 之間
+        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="more", threshold=27, days=1),
+        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=87, days=1),
+        ## (今天 k9-d9) 大於等於 (昨天 k9-d9)
         # technical_strategy.technical_indicator_difference_greater_two_day_check_df(final_df, indicator_1="k9", indicator_2="d9", days=1),
         # # 5 日線趨勢向上 (MA5 趨勢向上)
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="mean5", indicator_2="mean5", direction="more", threshold=1, days=1),
-        ## 今天收盤 > 1.01 * 昨天收盤 (只抓今日漲幅 1% 以上的股票)
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="more", threshold=1.01, days=1),
+        ## (不改的條件 @ 20220724) 今天收盤 > 1.03 * 昨天收盤 (只抓今日漲幅 3% 以上的股票)
+        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="收盤", indicator_2="收盤", direction="more", threshold=1.03, days=1),
         ## 今天收盤 < 1.1 * Mean5 or Mean10 or Mean20 (不抓取乖離過大的股票)
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean5", direction="less", threshold=1.1, days=1) |\
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean10", direction="less", threshold=1.1, days=1) |\
