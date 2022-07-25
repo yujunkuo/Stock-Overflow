@@ -106,16 +106,16 @@ def wakeup():
     return Response(status=200)
 
 
-# 更新今日推薦股票(1630-1730)
+# 更新當日推薦股票(1630-1715)
 def update():
-    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
-        print("Not yet Update!")
+    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,15)):
+        print("=== 目前非推播時段 ===")
         return
     if not helper.check_weekday():
-        print("Today is not weekday!")
+        print("=== 假日不進行推播 ===")
         return
     else:
-        print("Start Update...")
+        print("=== 開始製作推薦股票清單 ===")
         # 欲查詢日期
         search_date = datetime.date.today()
         # 取得資料表
@@ -123,8 +123,8 @@ def update():
         global final_date
         final_df = get_all_final(search_date)
         final_date = search_date
-        print("Update Success!")
-        print("Start Broadcast...")
+        print("=== 製作完成 ===")
+        print("=== 開始進行好友推播 ===")
         broadcast()
         return
 
@@ -132,7 +132,7 @@ def update():
 # 進行全好友推播(1730-1830)
 def broadcast():
     # 顯示目前狀態
-    print(f"Final date is {str(final_date)}")
+    print(f"今日日期: {str(final_date)}")
     # print(final_df.head())
 
     ### 以下為根據 20211217 以前「買過與觀察過之個股」所設定的 Rules ###
@@ -248,7 +248,7 @@ def broadcast():
     final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
     # 透過 LINE API 進行推播
     line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
-    print("Broadcast Success!")
+    print("=== 推播完成 ===")
     return
 
 
