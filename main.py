@@ -98,17 +98,16 @@ def callback():
 # 喚醒 Dyno
 @app.route("/wakeup", methods=['GET'])
 def wakeup():
-    print("Start Wakeup...")
+    print("=== 開始喚醒主機 ===")
     # 透過 Thread 指派更新與檢查推播
     update_thread = threading.Thread(target=update)
     update_thread.start()
-    print("Wakeup Success!")
     return Response(status=200)
 
 
-# 更新當日推薦股票(1630-1715)
+# 更新當日推薦股票(1630-1730)
 def update():
-    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,15)):
+    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
         print("=== 目前非推播時段 ===")
         return
     if not helper.check_weekday():
@@ -129,7 +128,7 @@ def update():
         return
 
 
-# 進行全好友推播(1730-1830)
+# 進行好友推播
 def broadcast():
     # 顯示目前狀態
     print(f"今日日期: {str(final_date)}")
@@ -237,7 +236,7 @@ def broadcast():
     else:
         final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔\n"
         final_recommendation_text += "\n##########\n\n"
-        print(f"滿足條件的股票共有: {final_filter.shape[0]} 檔 (依照產業別排序)\n")
+        print(f"滿足條件的股票共有: {final_filter.shape[0]} 檔")
         for i, v in final_filter.iterrows():
             final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
     # 加上末尾分隔線
