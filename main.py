@@ -37,7 +37,7 @@ import threading
 YEAR = "2022"
 
 # 版本號
-VERSION = "v1.6"
+VERSION = "v1.7"
 
 
 # API Interface
