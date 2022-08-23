@@ -105,9 +105,9 @@ def wakeup():
     return Response(status=200)
 
 
-# 更新當日推薦股票(1630-1730)
+# 更新當日推薦股票(1630-1830)
 def update():
-    if not helper.check_time_between(datetime.time(16,30), datetime.time(17,30)):
+    if not helper.check_time_between(datetime.time(16,30), datetime.time(18,30)):
         print("=== 目前非推播時段 ===")
         return
     if not helper.check_weekday():
@@ -122,7 +122,7 @@ def update():
         global final_date
         final_df = get_all_final(search_date)
         final_date = search_date
-        print("=== 製作完成 ===")
+        print("=== 股票清單製作完成 ===")
         print("=== 開始進行好友推播 ===")
         broadcast()
         return
@@ -247,7 +247,7 @@ def broadcast():
     final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
     # 透過 LINE API 進行推播
     line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
-    print("=== 推播完成 ===")
+    print("=== 好友推播完成 ===")
     return
 
 
