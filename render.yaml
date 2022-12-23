@@ -1,6 +1,6 @@
 services:
 - type: web
-  name: line-bot-python-flask
+  name: stock-overflow-api
   env: python
   repo: https://github.com/yujunkuo/Stock-Overflow.git
   buildCommand: pip install -r requirements.txt
