@@ -12,6 +12,8 @@ services:
     sync: false
   - key: CHANNEL_SECRET
     sync: false
+  - key: TZ
+    sync: false
 # - type: web
 #   name: line-bot-python-flask-with-handler
 #   env: python
