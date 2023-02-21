@@ -34,10 +34,10 @@ import threading
 #################### 全域變數設定 ####################
 
 # 版本年份
-YEAR = "2022"
+YEAR = "2023"
 
 # 版本號
-VERSION = "v1.9.1"
+VERSION = "v1.9.2"
 
 
 # API Interface
