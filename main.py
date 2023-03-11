@@ -37,7 +37,7 @@ import threading
 YEAR = "2023"
 
 # 版本號
-VERSION = "v1.9.2"
+VERSION = "v1.9.3"
 
 
 # API Interface
@@ -107,24 +107,27 @@ def wakeup():
 
 # 更新當日推薦股票(1630-1830)
 def update():
-    if not helper.check_time_between(datetime.time(16,30), datetime.time(18,30)):
-        print("=== 目前非推播時段 ===")
-        return
-    if not helper.check_weekday():
-        print("=== 假日不進行推播 ===")
-        return
-    else:
-        print("=== 開始製作推薦股票清單 ===")
-        # 欲查詢日期
-        search_date = datetime.date.today()
-        # 取得資料表
-        global final_df
-        global final_date
-        final_df = get_all_final(search_date)
-        final_date = search_date
-        print("=== 股票清單製作完成 ===")
-        print("=== 開始進行好友推播 ===")
-        broadcast()
+    try:
+        if not helper.check_time_between(datetime.time(16,30), datetime.time(18,30)):
+            print("=== 目前非推播時段 ===")
+            return
+        elif not helper.check_weekday():
+            print("=== 假日不進行推播 ===")
+            return
+        else:
+            print("=== 開始製作推薦股票清單 ===")
+            # 欲查詢日期
+            search_date = datetime.date.today()
+            # 取得資料表
+            global final_df
+            global final_date
+            final_df = get_all_final(search_date)
+            final_date = search_date
+            print("=== 股票清單製作完成 ===")
+            print("=== 開始進行好友推播 ===")
+            broadcast()
+            return
+    except:
         return
 
 
