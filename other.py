@@ -97,10 +97,9 @@ def get_technical_indicators(input_df: pd.DataFrame) -> pd.DataFrame:
 # 取得單一股票的技術指標資訊
 def _get_technical_indicators_from_stock_id(stock_id: str) -> dict:
     try:
-        # days = 360 時 Heroku 記憶體會爆掉 / days = 200 時 Render 記憶體會爆掉
-        # (new) 嘗試 days = 240，也就是爬取一整年的資料
-        # r = requests.get(f"https://histock.tw/stock/chip/chartdata.aspx?no={stock_id}&days=120&m=dailyk,close,volume,mean5,mean10,mean20,mean60,mean120,mean5volume,mean20volume,k9,d9,rsi6,rsi12,dif,macd,osc")
-        r = requests.get(f"https://histock.tw/stock/chip/chartdata.aspx?no={stock_id}&days=240&m=dailyk,close,volume,mean5,mean10,mean20,mean60,mean5volume,mean20volume,k9,d9,dif,macd,osc")
+        # days = 240 時 Render 記憶體會爆掉
+        # r = requests.get(f"https://histock.tw/stock/chip/chartdata.aspx?no={stock_id}&days=240&m=dailyk,close,volume,mean5,mean10,mean20,mean60,mean120,mean5volume,mean20volume,k9,d9,rsi6,rsi12,dif,macd,osc")
+        r = requests.get(f"https://histock.tw/stock/chip/chartdata.aspx?no={stock_id}&days=120&m=dailyk,close,volume,mean5,mean10,mean20,mean60,mean5volume,mean20volume,k9,d9,dif,macd,osc")
         technical_data = r.json()
         k9 = _make_technical_pretty_list(json.loads(technical_data["K9"]))
         d9 = _make_technical_pretty_list(json.loads(technical_data["D9"]))
