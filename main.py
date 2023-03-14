@@ -37,7 +37,7 @@ import threading
 YEAR = "2023"
 
 # 版本號
-VERSION = "v2.0.1"
+VERSION = "v2.0.2"
 
 
 # API Interface
@@ -105,10 +105,10 @@ def wakeup():
     return Response(status=200)
 
 
-# 更新當日推薦股票(1630-1830)
+# 更新當日推薦股票(1630-1830) -> (1630-2330)
 def update():
     try:
-        if not helper.check_time_between(datetime.time(16,30), datetime.time(18,30)):
+        if not helper.check_time_between(datetime.time(16,30), datetime.time(23,30)):
             print("=== 目前非推播時段 ===")
             return
         elif not helper.check_weekday():
