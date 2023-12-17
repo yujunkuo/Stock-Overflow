@@ -6,4 +6,3 @@ requests
 bs4
 pandas
 numpy
-APScheduler

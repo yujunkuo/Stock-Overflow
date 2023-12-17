@@ -11,15 +11,15 @@ from io import StringIO
 import json
 from functools import reduce
 
-import twse
-import tpex
-import other
+from crawlers import twse
+from crawlers import tpex
+from crawlers import other
 
-import fundamental_strategy
-import technical_strategy
-import chip_strategy
+from strategies import chip_strategy
+from strategies import technical_strategy
+from strategies import fundamental_strategy
 
-import helper
+from utils import helper
 
 from flask import Flask, Response, request, abort
 from linebot import LineBotApi, WebhookHandler
@@ -37,7 +37,7 @@ import threading
 YEAR = "2023"
 
 # 版本號
-VERSION = "v2.0.5"
+VERSION = "v2.0.6"
 
 
 # API Interface
