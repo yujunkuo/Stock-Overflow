@@ -94,6 +94,11 @@ def callback():
 #             TextSendMessage(text="買股票賺大錢！")
 #         )
 
+# 檢查 Server 是否活著
+@app.route("/", methods=['GET'])
+def home():
+    print("=== 進行主機檢查 ===")
+    return Response(status=200)
 
 # 喚醒 Dyno
 @app.route("/wakeup", methods=['GET'])
