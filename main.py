@@ -37,7 +37,7 @@ import threading
 YEAR = "2023"
 
 # 版本號
-VERSION = "v2.0.7"
+VERSION = "v2.0.8"
 
 
 # API Interface
@@ -51,6 +51,10 @@ load_dotenv()
 # 設定 LINE Bot 基本資料
 line_bot_api = LineBotApi(os.getenv('CHANNEL_ACCESS_TOKEN'))
 handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
+
+
+# 設定 API Access Token
+api_access_token = os.getenv('API_ACCESS_TOKEN')
 
 
 # 初始化股票當日交易紀錄資料表
@@ -94,20 +98,29 @@ def callback():
 #             TextSendMessage(text="買股票賺大錢！")
 #         )
 
+
 # 檢查 Server 是否活著
 @app.route("/", methods=['GET'])
 def home():
     print("=== 進行主機檢查 ===")
     return Response(status=200)
 
+
 # 喚醒 Dyno
 @app.route("/wakeup", methods=['GET'])
 def wakeup():
-    print("=== 開始喚醒主機 ===")
-    # 透過 Thread 指派更新與檢查推播
-    update_thread = threading.Thread(target=update)
-    update_thread.start()
-    return Response(status=200)
+    # 檢查 request 是否有提供 'API-Access-Token' header
+    if 'API-Access-Token' not in request.headers:
+        return Response('Missing API-Access-Token', status=401)
+    # 驗證提供的 token 是否正確
+    elif request.headers['API-Access-Token'] != api_access_token:
+        return Response('Invalid API-Access-Token', status=401)
+    else:
+        print("=== 開始喚醒主機 ===")
+        # 透過 Thread 指派更新與檢查推播
+        update_thread = threading.Thread(target=update)
+        update_thread.start()
+        return Response(status=200)
 
 
 # 更新當日推薦股票(1630-1830) -> (1630-2330)
