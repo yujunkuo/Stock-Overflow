@@ -23,6 +23,7 @@
 
 2. Navigate to **Render**'s [blueprint](https://dashboard.render.com/blueprints), and create a new instance with the target repository and the **`render.yaml`** file.
     - The environment variables `CHANNEL_ACCESS_TOKEN` and `CHANNEL_SECRET` can be found from [LINE Developers](https://developers.line.biz/zh-hant/).
+    - The environment variable `API_ACCESS_TOKEN` should be designated with a unique value to enhance the security.
     - The environment variable `TZ` should be configured to `Asia/Taipei`.
 
 3. Upon creating and running the instance, you will receive a service URL for this web service from the dashboard (e.g., https://stock-overflow-api.onrender.com).
