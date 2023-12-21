@@ -37,7 +37,7 @@ import threading
 YEAR = "2023"
 
 # 版本號
-VERSION = "v2.1"
+VERSION = "v2.1.1"
 
 
 # API Interface
@@ -117,9 +117,13 @@ def wakeup():
         return Response('Invalid API-Access-Token', status=401)
     else:
         print("=== 開始喚醒主機 ===")
-        # 透過 Thread 指派更新與檢查推播
-        update_thread = threading.Thread(target=update)
-        update_thread.start()
+        # 指派更新與檢查推播
+        update()
+        # update_thread = threading.Thread(target=update)
+        # update_thread.start()
+        # 釋放記憶體
+        # global final_df
+        # final_df = final_df.iloc[0:0]
         return Response(status=200)
 
 
