@@ -27,6 +27,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
 import os
+import gc
 import psutil
 from dotenv import load_dotenv
 
@@ -104,6 +105,9 @@ def callback():
 @app.route("/", methods=['GET'])
 def home():
     print("=== 進行主機檢查 ===")
+    # 清除冗余的記憶體使用
+    gc.collect()
+    # 檢查目前的記憶體使用量
     process = psutil.Process()
     memory_usage = process.memory_info().rss / 1024 ** 2
     print(f"=== 目前記憶體使用量: {memory_usage:.2f} MB ===")
@@ -272,7 +276,7 @@ def broadcast(final_date, final_df):
     # 加上版權聲明
     final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
     # 透過 LINE API 進行推播
-    line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
+    # line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
     print("=== 好友推播完成 ===")
     return
 
