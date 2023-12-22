@@ -11,7 +11,7 @@ from functools import reduce
 
 ## 取得證交所當日所有上市股票資料
 
-MAX_REQUEST_RETRIES = 5
+MAX_REQUEST_RETRIES = 3
 
 # (Public) 取得最終合併後的資料表
 def get_twse_final(date):
@@ -54,7 +54,6 @@ def _get_twse_price(date) -> pd.DataFrame:
                 header=["證券代號" in l for l in r.text.split("\n")].index(True)-1)
             # 去除各個欄位名稱後方的多餘空格
             df.columns = [each.strip() for each in df.columns]
-            print(df.columns)
             # 更新名稱與代號欄位的資料型態
             df["證券名稱"] = df["證券名稱"].astype(str)
             df["證券代號"] = df["證券代號"].astype(str)

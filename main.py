@@ -38,7 +38,7 @@ import threading
 YEAR = "2023"
 
 # 版本號
-VERSION = "v2.1.2"
+VERSION = "v2.1.3"
 
 
 # API Interface
@@ -58,18 +58,18 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 api_access_token = os.getenv('API_ACCESS_TOKEN')
 
 
-# 初始化股票當日交易紀錄資料表
-final_df = pd.DataFrame(columns=['名稱', '產業別', '股票類型', '收盤', '漲跌', '開盤', '最高', '最低', '成交股數', '本益比',
-       '股利年度', '殖利率(%)', '股價淨值比', '融資買進', '融資賣出', '融資前日餘額', '融資今日餘額', '融券買進',
-       '融券賣出', '融券前日餘額', '融券今日餘額', '資券互抵', '融資變化量', '融券變化量', '券資比(%)',
-       '外資買賣超股數', '投信買賣超股數', '自營商買賣超股數', '三大法人買賣超股數', '外資持股比率(%)',
-       '(月)營收月增率(%)', '(月)營收年增率(%)', '(月)累積營收年增率(%)', 'k9', 'd9', 'dif',
-       'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume',
-       'daily_k'])
+# # 初始化股票當日交易紀錄資料表
+# final_df = pd.DataFrame(columns=['名稱', '產業別', '股票類型', '收盤', '漲跌', '開盤', '最高', '最低', '成交股數', '本益比',
+#        '股利年度', '殖利率(%)', '股價淨值比', '融資買進', '融資賣出', '融資前日餘額', '融資今日餘額', '融券買進',
+#        '融券賣出', '融券前日餘額', '融券今日餘額', '資券互抵', '融資變化量', '融券變化量', '券資比(%)',
+#        '外資買賣超股數', '投信買賣超股數', '自營商買賣超股數', '三大法人買賣超股數', '外資持股比率(%)',
+#        '(月)營收月增率(%)', '(月)營收年增率(%)', '(月)累積營收年增率(%)', 'k9', 'd9', 'dif',
+#        'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume',
+#        'daily_k'])
 
 
-# 最新資料表的日期
-final_date = None
+# # 最新資料表的日期
+# final_date = None
 
 ####################################################
 
@@ -122,12 +122,8 @@ def wakeup():
     else:
         print("=== 開始喚醒主機 ===")
         # 指派更新與檢查推播
-        update()
-        # update_thread = threading.Thread(target=update)
-        # update_thread.start()
-        # 釋放記憶體
-        # global final_df
-        # final_df = final_df.iloc[0:0]
+        update_thread = threading.Thread(target=update)
+        update_thread.start()
         return Response(status=200)
 
 
@@ -142,26 +138,25 @@ def update():
             return
         else:
             print("=== 開始製作推薦股票清單 ===")
-            # 欲查詢日期
-            search_date = datetime.date.today()
             # 取得資料表
-            global final_df
-            global final_date
-            final_df = get_all_final(search_date)
-            final_date = search_date
+            # global final_date
+            # global final_df
+            # 欲查詢日期
+            final_date = datetime.date.today()
+            final_df = get_all_final(final_date)
             print("=== 股票清單製作完成 ===")
             print("=== 開始進行好友推播 ===")
-            broadcast()
+            broadcast(final_date, final_df)
             return
     except:
         return
 
 
 # 進行好友推播
-def broadcast():
+def broadcast(final_date, final_df):
     # 顯示目前狀態
     print(f"今日日期: {str(final_date)}")
-    # print(final_df.head())
+    print(f"資料表大小: {final_df.shape}")
 
     ### 以下為根據 20211217 以前「買過與觀察過之個股」所設定的 Rules ###
 
@@ -310,6 +305,6 @@ def get_all_final(date) -> pd.DataFrame:
 
 
 if __name__ == "__main__":
-    port = int(os.getenv('PORT', 5000))
+    port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
 

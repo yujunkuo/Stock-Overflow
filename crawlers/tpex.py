@@ -11,7 +11,7 @@ from functools import reduce
 
 ## 取得櫃買中心當日所有上櫃股票資料
 
-MAX_REQUEST_RETRIES = 5
+MAX_REQUEST_RETRIES = 3
 
 # (Public) 取得最終合併後的資料表
 def get_tpex_final(date):
