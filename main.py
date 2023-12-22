@@ -126,8 +126,9 @@ def wakeup():
     else:
         print("=== 開始喚醒主機 ===")
         # 指派更新與檢查推播
-        update_thread = threading.Thread(target=update)
-        update_thread.start()
+        update()
+        # update_thread = threading.Thread(target=update)
+        # update_thread.start()
         return Response(status=200)
 
 
