@@ -87,6 +87,7 @@ def get_technical_indicators(input_df: pd.DataFrame) -> pd.DataFrame:
     test_data = _get_technical_indicators_from_stock_id("2330")
     test_date = test_data["daily_k"][-1][0]
     if test_date != datetime.date.today():
+        print("取得技術指標失敗，搜尋日期與今日日期不相符")
         return df
     total_ = len(df.index)
     current_finish_ = 0
