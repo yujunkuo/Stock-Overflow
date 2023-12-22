@@ -27,6 +27,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
 import os
+import psutil
 from dotenv import load_dotenv
 
 import threading
@@ -37,7 +38,7 @@ import threading
 YEAR = "2023"
 
 # 版本號
-VERSION = "v2.1.1"
+VERSION = "v2.1.2"
 
 
 # API Interface
@@ -103,6 +104,9 @@ def callback():
 @app.route("/", methods=['GET'])
 def home():
     print("=== 進行主機檢查 ===")
+    process = psutil.Process()
+    memory_usage = process.memory_info().rss / 1024 ** 2
+    print(f"=== 目前記憶體使用量: {memory_usage:.2f} MB ===")
     return Response(status=200)
 
 
