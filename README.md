@@ -21,7 +21,7 @@
 1. Modify the **`render.yaml`** file in your repository. (You can also find the template [here](https://github.com/haojiwu/line-bot-python-on-render).)
     - Modify the value of `name`, `repo`, and maybe some values of `envVars`.
 
-2. Navigate to **Render**'s [blueprint](https://dashboard.render.com/blueprints), and create a new instance with the target repository and the **`render.yaml`** file.
+2. Go to **Render**'s [blueprint](https://dashboard.render.com/blueprints), create a new instance with the target repository and the **`render.yaml`** file.
     - The environment variables `CHANNEL_ACCESS_TOKEN` and `CHANNEL_SECRET` can be found from [LINE Developers](https://developers.line.biz/zh-hant/).
     - The environment variable `API_ACCESS_TOKEN` should be designated with a unique value to enhance the security.
     - The environment variable `TZ` should be configured to `Asia/Taipei`.
@@ -36,7 +36,13 @@
 ## 💬 LINE Notification Message
 Below is an example of what the LINE notification message looks like:
 
-<img src="line_notification.jpg" alt="LINE Notification Screenshot" width="40%"/>
+<img src="line_notification.jpg" alt="LINE Notification Screenshot" width="37%"/>
+
+
+## ⚠️ Disclaimer and Customization
+**Please** note that Stock-Overflow is a stock recommendation system offering investment advice for informational purposes only. We do not assume any responsibility for financial decisions made based on our recommendations. Investing in the stock market involves risks, and users are advised to exercise caution and conduct their own research before making any investment decisions.
+
+**Moreover,** the system's filtering criteria can be adjusted according to individual investment preferences. Users can modify the source code's stock screening conditions to better align with their unique investment strategies. Feel free to explore and adapt the criteria to suit your preferences and risk tolerance.
 
 
 ## 🧷 Reference
@@ -49,6 +55,8 @@ Below is an example of what the LINE notification message looks like:
 
 
 ## 🧸 Contributing
-Contributions are greatly welcome and appreciated! 
+Your contributions are not only greatly welcome but also truly appreciated! If you have ideas for enhancements or something amazing brewing in your mind, please don't hesitate to create a pull request. Your feedback is invaluable, and every contribution, no matter how small, has the power to make a significant impact.
 
-Thank you for being part of this project! 🎉
+I appreciate any contributions or suggestions. Thank you for being a crucial part of this project and for bringing your unique brilliance to the table!
+
+Let's create something extraordinary together! 🎉
