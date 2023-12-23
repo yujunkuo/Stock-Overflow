@@ -36,7 +36,7 @@
 ## 💬 LINE Notification Message
 Below is an example of what the LINE notification message looks like:
 
-<img src="line_notification.jpg" alt="LINE Notification Screenshot" width="37%"/>
+<img src="line_notification.jpg" alt="LINE Notification Screenshot" width="38%"/>
 
 
 ## ⚠️ Disclaimer and Customization
