@@ -55,8 +55,6 @@ Below is an example of what the LINE notification message looks like:
 
 
 ## 🧸 Contributing
-Your contributions are not only greatly welcome but also truly appreciated! If you have ideas for enhancements or something amazing brewing in your mind, please don't hesitate to create a pull request. Your feedback is invaluable, and every contribution, no matter how small, has the power to make a significant impact.
+Your contributions or suggestions are not only greatly welcome but also truly appreciated! If you have any idea for enhancements or something amazing brewing in your mind, please don't hesitate to create a pull request. Your feedback is invaluable, and every contribution, no matter how small, has the power to make a significant impact.
 
-I appreciate any contributions or suggestions. Thank you for being a crucial part of this project and for bringing your unique brilliance to the table!
-
-Let's create something extraordinary together! 🎉
+Thank you for being a crucial part of this project and for bringing your unique brilliance to the table! Let's create something extraordinary together! 🎉
