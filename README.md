@@ -33,6 +33,12 @@
 5. Configure the scheduler (e.g., [Cron-job](https://cron-job.org/en/)) to invoke the `/wakeup` API endpoint at designated times daily, ensuring users receive notifications.
 
 
+## 💬 LINE Notification Message
+Below is an example of what the LINE notification message looks like:
+
+<img src="line_notification.jpg" alt="LINE Notification Screenshot" width="47%"/>
+
+
 ## 🧷 Reference
 - https://render.com/
 - https://cron-job.org/en/
