@@ -219,8 +219,8 @@ def broadcast(final_date, final_df):
         # technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", direction="less", threshold=1.1, days=1),
         ## 今天最高價不是一年內的最高 (不追高) -> 今天最高價不是四個月內的最高 (只抓得到四個月)
         # technical_strategy.today_price_is_not_max_check_df(final_df, price_type="最高", days=80),
-        ## (不改的條件 @ 20220822) 上影線長度不能超過昨天收盤價的 3.5% (0.035) / 0% (0.000001) 以上
-        technical_strategy.technical_indicator_difference_two_day_check_df(final_df, indicator_1="最高", indicator_2="收盤", direction="less", threshold=1e-6, indicator_3="收盤", days=1),
+        ## (不改的條件 @ 20220822) 上影線長度不能超過昨天收盤價的 2.2% (0.022) / 0% (0.000001) 以上
+        technical_strategy.technical_indicator_difference_two_day_check_df(final_df, indicator_1="最高", indicator_2="收盤", direction="less", threshold=0.022, indicator_3="收盤", days=1),
         # # OSC 必須要大於0 (經驗顯示 OSC 大於 0 後勢出現強勁漲幅的機會較高)
         # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="osc", direction="more", threshold=0, days=1),
     ]
