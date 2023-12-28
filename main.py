@@ -245,8 +245,8 @@ def broadcast(final_date, final_df):
         # chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10),
         # 三大法人合計買超至少超過成交量的 1%
         # chip_strategy.total_institutional_buy_check_df(final_df, total_volume_threshold=1),
-        # # 外資買超至少超過 200 張
-        # chip_strategy.foreign_buy_positive_check_df(final_df, threshold=2e5),
+        # 外資買超至少超過 -1 股 (大於等於 0) (200 張 -> threshold=2e5)
+        chip_strategy.foreign_buy_positive_check_df(final_df, threshold=-1),
         # # 投信買超至少超過 50 張
         # chip_strategy.investment_buy_positive_check_df(final_df, threshold=5e4),
         ## (不改的條件 @ 20220723) 自定義法人買超張數篩選 (法人買賣常常跟起漲點相反)
