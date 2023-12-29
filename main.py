@@ -116,6 +116,7 @@ def home():
     process = psutil.Process()
     memory_usage = process.memory_info().rss / 1024 ** 2
     print(f"=== 目前記憶體使用量: {memory_usage:.2f} MB ===")
+    print(f"=== 昨日股票推薦清單: {[s for s in yesterday_recommendations]} ===")
     return Response(status=200)
 
 
