@@ -137,39 +137,36 @@ def wakeup():
         return Response(status=200)
 
 
-# 更新當日推薦股票 (1630-2330)
+# 更新當日推薦股票
 def update():
-    try:
-        if not helper.check_time_between(datetime.time(16,30), datetime.time(23,30)):
-            print("=== 目前非推播時段 ===")
-            return
-        elif not helper.check_weekday():
-            print("=== 假日不進行推播 ===")
-            return
-        else:
-            print("=== 開始製作推薦股票清單 ===")
-            # 欲查詢日期
-            final_date = datetime.date.today()
-            ########## !!!!!!!!!!!!!!!!! #######################
-            # 暫時抓取今天往前推 n 天的資料做測試
-            final_date = final_date - datetime.timedelta(days=5)
-            ########## !!!!!!!!!!!!!!!!! #######################
-            final_df = get_all_final(final_date)
-            # 印出台積電資料，確保爬蟲取得資料的正確性
-            print("---------------------")
-            print("核對 [2330 台積電] 今日交易資訊:")
-            tsmc = final_df.loc["2330"]
-            for column, value in tsmc.iteritems():
-                if column == "k9":
-                    break
-                else:
-                    print(f"{column}: {value}")
-            print("---------------------")
-            print("=== 股票清單製作完成 ===")
-            print("=== 開始進行好友推播 ===")
-            broadcast(final_date, final_df)
-            return
-    except:
+    # if not helper.check_time_between(datetime.time(16,30), datetime.time(23,30)):
+    #     print("=== 目前非推播時段 ===")
+    #     return
+    if not helper.check_weekday():
+        print("=== 假日不進行推播 ===")
+        return
+    else:
+        print("=== 開始製作推薦股票清單 ===")
+        # 欲查詢日期
+        final_date = datetime.date.today()
+        ########## !!!!!!!!!!!!!!!!! #######################
+        # 暫時抓取今天往前推 n 天的資料做測試
+        final_date = final_date - datetime.timedelta(days=5)
+        ########## !!!!!!!!!!!!!!!!! #######################
+        final_df = get_all_final(final_date)
+        # 印出台積電資料，確保爬蟲取得資料的正確性
+        print("---------------------")
+        print("核對 [2330 台積電] 今日交易資訊:")
+        tsmc = final_df.loc["2330"]
+        for column, value in tsmc.iteritems():
+            if column == "k9":
+                break
+            else:
+                print(f"{column}: {value}")
+        print("---------------------")
+        print("=== 股票清單製作完成 ===")
+        print("=== 開始進行好友推播 ===")
+        broadcast(final_date, final_df)
         return
 
 
