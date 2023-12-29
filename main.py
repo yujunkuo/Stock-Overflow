@@ -245,14 +245,14 @@ def broadcast(final_date, final_df):
         technical_strategy.volume_greater_check_df(final_df, shares_threshold=2000, days=1),
         ## 今天成交量不能是 2 天內最低量 (今天成交量要比昨天高)
         # technical_strategy.today_volume_is_not_min_check_df(final_df, days=2),
-        ## (不改的條件 @ 20220603) 今天成交量要大於昨天成交量 (1 -> 1.5)
-        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="volume", indicator_2="volume", direction="more", threshold=1.5, days=1),
+        ## (不改的條件 @ 20220603) 今天成交量要大於昨天成交量
+        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="volume", indicator_2="volume", direction="more", threshold=1, days=1),
         ## (不改的條件 @ 20220603) 今量 > 5日均量
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="volume", indicator_2="mean_5_volume", direction="more", threshold=1, days=1),
         # # 5日均量 > 20日均量
         # technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", direction="more", threshold=1, days=1),
-        # # 5日均量 > 1000
-        # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=1),
+        # 5日均量 > 1000
+        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=1),
         # # 20日均量 > 1000
         # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_20_volume", direction="more", threshold=1000, days=1),
         # 單一法人至少買超成交量的 10%
