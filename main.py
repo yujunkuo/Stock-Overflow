@@ -142,10 +142,10 @@ def update():
     # if not helper.check_time_between(datetime.time(16,30), datetime.time(23,30)):
     #     print("=== 目前非推播時段 ===")
     #     return
-    if not helper.check_weekday():
-        print("=== 假日不進行推播 ===")
-        return
-    else:
+    # if not helper.check_weekday():
+    #     print("=== 假日不進行推播 ===")
+    #     return
+    # else:
         print("=== 開始製作推薦股票清單 ===")
         # 欲查詢日期
         final_date = datetime.date.today()
