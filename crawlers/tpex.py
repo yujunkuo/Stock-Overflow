@@ -91,7 +91,7 @@ def _get_tpex_fundamental(date) -> pd.DataFrame:
             new_date = f"{year}/{month:02}/{day:02}"  # 生成符合 url query 的日期字串
             r = requests.get(f"https://www.tpex.org.tw/web/stock/aftertrading/peratio_analysis/pera_result.php?l=zh-tw&o=csv&charset=UTF-8&d={new_date}&c=&s=0,asc")
             # 整理資料，變成表格
-            r.encoding = "Big5"
+            r.encoding = "utf8"
             df = pd.read_csv(StringIO(r.text), header=3)
             # 去除各個欄位名稱後方的多餘空格
             df.columns = [each.strip() for each in df.columns]
@@ -134,7 +134,7 @@ def _get_tpex_margin_trading(date) -> pd.DataFrame:
             new_date = f"{year}/{month:02}/{day:02}"  # 生成符合 url query 的日期字串
             r = requests.get(f"https://www.tpex.org.tw/web/stock/margin_trading/margin_balance/margin_bal_result.php?l=zh-tw&o=csv&charset=UTF-8&d={new_date}&s=0,asc")
             # 整理資料，變成表格
-            r.encoding = "Big5"
+            r.encoding = "utf8"
             df = pd.read_csv(StringIO(r.text), header=2)
             # 去除各個欄位名稱後方的多餘空格
             df.columns = [each.strip() for each in df.columns]
@@ -236,6 +236,8 @@ def _get_tpex_hold_percentage(date) -> pd.DataFrame:
             data = soup.find_all("td")
             hold_percentage_list = [[data[x].text, data[x+1].text, data[x+6].text] for x in range(0, len(data), 11)]
             df = pd.DataFrame(hold_percentage_list, columns=["代號", "名稱", "外資持股比率(%)"])
+            # 去除換行字元
+            df["外資持股比率(%)"] = df["外資持股比率(%)"].apply(lambda x: x.replace(u'\xa0', u''))
             # 去除各個欄位名稱後方的多餘空格
             df.columns = [each.strip() for each in df.columns]
             # 更新名稱與代號欄位的資料型態
