@@ -277,7 +277,7 @@ def broadcast(final_date, final_df):
     # 加上版權聲明
     final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
     # 透過 LINE API 進行推播
-    line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
+    # line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
     print("=== 好友推播完成 ===")
     return
 
