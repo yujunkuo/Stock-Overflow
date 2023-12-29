@@ -59,8 +59,9 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 api_access_token = os.getenv('API_ACCESS_TOKEN')
 
 
-# 記錄昨日與今日的推薦股票清單
-
+# 記錄昨日與今日的股票推薦清單
+yesterday_recommendations = set()
+today_recommendations = set()
 
 
 # # 初始化股票當日交易紀錄資料表
@@ -156,7 +157,7 @@ def update():
             print("---------------------")
             print("核對 [2330 台積電] 今日交易資訊:")
             tsmc = final_df.loc["2330"]
-            for column, value in tsmc.iteritems():
+            for column, value in tsmc.iteritems()[:33]:
                 print(f"{column}: {value}")
             print("---------------------")
             print("=== 股票清單製作完成 ===")
@@ -271,16 +272,28 @@ def broadcast(final_date, final_df):
     final_filter = final_filter.sort_values(by=["產業別"], ascending=False)
     # 轉換為字串回傳
     final_recommendation_text = None
-    if not final_filter.shape[0]:
+    # 更新昨日與今日的股票推薦清單
+    global yesterday_recommendations, today_recommendations
+    total_fit = len([i for i, _ in final_filter.iterrows() if i not in yesterday_recommendations])
+    # 建構推播訊息
+    if not total_fit:
         final_recommendation_text = f"今日無推薦之股票\n"
         print("今日無推薦之股票")
+        yesterday_recommendations, today_recommendations = set(), set()
     else:
-        final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔\n"
+        # final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔\n"
+        final_recommendation_text = f"滿足條件的股票共有: {total_fit} 檔\n"
         final_recommendation_text += "\n##########\n\n"
-        print(f"滿足條件的股票共有: {final_filter.shape[0]} 檔")
+        print(f"滿足條件的股票共有: {total_fit} 檔")
         for i, v in final_filter.iterrows():
-            final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
-            print(f"{i} {v['名稱']}  {v['產業別']}")
+            today_recommendations.add(i)
+            if i in yesterday_recommendations:
+                print(f"[重複故不列入] {i} {v['名稱']}  {v['產業別']}")
+                continue
+            else:
+                final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
+                print(f"{i} {v['名稱']}  {v['產業別']}")
+        yesterday_recommendations, today_recommendations = today_recommendations, set()
     # 加上末尾分隔線
     final_recommendation_text += "\n##########\n\n"
     # 加上資料來源說明
