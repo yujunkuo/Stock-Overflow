@@ -62,7 +62,7 @@ api_access_token = os.getenv('API_ACCESS_TOKEN')
 # # 初始化股票當日交易紀錄資料表
 # final_df = pd.DataFrame(columns=['名稱', '產業別', '股票類型', '收盤', '漲跌', '開盤', '最高', '最低', '成交股數', '本益比',
 #        '股利年度', '殖利率(%)', '股價淨值比', '融資買進', '融資賣出', '融資前日餘額', '融資今日餘額', '融券買進',
-#        '融券賣出', '融券前日餘額', '融券今日餘額', '資券互抵', '融資變化量', '融券變化量', '券資比(%)',
+#        '融券賣出', '融券前日餘額', '融券今日餘額', '融資變化量', '融券變化量', '券資比(%)',
 #        '外資買賣超股數', '投信買賣超股數', '自營商買賣超股數', '三大法人買賣超股數', '外資持股比率(%)',
 #        '(月)營收月增率(%)', '(月)營收年增率(%)', '(月)累積營收年增率(%)', 'k9', 'd9', 'dif',
 #        'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume',
@@ -148,6 +148,13 @@ def update():
             # 欲查詢日期
             final_date = datetime.date.today()
             final_df = get_all_final(final_date)
+            # 印出台積電資料，確保爬蟲取得資料的正確性
+            print("---------------------")
+            print("核對 [2330 台積電] 今日交易資訊:")
+            tsmc = final_df.iloc[2330]
+            for column, value in tsmc.iteritems():
+                print(f"{column}: {value}")
+            print("---------------------")
             print("=== 股票清單製作完成 ===")
             print("=== 開始進行好友推播 ===")
             broadcast(final_date, final_df)
