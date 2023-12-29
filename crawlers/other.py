@@ -84,11 +84,11 @@ def get_technical_indicators(input_df: pd.DataFrame) -> pd.DataFrame:
     df[new_column_list] = None
     df[["k9", "d9", "dif", "macd", "osc", "mean5", "mean10", "mean20", "mean60", "volume", "mean_5_volume", "mean_20_volume", "daily_k"]] = df[["k9", "d9", "dif", "macd", "osc", "mean5", "mean10", "mean20", "mean60", "volume", "mean_5_volume", "mean_20_volume", "daily_k"]].astype('object')
     # 先從台積電判斷日期是否為今天（必須要是最新資料才回傳）
-    test_data = _get_technical_indicators_from_stock_id("2330")
-    test_date = test_data["daily_k"][-1][0]
-    if test_date != datetime.date.today():
-        print("取得技術指標失敗，搜尋日期與今日日期不相符")
-        return df
+    # test_data = _get_technical_indicators_from_stock_id("2330")
+    # test_date = test_data["daily_k"][-1][0]
+    # if test_date != datetime.date.today():
+    #     print("取得技術指標失敗，搜尋日期與今日日期不相符")
+    #     return df
     total_ = len(df.index)
     current_finish_ = 0
     for i, row in df.iterrows():
