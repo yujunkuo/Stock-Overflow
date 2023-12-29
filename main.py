@@ -137,7 +137,7 @@ def wakeup():
         return Response(status=200)
 
 
-# 更新當日推薦股票(1630-1830) -> (1630-2330)
+# 更新當日推薦股票 (1630-2330)
 def update():
     try:
         if not helper.check_time_between(datetime.time(16,30), datetime.time(23,30)):
@@ -148,9 +148,6 @@ def update():
             return
         else:
             print("=== 開始製作推薦股票清單 ===")
-            # 取得資料表
-            # global final_date
-            # global final_df
             # 欲查詢日期
             final_date = datetime.date.today()
             final_df = get_all_final(final_date)
@@ -158,8 +155,11 @@ def update():
             print("---------------------")
             print("核對 [2330 台積電] 今日交易資訊:")
             tsmc = final_df.loc["2330"]
-            for column, value in tsmc.iteritems()[:33]:
-                print(f"{column}: {value}")
+            for column, value in tsmc.iteritems():
+                if column == "k9":
+                    break
+                else:
+                    print(f"{column}: {value}")
             print("---------------------")
             print("=== 股票清單製作完成 ===")
             print("=== 開始進行好友推播 ===")
