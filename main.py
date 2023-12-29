@@ -59,6 +59,10 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 api_access_token = os.getenv('API_ACCESS_TOKEN')
 
 
+# 記錄昨日與今日的推薦股票清單
+
+
+
 # # 初始化股票當日交易紀錄資料表
 # final_df = pd.DataFrame(columns=['名稱', '產業別', '股票類型', '收盤', '漲跌', '開盤', '最高', '最低', '成交股數', '本益比',
 #        '股利年度', '殖利率(%)', '股價淨值比', '融資買進', '融資賣出', '融資前日餘額', '融資今日餘額', '融券買進',
@@ -151,7 +155,7 @@ def update():
             # 印出台積電資料，確保爬蟲取得資料的正確性
             print("---------------------")
             print("核對 [2330 台積電] 今日交易資訊:")
-            tsmc = final_df.iloc[2330]
+            tsmc = final_df.loc["2330"]
             for column, value in tsmc.iteritems():
                 print(f"{column}: {value}")
             print("---------------------")
