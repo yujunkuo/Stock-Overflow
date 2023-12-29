@@ -138,34 +138,33 @@ def _get_twse_margin_trading(date) -> pd.DataFrame:
             month = date.month
             day = date.day
             new_date = f"{year}{month:02}{day:02}"  # 生成符合 url query 的日期字串
-            r = requests.get(f"https://www.twse.com.tw/exchangeReport/MI_MARGN?response=csv&date={new_date}&selectType=ALL")
+            r = requests.get(f"https://www.twse.com.tw/rwd/zh/marginTrading/TWT93U?response=csv&date={new_date}&selectType=ALL")
             # 整理資料，變成表格
-            df = pd.read_csv(StringIO(r.text.replace("=", "")), header=7)
+            df = pd.read_csv(StringIO(r.text.replace("=", "")), header=2)
             # 去除各個欄位名稱後方的多餘空格
             df.columns = [each.strip() for each in df.columns]
             # 更新名稱與代號欄位的資料型態
-            df["股票名稱"] = df["股票名稱"].astype(str)
-            df["股票代號"] = df["股票代號"].astype(str)
+            df["名稱"] = df["名稱"].astype(str)
+            df["代號"] = df["代號"].astype(str)
             # 去除名稱與代號的前後空格
-            df["股票名稱"] = df["股票名稱"].str.strip()
-            df["股票代號"] = df["股票代號"].str.strip()
+            df["名稱"] = df["名稱"].str.strip()
+            df["代號"] = df["代號"].str.strip()
             # 去除多餘欄位
-            df = df.drop(["現金償還", "限額", "現券償還", "限額.1", "註記", "Unnamed: 16"], axis=1, inplace=False)
+            df = df.drop(["現券", "限額", "當日調整", "次一營業日可限額", "備註", "Unnamed: 15"], axis=1, inplace=False)
             # 取出上市股票（4碼）
-            df = df[(df["股票代號"].str.len() == 4) & (df["股票代號"].str[:2] != "00")]
+            df = df[(df["代號"].str.len() == 4) & (df["代號"].str[:2] != "00")]
             # 字串轉數字，去除逗號
-            df = df.apply(lambda s: pd.to_numeric(s.astype(str).str.replace(",", ""), errors='coerce') if s.name not in ["股票代號", "股票名稱"] else s)
+            df = df.apply(lambda s: pd.to_numeric(s.astype(str).str.replace(",", ""), errors='coerce') if s.name not in ["代號", "名稱"] else s)
             # 重新命名表頭
-            df = df.rename(columns={"股票代號": "代號", "股票名稱": "名稱", "買進": "融資買進", "賣出": "融資賣出",
-                                "前日餘額": "融資前日餘額", "今日餘額": "融資今日餘額", "買進.1": "融券買進", "賣出.1": "融券賣出",
-                                "前日餘額.1": "融券前日餘額", "今日餘額.1": "融券今日餘額"})
+            df = df.rename(columns={"買進": "融資買進", "賣出": "融資賣出", "前日餘額": "融資前日餘額", "今日餘額": "融資今日餘額",
+                                    "當日還券": "融券買進", "當日賣出": "融券賣出", "前日餘額.1": "融券前日餘額", "當日餘額": "融券今日餘額"})
             # 計算指標
             df["融資變化量"] = df["融資今日餘額"] - df["融資前日餘額"]
             df["融券變化量"] = df["融券今日餘額"] - df["融券前日餘額"]
             df["券資比(%)"] = round((df["融券今日餘額"] / df["融資今日餘額"]) * 100, 2)  # 注意分母是否為0
             # 重新排序表頭
             df = df[["代號", "名稱", "融資買進", "融資賣出", "融資前日餘額", "融資今日餘額", 
-                                        "融券買進", "融券賣出", "融券前日餘額", "融券今日餘額", "資券互抵", "融資變化量", "融券變化量", "券資比(%)"]]
+                                        "融券買進", "融券賣出", "融券前日餘額", "融券今日餘額", "融資變化量", "融券變化量", "券資比(%)"]]
             # 重新照股票代號排序
             df = df.sort_values(by=["代號"])
             # 重置 index
@@ -188,7 +187,7 @@ def _get_twse_institutional(date) -> pd.DataFrame:
             month = date.month
             day = date.day
             new_date = f"{year}{month:02}{day:02}"  # 生成符合 url query 的日期字串
-            r = requests.get(f"https://www.twse.com.tw/fund/T86?response=csv&date={new_date}&selectType=ALL")
+            r = requests.get(f"https://www.twse.com.tw/rwd/zh/fund/T86?response=csv&date={new_date}&selectType=ALL")
             # 整理資料，變成表格
             df = pd.read_csv(StringIO(r.text.replace("=", "")), 
                 header=1)
@@ -231,7 +230,7 @@ def _get_twse_hold_percentage(date) -> pd.DataFrame:
             month = date.month
             day = date.day
             new_date = f"{year}{month:02}{day:02}"  # 生成符合 url query 的日期字串
-            r = requests.get(f"https://www.twse.com.tw/fund/MI_QFIIS?response=csv&date={new_date}&selectType=ALLBUT0999")
+            r = requests.get(f"https://www.twse.com.tw/rwd/zh/fund/MI_QFIIS?response=csv&date={new_date}&selectType=ALLBUT0999")
             # 整理資料，變成表格
             df = pd.read_csv(StringIO(r.text.replace("=", "")), 
                 header=1)

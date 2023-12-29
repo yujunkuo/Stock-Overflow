@@ -269,6 +269,7 @@ def broadcast(final_date, final_df):
         print(f"滿足條件的股票共有: {final_filter.shape[0]} 檔")
         for i, v in final_filter.iterrows():
             final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
+            print(f"{i} {v['名稱']}  {v['產業別']}")
     # 加上末尾分隔線
     final_recommendation_text += "\n##########\n\n"
     # 加上資料來源說明
