@@ -151,7 +151,7 @@ def update():
         final_date = datetime.date.today()
         ########## !!!!!!!!!!!!!!!!! #######################
         # 暫時抓取今天往前推 n 天的資料做測試
-        final_date = final_date - datetime.timedelta(days=1)
+        final_date = final_date - datetime.timedelta(days=2)
         ########## !!!!!!!!!!!!!!!!! #######################
         final_df = get_all_final(final_date)
         # 印出台積電資料，確保爬蟲取得資料的正確性
