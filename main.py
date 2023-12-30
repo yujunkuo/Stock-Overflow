@@ -253,8 +253,10 @@ def broadcast(final_date, final_df):
         # technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", direction="more", threshold=1, days=1),
         # 5日均量 > 1000
         technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_5_volume", direction="more", threshold=1000, days=1),
-        # # 20日均量 > 1000
-        # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_20_volume", direction="more", threshold=1000, days=1),
+        # 20日均量 > 1000
+        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="mean_20_volume", direction="more", threshold=1000, days=1),
+        ## 「今天的5日均量」要大於「昨天的5日均量」
+        technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="mean_5_volume", indicator_2="mean_5_volume", direction="more", threshold=1, days=1),
         # 單一法人至少買超成交量的 10%
         # chip_strategy.single_institutional_buy_check_df(final_df, single_volume_threshold=10),
         # 三大法人合計買超至少超過成交量的 1%
