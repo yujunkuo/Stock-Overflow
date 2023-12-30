@@ -11,7 +11,7 @@ from functools import reduce
 
 ## 取得證交所當日所有上市股票資料
 
-MAX_REQUEST_RETRIES = 3
+MAX_REQUEST_RETRIES = 5
 
 # (Public) 取得最終合併後的資料表
 def get_twse_final(date):
@@ -27,9 +27,9 @@ def get_twse_final(date):
         df = pd.merge(df, twse_institutional_df, how="left", on=["代號", "名稱", "股票類型"])
         df = pd.merge(df, twse_hold_percentage_df, how="left", on=["代號", "名稱", "股票類型"])
         # 沒有三大法人買賣超的補上0
-#         df[['外資買賣超股數', '投信買賣超股數', "自營商買賣超股數", "三大法人買賣超股數"]] = df[['外資買賣超股數', '投信買賣超股數', "自營商買賣超股數", "三大法人買賣超股數"]].fillna(value=0)
+        df[["外資買賣超股數", "投信買賣超股數", "自營商買賣超股數", "三大法人買賣超股數"]] = df[["外資買賣超股數", "投信買賣超股數", "自營商買賣超股數", "三大法人買賣超股數"]].fillna(value=0)
         # 外資沒有持股的補上0
-#         df[["外資持股比率(%)"]] = df[["外資持股比率(%)"]].fillna(value=0)
+        df[["外資持股比率(%)"]] = df[["外資持股比率(%)"]].fillna(value=0)
         df = df.set_index("代號")
         _end_time = time.time()
         _spent_time = _end_time - _start_time
