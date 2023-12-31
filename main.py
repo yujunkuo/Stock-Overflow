@@ -239,9 +239,8 @@ def broadcast(final_date, final_df):
         technical_strategy.technical_indicator_difference_two_day_check_df(final_df, indicator_1="最高", indicator_2="收盤", direction="less", threshold=0.022, indicator_3="收盤", days=1),
         # # OSC 必須要大於0 (經驗顯示 OSC 大於 0 後勢出現強勁漲幅的機會較高)
         # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="osc", direction="more", threshold=0, days=1),
-        # DIF 和 MACD 都要大於 0
+        # DIF 要大於 0
         technical_strategy.technical_indicator_constant_check_df(final_df, indicator="dif", direction="more", threshold=0, days=1),
-        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="macd", direction="more", threshold=0, days=1),
     ]
 
     # 股票籌碼面篩選條件
