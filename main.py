@@ -159,8 +159,8 @@ def update():
         print("核對 [2330 台積電] 今日交易資訊:")
         tsmc = final_df.loc["2330"]
         for column, value in tsmc.iteritems():
-            if column == "k9":
-                break
+            if type(value) == list and len(value) > 0:
+                print(f"{column}: {value[-1]} (history length={len(value)})")
             else:
                 print(f"{column}: {value}")
         print("---------------------")
