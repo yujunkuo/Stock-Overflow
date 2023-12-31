@@ -68,14 +68,18 @@ def _today_price_is_not_min_check_row(row, price_type, days) -> bool:
         return False
 
 
-# 5. (Public) 今天某類型價格不是 N 天中最高 (price_type=開盤/最高/最低／收盤)
+# 5. (Public) 今天某類型價格或技術指標不是 N 天中最高 (price_type=開盤/最高/最低／收盤 or 技術指標)
 def today_price_is_not_max_check_df(df, price_type="收盤", days=3):
     return df.apply(_today_price_is_not_max_check_row, price_type=price_type, days=days, axis=1)
 
 def _today_price_is_not_max_check_row(row, price_type, days) -> bool:
     try:
-        last_n_days_data = row["daily_k"][-1:(-1-days):-1]
-        last_n_days_price = [each[1][price_type] for each in last_n_days_data]
+        if price_type in ['開盤', '收盤', '最高', '最低']:
+            last_n_days_data = row["daily_k"][-1:(-1-days):-1]
+            last_n_days_price = [each[1][price_type] for each in last_n_days_data]
+        else:
+            last_n_days_data = row[price_type][-1:(-1-days):-1]
+            last_n_days_price = [each[1] for each in last_n_days_data]
         return last_n_days_price[0] != max(last_n_days_price)
     except:
         return False
