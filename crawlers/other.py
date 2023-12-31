@@ -122,7 +122,7 @@ def _get_technical_indicators_from_stock_id(stock_id: str) -> dict:
             technical_data = r.json()
             k9 = _make_technical_pretty_list(json.loads(technical_data["K9"]))
             d9 = _make_technical_pretty_list(json.loads(technical_data["D9"]))
-            j9 = [[date_k, 3 * value_k - 2 * value_d] for (date_k, value_k), (date_d, value_d) in zip(k9, d9)]
+            j9 = [[date_k, round(3 * value_k - 2 * value_d, 2)] for (date_k, value_k), (date_d, value_d) in zip(k9, d9)]
             dif = _make_technical_pretty_list(json.loads(technical_data["DIF"]))
             macd = _make_technical_pretty_list(json.loads(technical_data["MACD"]))
             osc = _make_technical_pretty_list(json.loads(technical_data["OSC"]))

@@ -44,9 +44,9 @@ def volume_greater_check_df(df, shares_threshold=500, days=1):
     return df.apply(_volume_greater_check_row, shares_threshold=shares_threshold, days=days, axis=1)
 
 def _volume_greater_check_row(row, shares_threshold, days) -> bool:
-    # 如果只找今天的成交量的話，直接從「成交股數」欄位抓資料，因為這個欄位的資料較準確
-    if days == 1 and row["成交股數"]:
-        return (row["成交股數"] / 1000) >= shares_threshold
+    # # 如果只找今天的成交量的話，直接從「成交股數」欄位抓資料，因為這個欄位的資料較準確
+    # if days == 1 and row["成交股數"]:
+    #     return (row["成交股數"] / 1000) >= shares_threshold
     try:
         last_n_days_data = row["volume"][-1:(-1-days):-1]
         last_n_days_volume = [each[1] for each in last_n_days_data]
