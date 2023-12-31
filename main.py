@@ -69,7 +69,7 @@ today_recommendations = set()
 #        '股利年度', '殖利率(%)', '股價淨值比', '融資買進', '融資賣出', '融資前日餘額', '融資今日餘額', '融券買進',
 #        '融券賣出', '融券前日餘額', '融券今日餘額', '融資變化量', '融券變化量', '券資比(%)',
 #        '外資買賣超股數', '投信買賣超股數', '自營商買賣超股數', '三大法人買賣超股數', '外資持股比率(%)',
-#        '(月)營收月增率(%)', '(月)營收年增率(%)', '(月)累積營收年增率(%)', 'k9', 'd9', 'dif',
+#        '(月)營收月增率(%)', '(月)營收年增率(%)', '(月)累積營收年增率(%)', 'k9', 'd9', 'j9', 'dif',
 #        'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume',
 #        'daily_k'])
 
@@ -219,6 +219,8 @@ def broadcast(final_date, final_df):
         ## (不改的條件 @ 20220724) 今天的 K9 要介於 27 ~ 87 之間
         technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="more", threshold=27, days=1),
         technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=87, days=1),
+        # 今天的 J9 要小於 100
+        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="j9", direction="less", threshold=100, days=1),
         ## (今天 k9-d9) 大於等於 (昨天 k9-d9)
         # technical_strategy.technical_indicator_difference_greater_two_day_check_df(final_df, indicator_1="k9", indicator_2="d9", days=1),
         # # 5 日線趨勢向上 (MA5 趨勢向上)
