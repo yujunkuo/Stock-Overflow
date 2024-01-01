@@ -156,10 +156,6 @@ def update():
         print("=== 開始製作推薦股票清單 ===")
         # 欲查詢日期
         final_date = datetime.date.today()
-        # ########## !!!!!!!!!!!!!!!!! #######################
-        # 暫時抓取今天往前推 n 天的資料做測試
-        final_date = final_date - datetime.timedelta(days=3)
-        ########## !!!!!!!!!!!!!!!!! #######################
         final_df = get_all_final(final_date)
         # 印出台積電資料，確保爬蟲取得資料的正確性
         print("---------------------")
@@ -317,7 +313,7 @@ def broadcast(final_date, final_df):
     # 加上版權聲明
     final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
     # 透過 LINE API 進行推播
-    # line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
+    line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
     print("=== 好友推播完成 ===")
     return
 
