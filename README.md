@@ -42,7 +42,7 @@ Below is an example of what the LINE notification message looks like:
 ## ⚠️ Disclaimer and Customization
 **Please** note that Stock-Overflow is a stock recommendation system offering investment advice for informational purposes only. We do not assume any responsibility for financial decisions made based on our recommendations. Investing in the stock market involves risks, and users are advised to exercise caution and conduct their own research before making any investment decisions.
 
-**Moreover,** the system's filtering criteria can be adjusted according to individual investment preferences. Users can modify the source code's stock screening conditions to better align with their unique investment strategies. Feel free to explore and adapt the criteria to suit your preferences and risk tolerance.
+**Moreover,** it's also important to note that the system's default investment strategy is geared towards "short-term trading." Nevertheless, users have the flexibility to adjust filtering criteria based on their individual investment preferences. They can modify the source code's stock screening conditions to better align with their unique strategies. Feel free to explore and adapt the criteria to match your preferences and risk tolerance.
 
 
 ## 🧷 Reference
