@@ -145,14 +145,14 @@ def _get_technical_indicators_from_stock_id(stock_id: str) -> dict:
 
 # 資料清洗 (一般技術指標)
 def _make_technical_pretty_list(indicator_list: list) -> list:
-    return [[_calculate_date_from_milliseconds(t), i] for t, i in indicator_list]
+    return [[_calculate_date_from_milliseconds(t, len(indicator_list)-i-1), v] for i, (t, v) in enumerate(indicator_list)]
 
 
 # 資料清洗 (K線)
 def _make_daily_k_pretty_list(daily_k_list: list) -> list:
     new_daily_k_list = list()
-    for each in daily_k_list:
-        single_time = _calculate_date_from_milliseconds(each[0])
+    for i, each in enumerate(daily_k_list):
+        single_time = _calculate_date_from_milliseconds(each[0], len(daily_k_list)-i-1)
         single_k_dict = {
             "開盤": each[1],
             "最高": each[2],
@@ -164,8 +164,8 @@ def _make_daily_k_pretty_list(daily_k_list: list) -> list:
 
 
 # 將輸入的 milliseconds 轉換為當前日期
-def _calculate_date_from_milliseconds(input_milliseconds: int) -> datetime.date:
-    current_year = datetime.datetime.now().year
+def _calculate_date_from_milliseconds(input_milliseconds: int, time_delta: int) -> datetime.date:
+    current_year = (datetime.datetime.now() - datetime.timedelta(days=time_delta)).year
     current_year_beginning = datetime.date(current_year, 1, 1)
     time_delta_days = datetime.timedelta(days=datetime.timedelta(seconds=input_milliseconds/1000 - 13*86400).days % 365)
     final_date = current_year_beginning + time_delta_days

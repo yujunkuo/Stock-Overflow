@@ -36,10 +36,10 @@ import threading
 #################### 全域變數設定 ####################
 
 # 版本年份
-YEAR = "2023"
+YEAR = "2024"
 
 # 版本號
-VERSION = "v2.2"
+VERSION = "v3.0"
 
 
 # API Interface
@@ -137,19 +137,26 @@ def wakeup():
         return Response(status=200)
 
 
+# if not helper.check_time_between(datetime.time(16,30), datetime.time(23,30)):
+#     print("=== 目前非推播時段 ===")
+#     return
+
+# ########## !!!!!!!!!!!!!!!!! #######################
+# # 暫時抓取今天往前推 n 天的資料做測試
+# final_date = final_date - datetime.timedelta(days=k)
+# ########## !!!!!!!!!!!!!!!!! #######################
+
+
 # 更新當日推薦股票
 def update():
-    # if not helper.check_time_between(datetime.time(16,30), datetime.time(23,30)):
-    #     print("=== 目前非推播時段 ===")
-    #     return
-    # if not helper.check_weekday():
-    #     print("=== 假日不進行推播 ===")
-    #     return
-    # else:
+    if not helper.check_weekday():
+        print("=== 假日不進行推播 ===")
+        return
+    else:
         print("=== 開始製作推薦股票清單 ===")
         # 欲查詢日期
         final_date = datetime.date.today()
-        ########## !!!!!!!!!!!!!!!!! #######################
+        # ########## !!!!!!!!!!!!!!!!! #######################
         # 暫時抓取今天往前推 n 天的資料做測試
         final_date = final_date - datetime.timedelta(days=3)
         ########## !!!!!!!!!!!!!!!!! #######################
@@ -175,8 +182,6 @@ def broadcast(final_date, final_df):
     # 顯示目前狀態
     print(f"今日日期: {str(final_date)}")
     print(f"資料表大小: {final_df.shape}")
-
-    ### 以下為根據 20211217 以前「買過與觀察過之個股」所設定的 Rules ###
 
     # 股票基本面篩選條件
     fundimental_mask = [
