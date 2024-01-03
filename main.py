@@ -158,11 +158,12 @@ def update():
         final_date = datetime.date.today()
         final_df = get_all_final(final_date)
         # 若今日休市則不進行後續更新與推播
-        if not final_df:
+        if final_df.shape[0] == 0:
+            print("=== 今日休市故不推播 ===")
             return
         # 印出台積電資料，確保爬蟲取得資料的正確性
         print("---------------------")
-        print("核對 [2330 台積電] 今日交易資訊:")
+        print("核對 [2330 台積電] 今推播日交易資訊:")
         tsmc = final_df.loc["2330"]
         for column, value in tsmc.iteritems():
             if type(value) == list and len(value) > 0:
@@ -331,7 +332,7 @@ def get_all_final(date) -> pd.DataFrame:
     df = pd.concat([twse_df, tpex_df])
     # 若今日休市則不進行後續更新與推播
     if df.shape[0] == 0:
-        return None
+        return df
     # 取得產業別
     industry_category_df = other.get_industry_category()
     # 合併資料表
