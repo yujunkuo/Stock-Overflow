@@ -241,7 +241,7 @@ def broadcast(final_date, final_df):
         # # OSC 必須要大於0 (經驗顯示 OSC 大於 0 後勢出現強勁漲幅的機會較高)
         # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="osc", direction="more", threshold=0, days=1),
         # DIF 要大於 0
-        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="dif", direction="more", threshold=0, days=1),
+        # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="dif", direction="more", threshold=0, days=1),
         # [(DIF / 收盤價) < 0.03] 或 [DIF 不是四個月內的最高]
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="dif", indicator_2="收盤", direction="less", threshold=0.03, days=1) | 
         technical_strategy.today_price_is_not_max_check_df(final_df, price_type="dif", days=80),
