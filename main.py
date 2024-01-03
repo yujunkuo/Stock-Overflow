@@ -157,6 +157,9 @@ def update():
         # 欲查詢日期
         final_date = datetime.date.today()
         final_df = get_all_final(final_date)
+        # 若今日休市則不進行後續更新與推播
+        if not final_df:
+            return
         # 印出台積電資料，確保爬蟲取得資料的正確性
         print("---------------------")
         print("核對 [2330 台積電] 今日交易資訊:")
@@ -326,6 +329,9 @@ def get_all_final(date) -> pd.DataFrame:
     tpex_df = tpex.get_tpex_final(date)
     # 兩張表接起來
     df = pd.concat([twse_df, tpex_df])
+    # 若今日休市則不進行後續更新與推播
+    if df.shape[0] == 0:
+        return None
     # 取得產業別
     industry_category_df = other.get_industry_category()
     # 合併資料表
