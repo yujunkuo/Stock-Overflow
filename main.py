@@ -163,7 +163,7 @@ def update():
             return
         # 印出台積電資料，確保爬蟲取得資料的正確性
         print("---------------------")
-        print("核對 [2330 台積電] 今推播日交易資訊:")
+        print("核對 [2330 台積電] 今日交易資訊:")
         tsmc = final_df.loc["2330"]
         for column, value in tsmc.iteritems():
             if type(value) == list and len(value) > 0:
