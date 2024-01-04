@@ -33,6 +33,8 @@ from dotenv import load_dotenv
 
 import threading
 
+import twstock
+
 #################### 全域變數設定 ####################
 
 # 版本年份
@@ -198,6 +200,8 @@ def update():
             print("=== 開始進行好友推播 ===")
             broadcast(final_date, final_df)
             print("=== 好友推播完成 ===")
+            # 每天更新一次上市櫃股票列表
+            twstock.__update_codes()
             return
 
 
