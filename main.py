@@ -60,8 +60,8 @@ api_access_token = os.getenv('API_ACCESS_TOKEN')
 
 
 # 記錄昨日與今日的股票推薦清單
-yesterday_recommendations = set()
-today_recommendations = set()
+yesterday_recommendations = dict()
+today_recommendations = dict()
 
 
 # # 初始化股票當日交易紀錄資料表
@@ -72,10 +72,6 @@ today_recommendations = set()
 #        '(月)營收月增率(%)', '(月)營收年增率(%)', '(月)累積營收年增率(%)', 'k9', 'd9', 'j9', 'dif',
 #        'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume',
 #        'daily_k'])
-
-
-# # 最新資料表的日期
-# final_date = None
 
 ####################################################
 
@@ -295,21 +291,21 @@ def broadcast(final_date, final_df):
     if not total_fit:
         final_recommendation_text = f"今日無推薦之股票\n"
         print("今日無推薦之股票")
-        yesterday_recommendations, today_recommendations = set(), set()
+        yesterday_recommendations, today_recommendations = dict(), dict()
     else:
         # final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔\n"
         final_recommendation_text = f"滿足條件的股票共有: {total_fit} 檔\n"
         final_recommendation_text += "\n##########\n\n"
         print(f"滿足條件的股票共有: {total_fit} 檔")
         for i, v in final_filter.iterrows():
-            today_recommendations.add(i)
+            today_recommendations[i] = (v['名稱'], v['產業別'], v['收盤'])
             if i in yesterday_recommendations:
                 print(f"[重複故不列入] {i} {v['名稱']}  {v['產業別']}")
                 continue
             else:
                 final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
                 print(f"{i} {v['名稱']}  {v['產業別']}")
-        yesterday_recommendations, today_recommendations = today_recommendations, set()
+        yesterday_recommendations, today_recommendations = today_recommendations, dict()
     # 加上末尾分隔線
     final_recommendation_text += "\n##########\n\n"
     # 加上資料來源說明
