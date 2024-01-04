@@ -171,8 +171,8 @@ def update():
             print("=== 開始進行好友推播 ===")
             evening_broadcast(final_date, final_df)
             print("=== 好友推播完成 ===")
-            # 每天更新一次上市櫃股票列表
-            twstock.__update_codes()
+            # # 每天更新一次上市櫃股票列表
+            # twstock.__update_codes()  # 記憶體會炸掉
             return
 
 
