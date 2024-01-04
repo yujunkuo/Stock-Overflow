@@ -127,15 +127,11 @@ def wakeup():
         return Response('Invalid API-Access-Token', status=401)
     else:
         print("=== 開始喚醒主機 ===")
-        # 指派更新與檢查推播
+        # 指派更新與推播
         update_thread = threading.Thread(target=update, daemon=True)
         update_thread.start()
         return Response(status=200)
 
-
-# if not helper.check_time_between(datetime.time(16,30), datetime.time(23,30)):
-#     print("=== 目前非推播時段 ===")
-#     return
 
 # ########## !!!!!!!!!!!!!!!!! #######################
 # # 暫時抓取今天往前推 n 天的資料做測試
@@ -149,28 +145,60 @@ def update():
         print("=== 假日不進行推播 ===")
         return
     else:
-        print("=== 開始製作推薦股票清單 ===")
-        # 欲查詢日期
-        final_date = datetime.date.today()
-        final_df = get_all_final(final_date)
-        # 若今日休市則不進行後續更新與推播
-        if final_df.shape[0] == 0:
-            print("=== 今日休市故不推播 ===")
-            return
-        # 印出台積電資料，確保爬蟲取得資料的正確性
-        print("---------------------")
-        print("核對 [2330 台積電] 今日交易資訊:")
-        tsmc = final_df.loc["2330"]
-        for column, value in tsmc.iteritems():
-            if type(value) == list and len(value) > 0:
-                print(f"{column}: {value[-1]} (history length={len(value)})")
+        if helper.check_time_between(datetime.time(9,30), datetime.time(13,30)):
+            print("=== 開始製作 [推薦買入] 股票清單 ===")
+            buying_list = get_buying_list(yesterday_recommendations)
+            # 若今日休市則不進行後續更新與推播
+            if buying_list == None:
+                print("=== 今日休市故不推播 ===")
+                return
+            print("=== [推薦買入] 股票清單製作完成 ===")
+            print("=== 開始進行好友推播 ===")
+            # 建構推播訊息
+            if not buying_list:
+                final_recommendation_text = f"今日無[推薦買入]之股票\n"
+                print("今日無[推薦買入]之股票")
             else:
-                print(f"{column}: {value}")
-        print("---------------------")
-        print("=== 股票清單製作完成 ===")
-        print("=== 開始進行好友推播 ===")
-        broadcast(final_date, final_df)
-        return
+                final_recommendation_text = f"[推薦買入]的股票共有: {len(buying_list)} 檔\n"
+                final_recommendation_text += "\n##########\n\n"
+                print(f"[推薦買入]的股票共有: {len(buying_list)} 檔")
+                for stock in buying_list:
+                    final_recommendation_text += f"{stock[0]} {stock[1]}  {stock[2]}\n"
+                    print(f"{stock[0]} {stock[1]}  {stock[2]}")
+            # 加上末尾分隔線
+            final_recommendation_text += "\n##########\n\n"
+            # 加上資料來源說明
+            final_recommendation_text += f"資料來源: 台股 {str(final_date)}"
+            # 加上版權聲明
+            final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
+            # 透過 LINE API 進行推播
+            line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
+            print("=== 好友推播完成 ===")
+            return
+        else:
+            print("=== 開始製作 [推薦觀察] 股票清單 ===")
+            # 欲查詢日期
+            final_date = datetime.date.today()
+            final_df = get_watching_list(final_date)
+            # 若今日休市則不進行後續更新與推播
+            if final_df.shape[0] == 0:
+                print("=== 今日休市故不推播 ===")
+                return
+            # 印出台積電資料，確保爬蟲取得資料的正確性
+            print("---------------------")
+            print("核對 [2330 台積電] 今日交易資訊:")
+            tsmc = final_df.loc["2330"]
+            for column, value in tsmc.iteritems():
+                if type(value) == list and len(value) > 0:
+                    print(f"{column}: {value[-1]} (history length={len(value)})")
+                else:
+                    print(f"{column}: {value}")
+            print("---------------------")
+            print("=== [推薦觀察] 股票清單製作完成 ===")
+            print("=== 開始進行好友推播 ===")
+            broadcast(final_date, final_df)
+            print("=== 好友推播完成 ===")
+            return
 
 
 # 進行好友推播
@@ -289,14 +317,13 @@ def broadcast(final_date, final_df):
     total_fit = len([i for i, _ in final_filter.iterrows() if i not in yesterday_recommendations])
     # 建構推播訊息
     if not total_fit:
-        final_recommendation_text = f"今日無推薦之股票\n"
-        print("今日無推薦之股票")
+        final_recommendation_text = f"今日無[推薦觀察]之股票\n"
+        print("今日無[推薦觀察]之股票")
         yesterday_recommendations, today_recommendations = dict(), dict()
     else:
-        # final_recommendation_text = f"滿足條件的股票共有: {final_filter.shape[0]} 檔\n"
-        final_recommendation_text = f"滿足條件的股票共有: {total_fit} 檔\n"
+        final_recommendation_text = f"[推薦觀察]的股票共有: {total_fit} 檔\n"
         final_recommendation_text += "\n##########\n\n"
-        print(f"滿足條件的股票共有: {total_fit} 檔")
+        print(f"[推薦觀察]的股票共有: {total_fit} 檔")
         for i, v in final_filter.iterrows():
             today_recommendations[i] = (v['名稱'], v['產業別'], v['收盤'])
             if i in yesterday_recommendations:
@@ -314,12 +341,11 @@ def broadcast(final_date, final_df):
     final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
     # 透過 LINE API 進行推播
     line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
-    print("=== 好友推播完成 ===")
     return
 
 
 # 取得今日股市資料表
-def get_all_final(date) -> pd.DataFrame:
+def get_watching_list(date) -> pd.DataFrame:
     # 取得上市資料表
     twse_df = twse.get_twse_final(date)
     # 取得上櫃資料表
@@ -346,6 +372,34 @@ def get_all_final(date) -> pd.DataFrame:
     df = df.sort_index()
     return df
     
+
+def get_buying_list(yesterday_recommendations) -> list:
+    # 設定抓取的目標時間
+    today = datetime.date.today()
+    time_checker = datetime.datetime(today.year, today.month, today.day, 9, 15)
+    # 取得昨日觀察股票在今日開盤後「前15分鐘」之最低價，並檢查其是否有高於或等於昨日收盤價
+    buying_list = []
+    for stock_id, (name, category, last_close_price) in zip(yesterday_recommendations, yesterday_recommendations.values()):
+        while True:
+            # 爬取即時成交資訊
+            stock = twstock.realtime.get(stock_id)
+            # 取得時間戳
+            time_stamp = datetime.datetime.strptime(stock["info"]["time"], "%Y-%m-%d %H:%M:%S") + datetime.timedelta(hours=8)
+            # 檢查抓取資料的時間是否大於目標時間
+            if time_stamp >= time_checker:
+                break
+            else:
+                time.sleep(3)
+        today_low_price = stock["realtime"]["low"]
+        if today_low_price == "-":
+            # 休市
+            return None
+        else:
+            if float(today_low_price) >= last_close_price:
+                buying_list.append((stock_id, name, category))
+        time.sleep(3)
+    return buying_list
+
 
 
 if __name__ == "__main__":
