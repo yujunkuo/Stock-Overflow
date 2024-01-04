@@ -181,12 +181,12 @@ def morning_broadcast(buying_list):
     # 建構推播訊息
     final_recommendation_text = None
     if not buying_list:
-        final_recommendation_text = f"今日無 [推薦買入] 之股票\n"
+        final_recommendation_text = f"📌 今日無 [推薦買入] 之股票\n"
         print("今日無 [推薦買入] 之股票")
     else:
-        final_recommendation_text = f"[推薦買入] 的股票共有: {len(buying_list)} 檔\n"
+        final_recommendation_text = f"📌 [推薦買入] 的股票共有 {len(buying_list)} 檔\n"
         final_recommendation_text += "\n##########\n\n"
-        print(f"[推薦買入] 的股票共有: {len(buying_list)} 檔")
+        print(f"[推薦買入] 的股票共有 {len(buying_list)} 檔")
         for stock in buying_list:
             final_recommendation_text += f"{stock[0]} {stock[1]}  {stock[2]}\n"
             print(f"{stock[0]} {stock[1]}  {stock[2]}")
@@ -315,13 +315,13 @@ def evening_broadcast(final_date, final_df):
     total_fit = len([i for i, _ in final_filter.iterrows() if i not in yesterday_recommendations])
     # 建構推播訊息
     if not total_fit:
-        final_recommendation_text = f"今日無 [推薦觀察] 之股票\n"
+        final_recommendation_text = f"🔎 今日無 [推薦觀察] 之股票\n"
         print("今日無 [推薦觀察] 之股票")
         yesterday_recommendations, today_recommendations = dict(), dict()
     else:
-        final_recommendation_text = f"[推薦觀察] 的股票共有: {total_fit} 檔\n"
+        final_recommendation_text = f"🔎 [推薦觀察] 的股票共有 {total_fit} 檔\n"
         final_recommendation_text += "\n##########\n\n"
-        print(f"[推薦觀察] 的股票共有: {total_fit} 檔")
+        print(f"[推薦觀察] 的股票共有 {total_fit} 檔")
         for i, v in final_filter.iterrows():
             today_recommendations[i] = (v['名稱'], v['產業別'], v['收盤'])
             if i in yesterday_recommendations:
