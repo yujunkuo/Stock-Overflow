@@ -184,16 +184,16 @@ def morning_broadcast(buying_list):
         final_recommendation_text = f"📌 今日無 [推薦買入] 之股票\n"
         print("今日無 [推薦買入] 之股票")
     else:
-        final_recommendation_text = f"📌 [推薦買入] 的股票共有 {len(buying_list)} 檔\n"
-        final_recommendation_text += "\n##########\n\n"
-        print(f"[推薦買入] 的股票共有 {len(buying_list)} 檔")
+        final_recommendation_text = f"📌 [推薦買入]  股票有 {len(buying_list)} 檔\n"
+        final_recommendation_text += "\n###########\n\n"
+        print(f"[推薦買入] 股票有 {len(buying_list)} 檔")
         for stock in buying_list:
             final_recommendation_text += f"{stock[0]} {stock[1]}  {stock[2]}\n"
             print(f"{stock[0]} {stock[1]}  {stock[2]}")
     # 加上末尾分隔線
-    final_recommendation_text += "\n##########\n\n"
+    final_recommendation_text += "\n###########\n\n"
     # 加上版權聲明
-    final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
+    final_recommendation_text += f"JohnKuo © {YEAR} ({VERSION})"
     # 透過 LINE API 進行推播
     line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
     return
@@ -319,9 +319,9 @@ def evening_broadcast(final_date, final_df):
         print("今日無 [推薦觀察] 之股票")
         yesterday_recommendations, today_recommendations = dict(), dict()
     else:
-        final_recommendation_text = f"🔎 [推薦觀察] 的股票共有 {total_fit} 檔\n"
-        final_recommendation_text += "\n##########\n\n"
-        print(f"[推薦觀察] 的股票共有 {total_fit} 檔")
+        final_recommendation_text = f"🔎 [推薦觀察]  股票有 {total_fit} 檔\n"
+        final_recommendation_text += "\n###########\n\n"
+        print(f"[推薦觀察] 股票有 {total_fit} 檔")
         for i, v in final_filter.iterrows():
             today_recommendations[i] = (v['名稱'], v['產業別'], v['收盤'])
             if i in yesterday_recommendations:
@@ -332,7 +332,7 @@ def evening_broadcast(final_date, final_df):
                 print(f"{i} {v['名稱']}  {v['產業別']}")
         yesterday_recommendations, today_recommendations = today_recommendations, dict()
     # 加上末尾分隔線
-    final_recommendation_text += "\n##########\n\n"
+    final_recommendation_text += "\n###########\n\n"
     # 加上資料來源說明
     final_recommendation_text += f"資料來源: 台股 {str(final_date)}"
     # 加上版權聲明
