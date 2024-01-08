@@ -400,10 +400,15 @@ def get_buying_list(yesterday_recommendations) -> list:
     # 取得昨日觀察股票在今日開盤後「前15分鐘」之最低價，並檢查其是否有高於或等於昨日收盤價
     buying_list = []
     for stock_id, (name, category, last_close_price) in zip(yesterday_recommendations, yesterday_recommendations.values()):
+        no_data = False
         retry_times = 0
         while True:
             # 爬取即時成交資訊
             stock = twstock.realtime.get(stock_id)
+            # 檢查是否有成功取得資料
+            if stock["success"] == False:
+                no_data = True
+                break
             # 取得時間戳
             time_stamp = datetime.datetime.strptime(stock["info"]["time"], "%Y-%m-%d %H:%M:%S") + datetime.timedelta(hours=8)
             # 檢查抓取資料的時間是否大於目標時間
@@ -417,6 +422,10 @@ def get_buying_list(yesterday_recommendations) -> list:
                     return None    # 休市
                 else:
                     time.sleep(3)    # 太早抓取
+        # 若取得資料失敗，則略過該檔股票
+        if no_data:
+            continue
+        # 若取得資料成功，則存取目前開盤後最低價
         today_low_price = stock["realtime"]["low"]
         if today_low_price == "-":
             return None    # 休市
