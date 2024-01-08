@@ -41,7 +41,7 @@ import twstock
 YEAR = "2024"
 
 # 版本號
-VERSION = "v3.1"
+VERSION = "v3.2"
 
 
 # API Interface
@@ -62,19 +62,7 @@ api_access_token = os.getenv('API_ACCESS_TOKEN')
 
 
 # 記錄昨日與今日的股票推薦清單
-# yesterday_recommendations = dict()
-yesterday_recommendations = {
-    "1515": ("力山", "電機機械", 52.90),
-    "8068": ("全達", "電子通路業", 44.50),
-    "6805": ("富世達", "電子工業", 421.00),
-    "6451": ("訊芯-KY", "半導體業", 149.00),
-    "6531": ("愛普*", "半導體業", 498.00),
-    "6684": ("安格", "半導體業", 81.20),
-    "6770": ("力積電", "半導體業", 30.85),
-    "1795": ("美時", "化學生技醫療", 285.00),
-    "6472": ("保瑞", "化學生技醫療", 665.00),
-    "8085": ("福華", "其他電子類", 52.40),
-}
+yesterday_recommendations = dict()
 today_recommendations = dict()
 
 
