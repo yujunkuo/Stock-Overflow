@@ -66,6 +66,10 @@ yesterday_recommendations = dict()
 today_recommendations = dict()
 
 
+# 取得過去最新的推薦觀察股票清單
+get_latest_recommendations()
+
+
 # # 初始化股票當日交易紀錄資料表
 # final_df = pd.DataFrame(columns=['名稱', '產業別', '股票類型', '收盤', '漲跌', '開盤', '最高', '最低', '成交股數', '本益比',
 #        '股利年度', '殖利率(%)', '股價淨值比', '融資買進', '融資賣出', '融資前日餘額', '融資今日餘額', '融券買進',
@@ -200,7 +204,7 @@ def morning_broadcast(buying_list):
 
 
 # 進行盤後推播
-def evening_broadcast(final_date, final_df):
+def evening_broadcast(final_date, final_df, broadcast=True):
     # 顯示目前狀態
     print(f"今日日期: {str(final_date)}")
     print(f"資料表大小: {final_df.shape}")
@@ -305,7 +309,7 @@ def evening_broadcast(final_date, final_df):
         # chip_strategy.total_institutional_buy_positive_check_df(final_df, threshold=0),
     ]
 
-    # 取得推薦清單
+    # 取得推薦觀察清單
     final_filter = helper.df_mask_helper(final_df, fundimental_mask + technical_mask + chip_mask)
     final_filter = final_filter.sort_values(by=["產業別"], ascending=False)
     # 轉換為字串回傳
@@ -338,7 +342,8 @@ def evening_broadcast(final_date, final_df):
     # 加上版權聲明
     final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
     # 透過 LINE API 進行推播
-    line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
+    if broadcast:
+        line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
     return
 
 
@@ -381,6 +386,7 @@ def get_watching_list(date) -> pd.DataFrame:
     return df
     
 
+# 取得推薦購買清單
 def get_buying_list(yesterday_recommendations) -> list:
     # 設定抓取的目標時間
     today = datetime.date.today()
@@ -417,6 +423,28 @@ def get_buying_list(yesterday_recommendations) -> list:
                 buying_list.append((stock_id, name, category))
         time.sleep(3)
     return buying_list
+
+
+# (初始化時) 取得過去最新的推薦觀察股票清單
+def get_latest_recommendations():
+    print("=== 取得最新 [推薦觀察] 股票清單 ===")
+    if helper.check_time_between(datetime.time(13,30), datetime.time(17,00)):
+        print("=== 無需取得 [推薦觀察] 股票清單 ===")
+        return
+    final_date = datetime.date.today()
+    delta = 1
+    while True:
+        final_df = get_watching_list(final_date)
+        if final_df.shape[0] != 0:
+            break
+        else:
+            print("=== [推薦觀察] 股票清單取得失敗，正在嘗試往前推一天... ===")
+            final_date = final_date - datetime.timedelta(days=delta)
+            delta += 1
+    evening_broadcast(final_date, final_df, broadcast=False)
+    print("=== [推薦觀察] 股票清單取得完成 ===")
+    print(f"=== 最新股票推薦清單: {[s for s in yesterday_recommendations]} ===")
+    return
 
 
 
