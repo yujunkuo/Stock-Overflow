@@ -66,6 +66,10 @@ yesterday_recommendations = dict()
 today_recommendations = dict()
 
 
+# 紀錄是否為機器重啟後第一次喚醒
+restart = True
+
+
 # # 初始化股票當日交易紀錄資料表
 # final_df = pd.DataFrame(columns=['名稱', '產業別', '股票類型', '收盤', '漲跌', '開盤', '最高', '最低', '成交股數', '本益比',
 #        '股利年度', '殖利率(%)', '股價淨值比', '融資買進', '融資賣出', '融資前日餘額', '融資今日餘額', '融券買進',
@@ -107,7 +111,13 @@ def callback():
 # 檢查 Server 是否活著
 @app.route("/", methods=['GET'])
 def home():
+    global restart
     print("=== 進行主機檢查 ===")
+    # 取得過去最新的推薦觀察股票清單
+    if restart:
+        get_latest_recommendations_thread = threading.Thread(target=get_latest_recommendations, daemon=True)
+        get_latest_recommendations_thread.start()
+        restart = False
     # 清除冗余的記憶體使用
     gc.collect()
     # 檢查目前的記憶體使用量
@@ -439,12 +449,7 @@ def get_latest_recommendations():
             delta += 1
     evening_broadcast(final_date, final_df, broadcast=False)
     print("=== [推薦觀察] 股票清單取得完成 ===")
-    print(f"=== 最新股票推薦清單: {[s for s in yesterday_recommendations]} ===")
     return
-
-
-# 取得過去最新的推薦觀察股票清單
-get_latest_recommendations()
 
 
 
