@@ -191,8 +191,8 @@ def morning_broadcast(buying_list):
     # 建構推播訊息
     final_recommendation_text = None
     if not buying_list:
-        final_recommendation_text = f"📌 今日無 [推薦買入] 之股票\n"
-        print("今日無 [推薦買入] 之股票")
+        final_recommendation_text = f"📌 今日無 [推薦買入] 股票\n"
+        print("今日無 [推薦買入] 股票")
     else:
         final_recommendation_text = f"📌 [推薦買入]  股票有 {len(buying_list)} 檔\n"
         final_recommendation_text += "\n###########\n\n"
@@ -325,8 +325,8 @@ def evening_broadcast(final_date, final_df, broadcast=True):
     total_fit = len([i for i, _ in final_filter.iterrows() if i not in yesterday_recommendations])
     # 建構推播訊息
     if not total_fit:
-        final_recommendation_text = f"🔎 今日無 [推薦觀察] 之股票\n"
-        print("今日無 [推薦觀察] 之股票")
+        final_recommendation_text = f"🔎 今日無 [推薦觀察] 股票\n"
+        print("今日無 [推薦觀察] 股票")
         yesterday_recommendations, today_recommendations = dict(), dict()
     else:
         final_recommendation_text = f"🔎 [推薦觀察]  股票有 {total_fit} 檔\n"
