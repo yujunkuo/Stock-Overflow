@@ -11,7 +11,7 @@ from functools import reduce
 
 ## 取得其他股票相關指標
 
-MAX_REQUEST_RETRIES = 3
+MAX_REQUEST_RETRIES = 2
 
 # (Public) 透過 FinMind 取得股票產業別
 def get_industry_category() -> pd.DataFrame:
@@ -114,6 +114,8 @@ def get_technical_indicators(input_df: pd.DataFrame) -> pd.DataFrame:
 def _get_technical_indicators_from_stock_id(stock_id: str) -> dict:
     for _ in range(max(1, MAX_REQUEST_RETRIES - 1)):
         try:
+            time.sleep(1)
+            # time.sleep(random.uniform(1, 2))
             # days = 240 時 Render 記憶體會爆掉
             # days = 120 時有時會抓不到最新一天的資料 (原始網站打 API 時使用的是 days = 80)
             # r = requests.get(f"https://histock.tw/stock/chip/chartdata.aspx?no={stock_id}&days=240&m=dailyk,close,volume,mean5,mean10,mean20,mean60,mean120,mean5volume,mean20volume,k9,d9,rsi6,rsi12,dif,macd,osc")
