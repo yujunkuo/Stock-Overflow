@@ -1,13 +1,14 @@
 import requests
-from bs4 import BeautifulSoup
 import datetime
 import time
 import random
+import json
 import pandas as pd
 import numpy as np
 from io import StringIO
-import json
 from functools import reduce
+from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
 
 ## 取得其他股票相關指標
 
@@ -114,13 +115,16 @@ def get_technical_indicators(input_df: pd.DataFrame) -> pd.DataFrame:
 def _get_technical_indicators_from_stock_id(stock_id: str) -> dict:
     for _ in range(max(1, MAX_REQUEST_RETRIES - 1)):
         try:
-            time.sleep(1)
-            # time.sleep(random.uniform(1, 2))
             # days = 240 時 Render 記憶體會爆掉
             # days = 120 時有時會抓不到最新一天的資料 (原始網站打 API 時使用的是 days = 80)
             # r = requests.get(f"https://histock.tw/stock/chip/chartdata.aspx?no={stock_id}&days=240&m=dailyk,close,volume,mean5,mean10,mean20,mean60,mean120,mean5volume,mean20volume,k9,d9,rsi6,rsi12,dif,macd,osc")
             # r = requests.get(f"https://histock.tw/stock/chip/chartdata.aspx?no={stock_id}&days=120&m=dailyk,close,volume,mean5,mean10,mean20,mean60,mean5volume,mean20volume,k9,d9,dif,macd,osc")
-            r = requests.get(f"https://histock.tw/stock/chip/chartdata.aspx?no={stock_id}&days=80&m=dailyk,close,volume,mean5,mean10,mean20,mean60,mean5volume,mean20volume,k9,d9,dif,macd,osc")
+            headers = {
+                "User-Agent": UserAgent().random,
+                "authority": "histock.tw",
+                "referer": f"https://histock.tw/stock/{stock_id}",
+            }
+            r = requests.get(f"https://histock.tw/stock/chip/chartdata.aspx?no={stock_id}&days=80&m=dailyk,close,volume,mean5,mean10,mean20,mean60,mean5volume,mean20volume,k9,d9,dif,macd,osc", headers=headers)
             technical_data = r.json()
             k9 = _make_technical_pretty_list(json.loads(technical_data["K9"]))
             d9 = _make_technical_pretty_list(json.loads(technical_data["D9"]))
@@ -141,6 +145,8 @@ def _get_technical_indicators_from_stock_id(stock_id: str) -> dict:
                     "volume": volume, "mean_5_volume": mean_5_volume, "mean_20_volume": mean_20_volume,
                     "daily_k": daily_k}
         except:
+            if "請休息一下再試試" in r.text:
+                print("Warning! The web crawler has been blocked by the website...")
             continue
     return None
 
