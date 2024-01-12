@@ -61,9 +61,10 @@ handler = WebhookHandler(os.getenv('CHANNEL_SECRET'))
 api_access_token = os.getenv('API_ACCESS_TOKEN')
 
 
-# 記錄昨日與今日的股票推薦清單
+# 記錄昨日、今日與重複的股票推薦清單
 yesterday_recommendations = dict()
 today_recommendations = dict()
+duplicated_recommendations = dict()
 
 
 # 紀錄是否為機器重啟後第一次喚醒
@@ -124,7 +125,8 @@ def home():
     process = psutil.Process()
     memory_usage = process.memory_info().rss / 1024 ** 2
     print(f"=== 目前記憶體使用量: {memory_usage:.2f} MB ===")
-    print(f"=== 昨日股票推薦清單: {[s for s in yesterday_recommendations]} ===")
+    print(f"=== 昨日 [股票推薦] 清單: {[s for s in yesterday_recommendations]} ===")
+    print(f"=== 昨日 [重複股票] 清單: {[s for s in duplicated_recommendations]} ===")
     return Response(status=200)
 
 
@@ -319,27 +321,30 @@ def evening_broadcast(final_date, final_df, broadcast=True):
     final_filter = helper.df_mask_helper(final_df, fundimental_mask + technical_mask + chip_mask)
     final_filter = final_filter.sort_values(by=["產業別"], ascending=False)
     # 轉換為字串回傳
-    final_recommendation_text = None
+    final_recommendation_text = ""
     # 更新昨日與今日的股票推薦清單
-    global yesterday_recommendations, today_recommendations
-    total_fit = len([i for i, _ in final_filter.iterrows() if i not in yesterday_recommendations])
+    global yesterday_recommendations, today_recommendations, duplicated_recommendations
+    duplicated_recommendations = {i: v for i, v in duplicated_recommendations if i in final_filter.index}
+    total_fit = 0
+    for i, v in final_filter.iterrows():
+        if i in duplicated_recommendations:
+            print(f"[重複故不列入] {i} {v['名稱']}  {v['產業別']}")
+        elif i in yesterday_recommendations:
+            duplicated_recommendations[i] = (v['名稱'], v['產業別'], v['收盤'])
+            print(f"[重複故不列入] {i} {v['名稱']}  {v['產業別']}")
+        else:
+            today_recommendations[i] = (v['名稱'], v['產業別'], v['收盤'])
+            final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
+            print(f"{i} {v['名稱']}  {v['產業別']}")
+            total_fit += 1
     # 建構推播訊息
     if not total_fit:
         final_recommendation_text = f"🔎 今日無 [推薦觀察] 股票\n"
         print("今日無 [推薦觀察] 股票")
         yesterday_recommendations, today_recommendations = dict(), dict()
     else:
-        final_recommendation_text = f"🔎 [推薦觀察]  股票有 {total_fit} 檔\n"
-        final_recommendation_text += "\n###########\n\n"
+        final_recommendation_text = f"🔎 [推薦觀察]  股票有 {total_fit} 檔\n" + "\n###########\n\n" + final_recommendation_text
         print(f"[推薦觀察] 股票有 {total_fit} 檔")
-        for i, v in final_filter.iterrows():
-            today_recommendations[i] = (v['名稱'], v['產業別'], v['收盤'])
-            if i in yesterday_recommendations:
-                print(f"[重複故不列入] {i} {v['名稱']}  {v['產業別']}")
-                continue
-            else:
-                final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
-                print(f"{i} {v['名稱']}  {v['產業別']}")
         yesterday_recommendations, today_recommendations = today_recommendations, dict()
     # 加上末尾分隔線
     final_recommendation_text += "\n###########\n\n"
