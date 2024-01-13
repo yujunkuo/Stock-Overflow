@@ -30,7 +30,9 @@
 
 4. Append `/callback` to the service URL to construct the webhook URL. Paste this webhook URL into the `LINE Webhook URL` section on [LINE Developers](https://developers.line.biz/zh-hant/).
 
-5. Configure the scheduler (e.g., [Cron-job](https://cron-job.org/en/)) to invoke the `/wakeup` API endpoint at designated times daily, ensuring users receive notifications.
+5. Configure the scheduler (e.g., [Cron-job](https://cron-job.org/en/)) to invoke the API endpoints using the following settings:
+    - Invoke the `/wakeup` API endpoint every day at **9:15** and **17:00** to retrieve the recommendation list and ensure users receive notifications. For details regarding the configuration of the API access token, please refer to [Issue #1](https://github.com/yujunkuo/Stock-Overflow/issues/1).
+    - Invoke the `/` API endpoint every **5 minutes** to prevent the free instance from spinning down due to inactivity, and simultaneously release unreferenced memory usage.
 
 
 ## 💬 LINE Notification Message
