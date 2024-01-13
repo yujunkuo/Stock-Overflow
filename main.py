@@ -41,7 +41,7 @@ import twstock
 YEAR = "2024"
 
 # 版本號
-VERSION = "v3.3"
+VERSION = "v3.4"
 
 
 # API Interface
