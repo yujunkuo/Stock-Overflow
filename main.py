@@ -324,7 +324,7 @@ def evening_broadcast(final_date, final_df, broadcast=True):
     final_recommendation_text = ""
     # 更新昨日與今日的股票推薦清單
     global yesterday_recommendations, today_recommendations, duplicated_recommendations
-    duplicated_recommendations = {i: v for i, v in duplicated_recommendations if i in final_filter.index}
+    duplicated_recommendations = {i: v for i, v in duplicated_recommendations.items() if i in final_filter.index}
     total_fit = 0
     for i, v in final_filter.iterrows():
         if i in duplicated_recommendations:
