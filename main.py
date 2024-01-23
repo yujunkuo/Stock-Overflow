@@ -430,17 +430,26 @@ def get_buying_list(yesterday_recommendations) -> list:
         # 若取得資料失敗，則略過該檔股票
         if no_data:
             continue
-        # 若取得資料成功，則存取目前開盤後最低價
+        # 存取目前開盤後「最低價」與「最新一筆成交價（或以待處理交易之價格替代）」
         today_low_price = stock["realtime"]["low"]
         if today_low_price == "-":
             return None    # 休市
         else:
             today_low_price = float(today_low_price)
-            print(f"{stock_id} {name} {time_stamp}", end="\t")
-            print(f"昨收: {round(last_close_price, 2)}", end="\t")
-            print(f"今低: {round(today_low_price, 2)}")
-            if today_low_price >= last_close_price:
-                buying_list.append((stock_id, name, category))
+        today_latest_trade_price = stock["realtime"]["latest_trade_price"]
+        if today_latest_trade_price == "-":
+            today_best_bid_price = float(stock["realtime"]["best_bid_price"][0])
+            today_best_ask_price = float(stock["realtime"]["best_ask_price"][0])
+            today_latest_trade_price = max(today_best_bid_price, today_best_ask_price)
+        else:
+            today_latest_trade_price = float(today_latest_trade_price)
+        print(f"{stock_id} {name} {time_stamp}", end="\t")
+        print(f"昨收: {round(last_close_price, 2)}", end="\t")
+        print(f"今低: {round(today_low_price, 2)}", end="\t")
+        print(f"成交價: {round(today_latest_trade_price, 2)}")
+        # 成交價 >= 昨收 & 今低 >= 0.99 * 昨收
+        if (today_latest_trade_price >= last_close_price) and (today_low_price >= (0.99 * last_close_price)):
+            buying_list.append((stock_id, name, category))
         time.sleep(3)
     return buying_list
 
@@ -470,4 +479,4 @@ def get_latest_recommendations():
 if __name__ == "__main__":
     port = int(os.getenv('PORT', 10000))
     app.run(host='0.0.0.0', port=port)
-
+    
