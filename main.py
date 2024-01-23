@@ -438,9 +438,13 @@ def get_buying_list(yesterday_recommendations) -> list:
             today_low_price = float(today_low_price)
         today_latest_trade_price = stock["realtime"]["latest_trade_price"]
         if today_latest_trade_price == "-":
-            today_best_bid_price = float(stock["realtime"]["best_bid_price"][0])
-            today_best_ask_price = float(stock["realtime"]["best_ask_price"][0])
-            today_latest_trade_price = max(today_best_bid_price, today_best_ask_price)
+            try:
+                today_best_bid_price = float(stock["realtime"]["best_bid_price"][0])
+                today_best_ask_price = float(stock["realtime"]["best_ask_price"][0])
+                today_latest_trade_price = max(today_best_bid_price, today_best_ask_price)
+            except:
+                print(f"{stock_id} {name} {time_stamp} [無法取得最新價格資料]")
+                continue
         else:
             today_latest_trade_price = float(today_latest_trade_price)
         print(f"{stock_id} {name} {time_stamp}", end="\t")
