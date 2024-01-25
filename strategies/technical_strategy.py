@@ -265,6 +265,8 @@ def is_skyrocket(stock_id, n_days=40, k_change=0.40, continuous_up_days=5):
             if all(c >= 0 for c in historical_change_data[i: i + continuous_up_days]):
                 short_term_flag = True
                 break
+        print(f"{stock_id}: [long_term = {long_term_flag} / short_term = {short_term_flag} / data_length = {len(historical_data)}]")
         return long_term_flag and short_term_flag
     except:
+        print(f"{stock_id}: [取得歷史資料失敗]")
         return False
