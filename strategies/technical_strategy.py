@@ -8,6 +8,7 @@ import numpy as np
 from io import StringIO
 import json
 from functools import reduce
+import twstock
 
 ## 技術面策略
 
@@ -238,5 +239,31 @@ def _technical_indicator_constant_check_row(row, indicator, direction, threshold
             return all(idx > threshold for idx in last_n_days_indicator)
         else:
             return all(idx < threshold for idx in last_n_days_indicator)
+    except:
+        return False
+
+
+# 12. (Public) [twstock] 檢查該股票是否具備飆股特徵 (自定義長短線特徵)
+def is_skyrocket(stock_id, n_days=40, k_change=0.40, continuous_up_days=5):
+    try:
+        stock = twstock.Stock(stock_id)
+        six_months_ago = datetime.datetime.now() - datetime.timedelta(days=180)
+        historical_data = stock.fetch_from(six_months_ago.year, six_months_ago.month)
+        historical_close_data = [data.close for data in historical_data][:-5]
+        historical_change_data = [data.change for data in historical_data][:-5]
+        # 檢查飆股兩個面向特徵
+        long_term_flag, short_term_flag = False, False
+        # 檢查是否有在任意　n_days　內漲幅達 k_change
+        for i in range(len(historical_close_data) - n_days):
+            start, end = historical_close_data[i], historical_close_data[i + n_days]
+            if (end - start) / start >= k_change:
+                long_term_flag = True
+                break
+        # 檢查是否有在任意　continuous_up_days　內每天都是上漲的狀態
+        for i in range(len(historical_change_data) - continuous_up_days + 1):
+            if all(c >= 0 for c in historical_change_data[i: i + continuous_up_days]):
+                short_term_flag = True
+                break
+        return long_term_flag and short_term_flag
     except:
         return False
