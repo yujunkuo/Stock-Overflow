@@ -1,3 +1,4 @@
+pip==23.3.2
 aenum==3.1.15
 aiohttp==3.9.1
 aiosignal==1.3.1
@@ -11,7 +12,7 @@ charset-normalizer==3.3.2
 click==8.1.7
 Deprecated==1.2.14
 fake-useragent==1.4.0
-Flask==2.2.5
+Flask==3.0.1
 frozenlist==1.3.3
 future==0.18.3
 gunicorn==21.2.0
@@ -24,10 +25,9 @@ line-bot-sdk==3.7.0
 lxml==5.1.0
 MarkupSafe==2.1.4
 multidict==6.0.4
-numpy==1.22.0
+numpy==1.26.3
 packaging==23.2
-pandas==1.3.5
-pip==23.3
+pandas==2.2.0
 psutil==5.9.8
 pydantic==2.0.3
 python-dateutil==2.8.2
