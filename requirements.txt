@@ -34,7 +34,7 @@ python-dateutil==2.8.2
 python-dotenv==0.21.1
 pytz==2023.3.post1
 requests==2.31.0
-setuptools==47.1.0
+setuptools==65.5.1
 six==1.16.0
 soupsieve==2.4.1
 twstock==1.3.1
