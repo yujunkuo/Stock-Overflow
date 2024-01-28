@@ -320,11 +320,7 @@ def evening_broadcast(final_date, final_df, broadcast=True):
     # 取得推薦觀察清單
     final_filter = helper.df_mask_helper(final_df, fundimental_mask + technical_mask + chip_mask)
     final_filter = final_filter.sort_values(by=["產業別"], ascending=False)
-    print("Before Skyrocket Check:")
-    print(final_filter)
     final_filter = final_filter[final_filter.index.to_series().apply(technical_strategy.is_skyrocket)]
-    print("After Skyrocket Check:")
-    print(final_filter)
     # 轉換為字串回傳
     final_recommendation_text = ""
     # 更新昨日與今日的股票推薦清單

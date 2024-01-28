@@ -1,16 +1,17 @@
-import requests
-from bs4 import BeautifulSoup
-import datetime
-import time
-import random
-import pandas as pd
-import numpy as np
-from io import StringIO
-import json
-from functools import reduce
+import warnings
+warnings.simplefilter(action='ignore', category=FutureWarning)
 
-# Set the option to opt-in to the future behavior
-# pd.set_option('future.no_silent_downcasting', True)
+import json
+import random
+import time
+import datetime
+import requests
+import numpy as np
+import pandas as pd
+from io import StringIO
+from functools import reduce
+from bs4 import BeautifulSoup
+
 
 ## 取得櫃買中心當日所有上櫃股票資料
 
