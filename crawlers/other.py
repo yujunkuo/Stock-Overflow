@@ -90,21 +90,21 @@ def get_technical_indicators(input_df: pd.DataFrame) -> pd.DataFrame:
     # if test_date != datetime.date.today():
     #     print("取得技術指標失敗，搜尋日期與今日日期不相符")
     #     return df
-    total_ = len(df.index)
-    current_finish_ = 0
+    current_finish_, total_ = 0, len(df.index)
+    print_flag = False
     for i, row in df.iterrows():
         try:
             technical_data = _get_technical_indicators_from_stock_id(i)
             for each in new_column_list:
                 df.loc[[str(i)], each] = [technical_data[each]]
             current_finish_ += 1
-            if current_finish_ % 100 == 0:
+            if print_flag or current_finish_ % 100 == 0:
                 print(f"Finish technical data: {current_finish_}/{total_}, index = {i}")
-                # time.sleep(random.randint(1, 3))
+                print_flag = False
         except:
             current_finish_ += 1
-            # print(f"Finish technical data: {current_finish_}/{total_}, Fail!")
-            # time.sleep(random.randint(1, 3))
+            if current_finish_ % 100 == 0:
+                print_flag = True
     end_time_ = time.time()
     spent_time_ = end_time_ - start_time_
     print(f"取得技術指標花費時間: {datetime.timedelta(seconds=int(spent_time_))}")
