@@ -10,7 +10,7 @@ import json
 from functools import reduce
 
 # Set the option to opt-in to the future behavior
-pd.set_option('future.no_silent_downcasting', True)
+# pd.set_option('future.no_silent_downcasting', True)
 
 ## 取得櫃買中心當日所有上櫃股票資料
 
