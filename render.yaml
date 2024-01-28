@@ -4,7 +4,7 @@ services:
   env: python
   repo: https://github.com/yujunkuo/Stock-Overflow.git
   buildCommand: pip install -r requirements.txt
-  startCommand: gunicorn main:app --preload
+  startCommand: gunicorn main:app
   plan: free
   autoDeploy: false
   envVars:
