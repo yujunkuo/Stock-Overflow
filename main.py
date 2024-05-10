@@ -29,6 +29,7 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import os
 import gc
 import psutil
+import tracemalloc
 from dotenv import load_dotenv
 
 import threading
@@ -50,6 +51,10 @@ app = Flask(__name__)
 
 # 載入環境變數
 load_dotenv()
+
+
+# 追蹤記憶體使用情況
+tracemalloc.start()
 
 
 # 設定 LINE Bot 基本資料
@@ -127,6 +132,12 @@ def home():
     print(f"=== 目前記憶體使用量: {memory_usage:.2f} MB ===")
     print(f"=== 昨日 [股票推薦] 清單: {[s for s in yesterday_recommendations]} ===")
     print(f"=== 昨日 [重複股票] 清單: {[s for s in duplicated_recommendations]} ===")
+    # 追蹤記憶體使用情況
+    snapshot = tracemalloc.take_snapshot()
+    top_stats = snapshot.statistics('lineno')
+    print("[ Top 10 ]")
+    for stat in top_stats[:10]:
+        print(stat)
     return Response(status=200)
 
 
