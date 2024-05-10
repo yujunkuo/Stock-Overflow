@@ -410,6 +410,7 @@ def get_buying_list(yesterday_recommendations) -> list:
         retry_times = 0
         while True:
             # 爬取即時成交資訊
+            time.sleep(3)
             stock = twstock.realtime.get(stock_id)
             # 檢查是否有成功取得資料
             if stock["success"] == False:
@@ -426,8 +427,6 @@ def get_buying_list(yesterday_recommendations) -> list:
                 retry_times += 1
                 if retry_times > 100:
                     return None    # 休市
-                else:
-                    time.sleep(3)    # 太早抓取
         # 若取得資料失敗，則略過該檔股票
         if no_data:
             continue
@@ -459,7 +458,6 @@ def get_buying_list(yesterday_recommendations) -> list:
             # 目前漲幅小於 6%
             if today_latest_trade_price <= (1.06 * last_close_price):
                 buying_list.append((stock_id, name, category))
-        time.sleep(3)
     return buying_list
 
 
