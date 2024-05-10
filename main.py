@@ -185,6 +185,7 @@ def update():
             print("=== 好友推播完成 ===")
             # # 每天更新一次上市櫃股票列表
             # twstock.__update_codes()  # 記憶體會炸掉
+            del final_df  # 釋放記憶體
             return
 
 
@@ -479,6 +480,7 @@ def get_latest_recommendations():
             delta += 1
     evening_broadcast(final_date, final_df, broadcast=False)
     print("=== [推薦觀察] 股票清單取得完成 ===")
+    del final_df  # 釋放記憶體
     return
 
 
