@@ -113,6 +113,8 @@ def callback():
 # 檢查 Server 是否活著
 @app.route("/", methods=['GET'])
 def home():
+    # 追蹤記憶體使用情況
+    tracemalloc.start()
     global restart
     print("=== 進行主機檢查 ===")
     # 取得過去最新的推薦觀察股票清單
@@ -129,7 +131,6 @@ def home():
     print(f"=== 昨日 [股票推薦] 清單: {[s for s in yesterday_recommendations]} ===")
     print(f"=== 昨日 [重複股票] 清單: {[s for s in duplicated_recommendations]} ===")
     # 追蹤記憶體使用情況
-    tracemalloc.start()
     snapshot = tracemalloc.take_snapshot()
     top_stats = snapshot.statistics('lineno')
     print("[ Top 10 ]")
