@@ -29,7 +29,6 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import os
 import gc
 import psutil
-import tracemalloc
 from dotenv import load_dotenv
 
 import threading
@@ -113,13 +112,11 @@ def callback():
 # 檢查 Server 是否活著
 @app.route("/", methods=['GET'])
 def home():
-    # 追蹤記憶體使用情況
-    tracemalloc.start()
     global restart
     print("=== 進行主機檢查 ===")
     # 取得過去最新的推薦觀察股票清單
     if restart:
-        get_latest_recommendations_thread = threading.Thread(target=get_latest_recommendations, daemon=True)
+        get_latest_recommendations_thread = threading.Thread(target=get_latest_recommendations)
         get_latest_recommendations_thread.start()
         restart = False
     # 清除冗余的記憶體使用
@@ -130,13 +127,6 @@ def home():
     print(f"=== 目前記憶體使用量: {memory_usage:.2f} MB ===")
     print(f"=== 昨日 [股票推薦] 清單: {[s for s in yesterday_recommendations]} ===")
     print(f"=== 昨日 [重複股票] 清單: {[s for s in duplicated_recommendations]} ===")
-    # 追蹤記憶體使用情況
-    snapshot = tracemalloc.take_snapshot()
-    top_stats = snapshot.statistics('lineno')
-    print("[ Top 10 ]")
-    for stat in top_stats[:10]:
-        print(stat)
-    tracemalloc.stop()
     return Response(status=200)
 
 
@@ -152,7 +142,7 @@ def wakeup():
     else:
         print("=== 開始喚醒主機 ===")
         # 指派更新與推播
-        update_thread = threading.Thread(target=update, daemon=True)
+        update_thread = threading.Thread(target=update)
         update_thread.start()
         return Response(status=200)
 

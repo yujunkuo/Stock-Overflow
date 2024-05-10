@@ -249,20 +249,18 @@ def is_skyrocket(stock_id, n_days=40, k_change=0.40, continuous_up_days=4):
         time.sleep(5)
         stock = twstock.Stock(stock_id)
         six_months_ago = datetime.datetime.now() - datetime.timedelta(days=180)
-        historical_data = stock.fetch_from(six_months_ago.year, six_months_ago.month)
-        historical_close_data = [data.close for data in historical_data][:-5]
-        historical_change_data = [data.change for data in historical_data][:-5]
+        historical_data = stock.fetch_from(six_months_ago.year, six_months_ago.month)[:-5]
         # 檢查飆股兩個面向特徵
         long_term_flag, short_term_flag = False, False
         # 檢查是否有在任意 n_days 內漲幅達 k_change
-        for i in range(len(historical_close_data) - n_days):
-            start, end = historical_close_data[i], historical_close_data[i + n_days]
+        for i in range(len(historical_data) - n_days):
+            start, end = historical_data[i].close, historical_data[i + n_days].close
             if (end - start) / start >= k_change:
                 long_term_flag = True
                 break
         # 檢查是否有在任意 continuous_up_days 內每天都是上漲的狀態
-        for i in range(len(historical_change_data) - continuous_up_days + 1):
-            if all(c >= 0 for c in historical_change_data[i: i + continuous_up_days]):
+        for i in range(len(historical_data) - continuous_up_days + 1):
+            if all(c.change >= 0 for c in historical_data[i: i + continuous_up_days]):
                 short_term_flag = True
                 break
         print(f"{stock_id}: [long_term = {long_term_flag} / short_term = {short_term_flag} / data_length = {len(historical_data)}]")
