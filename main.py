@@ -29,7 +29,6 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import os
 import gc
 import psutil
-import requests_cache
 
 import twstock
 import threading
@@ -122,7 +121,6 @@ def home():
         restart = False
     # 清除冗余的記憶體使用
     gc.collect()
-    requests_cache.clear()
     # 檢查目前的記憶體使用量
     process = psutil.Process()
     memory_usage = process.memory_info().rss / 1024 ** 2
@@ -187,13 +185,6 @@ def update():
             print("=== 好友推播完成 ===")
             # # 每天更新一次上市櫃股票列表
             # twstock.__update_codes()  # 記憶體會炸掉
-            # 釋放記憶體
-            print("=== [記憶體用量] 檢查開始 ===")
-            print(final_df.memory_usage(deep=True))
-            print(final_df.info(verbose=False, memory_usage="deep"))
-            del final_df
-            gc.collect()
-            print("=== [記憶體用量] 檢查結束 ===")
             return
 
 
@@ -488,13 +479,6 @@ def get_latest_recommendations():
             delta += 1
     evening_broadcast(final_date, final_df, broadcast=False)
     print("=== [推薦觀察] 股票清單取得完成 ===")
-    # 釋放記憶體
-    print("=== [記憶體用量] 檢查開始 ===")
-    print(final_df.memory_usage(deep=True))
-    print(final_df.info(verbose=False, memory_usage="deep"))
-    del final_df
-    gc.collect()
-    print("=== [記憶體用量] 檢查結束 ===")
     return
 
 
