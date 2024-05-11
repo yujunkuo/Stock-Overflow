@@ -29,11 +29,12 @@ from linebot.models import MessageEvent, TextMessage, TextSendMessage
 import os
 import gc
 import psutil
-from dotenv import load_dotenv
-
-import threading
+import requests_cache
 
 import twstock
+import threading
+
+from dotenv import load_dotenv
 
 #################### 全域變數設定 ####################
 
@@ -121,6 +122,7 @@ def home():
         restart = False
     # 清除冗余的記憶體使用
     gc.collect()
+    requests_cache.clear()
     # 檢查目前的記憶體使用量
     process = psutil.Process()
     memory_usage = process.memory_info().rss / 1024 ** 2

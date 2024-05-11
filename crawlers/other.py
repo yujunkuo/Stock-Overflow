@@ -124,7 +124,7 @@ def _get_technical_indicators_from_stock_id(stock_id: str) -> dict:
                 "authority": "histock.tw",
                 "referer": f"https://histock.tw/stock/{stock_id}",
             }
-            r = requests.get(f"https://histock.tw/stock/chip/chartdata.aspx?no={stock_id}&days=80&m=dailyk,close,volume,mean5,mean10,mean20,mean60,mean5volume,mean20volume,k9,d9,dif,macd,osc", headers=headers, cache=False)
+            r = requests.get(f"https://histock.tw/stock/chip/chartdata.aspx?no={stock_id}&days=80&m=dailyk,close,volume,mean5,mean10,mean20,mean60,mean5volume,mean20volume,k9,d9,dif,macd,osc", headers=headers)
             technical_data = r.json()
             k9 = _make_technical_pretty_list(json.loads(technical_data["K9"]))
             d9 = _make_technical_pretty_list(json.loads(technical_data["D9"]))
