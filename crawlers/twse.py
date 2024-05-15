@@ -1,13 +1,9 @@
-import requests
-from bs4 import BeautifulSoup
 import datetime
 import time
-import random
+
 import pandas as pd
-import numpy as np
+import requests
 from io import StringIO
-import json
-from functools import reduce
 
 ## 取得證交所當日所有上市股票資料
 

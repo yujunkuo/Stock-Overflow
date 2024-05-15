@@ -1,17 +1,13 @@
+import datetime
+import time
+
+import pandas as pd
+import requests
+from bs4 import BeautifulSoup
+from io import StringIO
+
 import warnings
 warnings.simplefilter(action='ignore', category=FutureWarning)
-
-import json
-import random
-import time
-import datetime
-import requests
-import numpy as np
-import pandas as pd
-from io import StringIO
-from functools import reduce
-from bs4 import BeautifulSoup
-
 
 ## 取得櫃買中心當日所有上櫃股票資料
 

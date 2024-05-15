@@ -1,12 +1,9 @@
-import requests
 import datetime
-import time
-import random
 import json
+import time
+
 import pandas as pd
-import numpy as np
-from io import StringIO
-from functools import reduce
+import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
