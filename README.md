@@ -53,9 +53,22 @@ Below is an example of what the LINE notification message looks like:
 - https://ithelp.ithome.com.tw/articles/10283836
 - https://github.com/haojiwu/line-bot-python-on-render
 - https://bamorlove.com/blog/render
+- https://api-docs.render.com/reference/restart-server
 
 
-## 🧸 Contributing
-Your contributions or suggestions are not only greatly welcome but also truly appreciated! If you have any idea for enhancements or something amazing brewing in your mind, please don't hesitate to create a pull request. Your feedback is invaluable, and every contribution, no matter how small, has the power to make a significant impact.
+## 🧸 Contribution
+Contributions are greatly welcome and appreciated! If you have any idea for enhancements, please don't hesitate to create a pull request. Thank you for being a crucial part of this project and for bringing your unique brilliance to the table! Let's create something extraordinary together! 
 
-Thank you for being a crucial part of this project and for bringing your unique brilliance to the table! Let's create something extraordinary together! 🎉
+
+## 📅 Update Info
+If you need to automate restarting the service, Render now supports this via an API call. Just make a POST request to https://api.render.com/v1/services/{service-id}/restart. You can find the `service-id` by looking at the URL after entering the project (format: `srv-xxxxx`).
+
+You should also include your `api-key` in the request via the Authorization HTTP header. You can create API keys from your [Account Settings page](https://dashboard.render.com/u/settings) in the Render Dashboard.
+
+Here is an example:
+```bash
+curl --request POST \
+     --url https://api.render.com/v1/services/{service-id}/restart \
+     --header 'accept: application/json' \
+     --header 'authorization: Bearer {api-key}'
+```
