@@ -1,39 +1,33 @@
 from __future__ import unicode_literals
 
-import requests
-from bs4 import BeautifulSoup
 import datetime
+import gc
+import os
+import threading
 import time
-import random
+
 import pandas as pd
-import numpy as np
-from io import StringIO
-import json
-from functools import reduce
-
-from crawlers import twse
-from crawlers import tpex
-from crawlers import other
-
-from strategies import chip_strategy
-from strategies import technical_strategy
-from strategies import fundamental_strategy
-
-from utils import helper
-
-from flask import Flask, Response, request, abort
+import psutil
+from dotenv import load_dotenv
+from flask import Flask, Response, abort, request
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import MessageEvent, TextMessage, TextSendMessage
 
-import os
-import gc
-import psutil
+# 定義 PatchedSession 以忽略 SSL Verification
+import requests
+class PatchedSession(requests.Session):
+    def request(self, *args, **kwargs):
+        kwargs['verify'] = False
+        return super().request(*args, **kwargs)
+
+requests.Session = PatchedSession
 
 import twstock
-import threading
 
-from dotenv import load_dotenv
+from crawlers import other, tpex, twse
+from strategies import chip_strategy, fundamental_strategy, technical_strategy
+from utils import helper
 
 #################### 全域變數設定 ####################
 
