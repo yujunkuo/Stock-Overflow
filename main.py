@@ -22,6 +22,7 @@ class PatchedSession(requests.Session):
         return super().request(*args, **kwargs)
 
 requests.Session = PatchedSession
+requests.packages.urllib3.disable_warnings()
 
 import twstock
 
