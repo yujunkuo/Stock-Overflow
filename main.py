@@ -448,11 +448,10 @@ def get_buying_list(yesterday_recommendations) -> list:
         print(f"成交價: {round(today_latest_trade_price, 2)}")
         # 成交價 >= 昨收 & 今低 >= 0.99 * 昨收
         # if (today_latest_trade_price >= last_close_price) and (today_low_price >= (0.99 * last_close_price)):
-        # 目前跌幅小於 0.5%
-        if today_latest_trade_price >= (0.995 * last_close_price):
-            # 目前漲幅小於 6%
-            if today_latest_trade_price <= (1.06 * last_close_price):
-                buying_list.append((stock_id, name, category))
+        # 目前跌幅小於 0.5% & 目前漲幅小於 6% (09:15 a.m.)
+        # 開盤價格漲幅介於 0-5% (09:00 a.m.)
+        if (1.05 * last_close_price) >= today_latest_trade_price >= (1.00 * last_close_price):
+            buying_list.append((stock_id, name, category))
     return buying_list
 
 
