@@ -235,8 +235,8 @@ def evening_broadcast(final_date, final_df, broadcast=True):
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean20", direction="more", threshold=1, days=1),
         # MA1 > MA60
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="mean60", direction="more", threshold=1, days=1),
-        ## (不改的條件 @ 20220723) 今天收紅 K 棒 (收盤價 > 開盤價)
-        technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="開盤", direction="more", threshold=1, days=1),
+        ## (不改的條件 @ 20220723) 今天收紅 K & 實體 K 棒漲幅大於 1% (收盤價 > 1.01 * 開盤價)
+        technical_strategy.technical_indicator_greater_or_less_one_day_check_df(final_df, indicator_1="收盤", indicator_2="開盤", direction="more", threshold=1.01, days=1),
         ## (不改的條件 @ 20220723) K 棒底底高
         # (technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="開盤", direction="more", threshold=1, days=1) |\
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(final_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1)),
