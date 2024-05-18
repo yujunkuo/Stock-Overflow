@@ -154,7 +154,7 @@ def update():
         print("=== 假日不進行推播 ===")
         return
     else:
-        if helper.check_time_between(datetime.time(9,0), datetime.time(13,30)):
+        if helper.check_time_between(datetime.time(8,30), datetime.time(13,30)):
             print("=== 開始製作 [推薦買入] 股票清單 ===")
             buying_list = get_buying_list(yesterday_recommendations)
             # 若今日休市則不進行後續更新與推播
@@ -397,8 +397,7 @@ def get_watching_list(date) -> pd.DataFrame:
 def get_buying_list(yesterday_recommendations) -> list:
     # 設定抓取的目標時間
     today = datetime.date.today()
-    time_checker = datetime.datetime(today.year, today.month, today.day, 9, 15)
-    # 取得昨日觀察股票在今日開盤後「前15分鐘」之最低價，並檢查其是否有高於或等於昨日收盤價
+    time_checker = datetime.datetime(today.year, today.month, today.day, 9, 0)
     buying_list = []
     for stock_id, (name, category, last_close_price) in zip(yesterday_recommendations, yesterday_recommendations.values()):
         no_data = False
@@ -425,32 +424,32 @@ def get_buying_list(yesterday_recommendations) -> list:
         # 若取得資料失敗，則略過該檔股票
         if no_data:
             continue
-        # 存取目前開盤後「最低價」與「最新一筆成交價（或以待處理交易之價格替代）」
-        today_low_price = stock["realtime"]["low"]
-        if today_low_price == "-":
+        # 存取「開盤價」 # 與「最新一筆成交價（或以待處理交易之價格替代）」
+        today_open_price = stock["realtime"]["open"]
+        if today_open_price == "-":
             return None    # 休市
         else:
-            today_low_price = float(today_low_price)
-        today_latest_trade_price = stock["realtime"]["latest_trade_price"]
-        if today_latest_trade_price == "-":
-            try:
-                today_best_bid_price = float(stock["realtime"]["best_bid_price"][0])
-                today_best_ask_price = float(stock["realtime"]["best_ask_price"][0])
-                today_latest_trade_price = max(today_best_bid_price, today_best_ask_price)
-            except:
-                print(f"{stock_id} {name} {time_stamp} [無法取得最新價格資料]")
-                continue
-        else:
-            today_latest_trade_price = float(today_latest_trade_price)
+            today_open_price = float(today_open_price)
+        # today_latest_trade_price = stock["realtime"]["latest_trade_price"]
+        # if today_latest_trade_price == "-":
+        #     try:
+        #         today_best_bid_price = float(stock["realtime"]["best_bid_price"][0])
+        #         today_best_ask_price = float(stock["realtime"]["best_ask_price"][0])
+        #         today_latest_trade_price = max(today_best_bid_price, today_best_ask_price)
+        #     except:
+        #         print(f"{stock_id} {name} {time_stamp} [無法取得最新價格資料]")
+        #         continue
+        # else:
+        #     today_latest_trade_price = float(today_latest_trade_price)
         print(f"{stock_id} {name} {time_stamp}", end="\t")
         print(f"昨收: {round(last_close_price, 2)}", end="\t")
-        print(f"今低: {round(today_low_price, 2)}", end="\t")
-        print(f"成交價: {round(today_latest_trade_price, 2)}")
+        print(f"今開: {round(today_open_price, 2)}", end="\t")
+        # print(f"成交價: {round(today_latest_trade_price, 2)}")
         # 成交價 >= 昨收 & 今低 >= 0.99 * 昨收
         # if (today_latest_trade_price >= last_close_price) and (today_low_price >= (0.99 * last_close_price)):
         # 目前跌幅小於 0.5% & 目前漲幅小於 6% (09:15 a.m.)
-        # 開盤價格漲幅介於 0-5% (09:00 a.m.)
-        if (1.05 * last_close_price) >= today_latest_trade_price >= (1.00 * last_close_price):
+        # 開盤價漲幅介於 0-5% (09:00 a.m.)
+        if (1.05 * last_close_price) >= today_open_price >= (1.00 * last_close_price):
             buying_list.append((stock_id, name, category))
     return buying_list
 
