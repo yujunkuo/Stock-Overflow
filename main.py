@@ -251,8 +251,8 @@ def evening_broadcast(final_date, final_df, broadcast=True):
         ## |今天D9 - 今天K9| < 22
         technical_strategy.technical_indicator_difference_one_day_check_df(final_df, indicator_1="k9", indicator_2="d9", difference_threshold=22, days=1),
         ## 今天的 K9 要介於 49 ~ 87 之間
-        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="more", threshold=49, days=1),
-        technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=87, days=1),
+        # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="more", threshold=49, days=1),
+        # technical_strategy.technical_indicator_constant_check_df(final_df, indicator="k9", direction="less", threshold=87, days=1),
         # 今天的 J9 要小於 100
         technical_strategy.technical_indicator_constant_check_df(final_df, indicator="j9", direction="less", threshold=100, days=1),
         ## (今天 k9-d9) 大於等於 (昨天 k9-d9)
