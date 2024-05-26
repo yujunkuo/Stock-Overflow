@@ -36,7 +36,7 @@ from utils import helper
 YEAR = "2024"
 
 # 版本號
-VERSION = "v3.9"
+VERSION = "v4.0"
 
 
 # API Interface
