@@ -2,7 +2,7 @@
 
 
 ## 🔎 Overview
-**Stock-Overflow** is a **stock recommendation system** tailored for the Taiwanese stock market. It leverages various strategies and indicators to identify potentially lucrative stock investment opportunities. The system provides recommendations based on fundamental analysis, technical analysis, and chip analysis. Additionally, it utilizes web scraping to fetch real-time stock market data and sends recommendations to users via the LINE messaging platform.
+**Stock-Overflow** is a **stock recommendation system** tailored for the Taiwanese stock market. It leverages various strategies and indicators to identify potentially lucrative stock investment opportunities. Specifically, the system automatically collects daily stock data through web scraping, applies fundamental, technical, and chip analysis to filter this information, and delivers recommendations to users via the LINE messaging platform.
 
 
 ## 📌 Features
@@ -30,7 +30,7 @@
 4. Append `/callback` to the service URL to construct the webhook URL. Paste this webhook URL into the `LINE Webhook URL` section on [LINE Developers](https://developers.line.biz/zh-hant/).
 
 5. Configure the scheduler (e.g., [Cron-job](https://cron-job.org/en/)) to invoke the API endpoints using the following settings:
-    - Invoke the `/wakeup` API endpoint every day at **9:00** and **18:00** to retrieve the recommendation list and ensure users receive notifications. For details regarding the configuration of the API access token, please refer to [Issue #1](https://github.com/yujunkuo/Stock-Overflow/issues/1).
+    - Invoke the `/wakeup` API endpoint every day at **🕕18:00** to retrieve the stock recommendation list and ensure users receive notifications. For details regarding the configuration of the API access token, please refer to [Issue #1](https://github.com/yujunkuo/Stock-Overflow/issues/1).
     - Invoke the `/` API endpoint every **5 minutes** to prevent the free instance from spinning down due to inactivity, and simultaneously release unreferenced memory usage.
 
 
