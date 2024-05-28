@@ -237,7 +237,7 @@ def _technical_indicator_constant_check_row(row, indicator, direction, threshold
 
 
 # 12. (Public) [twstock] 檢查該股票是否具備飆股特徵 (自定義長短線特徵)
-def is_skyrocket(stock_id, n_days=40, k_change=0.40, consecutive_red_no_upper_shadow_days=3):
+def is_skyrocket(stock_id, n_days=40, k_change=0.40, consecutive_red_no_upper_shadow_days=2):
     try:
         time.sleep(5)
         stock = twstock.Stock(stock_id)
@@ -251,9 +251,9 @@ def is_skyrocket(stock_id, n_days=40, k_change=0.40, consecutive_red_no_upper_sh
             if (end - start) / start >= k_change:
                 long_term_flag = True
                 break
-        # 檢查是否有在任意 consecutive_red_no_upper_shadow_days 內每天都是無上影線紅 K 棒
+        # 檢查是否有在任意 consecutive_red_no_upper_shadow_days 內每天都漲幅大於 9% 且收在最高
         for i in range(len(historical_data) - consecutive_red_no_upper_shadow_days + 1):
-            if all(d.close == d.high for d in historical_data[i: i + consecutive_red_no_upper_shadow_days]):
+            if all((d.close == d.high) and (d.close / (d.close - d.change) > 1.09) for d in historical_data[i: i + consecutive_red_no_upper_shadow_days]):
                 short_term_flag = True
                 break
         print(f"{stock_id}: [long_term = {long_term_flag} / short_term = {short_term_flag} / data_length = {len(historical_data)}]")
