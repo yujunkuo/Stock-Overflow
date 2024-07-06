@@ -3,6 +3,7 @@ from functools import reduce
 
 ## 工具函數
 
+
 # (Public) 從 df 中透過多個條件 mask_list 取交集來過濾
 def df_mask_helper(df, mask_list):
     return df[reduce(lambda x, y: (x & y), mask_list)]
@@ -15,7 +16,7 @@ def check_time_between(begin_time, end_time):
     # 判斷區間
     if begin_time < end_time:
         return check_time >= begin_time and check_time < end_time
-    else: # 跨過午夜
+    else:  # 跨過午夜
         return check_time >= begin_time or check_time < end_time
 
 
@@ -28,4 +29,3 @@ def check_weekday():
     # 判斷是否為工作日
     is_weekday = False if weekday_count in [5, 6] else True
     return is_weekday
-    

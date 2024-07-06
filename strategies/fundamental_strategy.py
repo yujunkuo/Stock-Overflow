@@ -1,5 +1,6 @@
 ## 基本面策略
 
+
 # 1. (Public) 本益比小於等於 N
 def per_check_df(df, per_threshold=15):
     return df["本益比"] <= per_threshold
