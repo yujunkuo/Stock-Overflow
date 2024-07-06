@@ -98,23 +98,20 @@ def wakeup():
 
 # 更新與推播當日推薦清單
 def update_and_broadcast():
+    current_date = datetime.date.today()
+    logger.info(f"資料日期 {str(current_date)}")
     if not helper.check_weekday():
         logger.info("假日不進行更新與推播")
-        return
     else:
         logger.info("開始更新推薦清單")
-        current_date = datetime.date.today()
-        logger.info(f"今日日期 {str(current_date)}")
         market_data_df = update_market_data(current_date)
         watch_list_df = update_watch_list(market_data_df)
         if watch_list_df.shape[0] == 0:
             logger.info("休市不進行更新與推播")
-            return
         logger.info("推薦清單更新完成")
         logger.info("開始進行好友推播")
         broadcast_watch_list(current_date, watch_list_df)
         logger.info("好友推播執行完成")
-        return
 
 
 # 更新股票市場資訊
@@ -424,7 +421,6 @@ def broadcast_watch_list(current_date, watch_list_df):
     final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
     # 透過 LINE API 進行推播
     line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
-    return
 
 
 ####################################################
