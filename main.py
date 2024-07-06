@@ -14,8 +14,10 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextSendMessage
 
 from crawlers import other, tpex, twse
+from logging_config import logger
 from strategies import chip_strategy, fundamental_strategy, technical_strategy
 from utils import helper
+
 
 #################### 全域變數設定 ####################
 
@@ -41,6 +43,7 @@ handler = WebhookHandler(os.getenv("CHANNEL_SECRET"))
 
 # 設定 API Access Token
 api_access_token = os.getenv("API_ACCESS_TOKEN")
+
 
 ####################################################
 
@@ -69,7 +72,7 @@ def home():
     # 檢查目前的記憶體使用量
     process = psutil.Process()
     memory_usage = process.memory_info().rss / 1024**2
-    print(f"=== 目前記憶體使用量: {memory_usage:.2f} MB ===")
+    logger.info(f"目前記憶體使用量 {memory_usage:.2f} MB")
     return Response(status=200)
 
 
@@ -83,31 +86,34 @@ def wakeup():
     elif request.headers["API-Access-Token"] != api_access_token:
         return Response("Invalid API-Access-Token", status=401)
     else:
-        print("=== 開始喚醒主機 ===")
+        logger.info("開始喚醒主機")
         # 指派更新與推播
         update_and_broadcast_thread = threading.Thread(target=update_and_broadcast)
         update_and_broadcast_thread.start()
         return Response(status=200)
 
 
+####################################################
+
+
 # 更新與推播當日推薦清單
 def update_and_broadcast():
     if not helper.check_weekday():
-        print("=== 假日：不進行更新與推播 ===")
+        logger.info("假日不進行更新與推播")
         return
     else:
-        print("=== 開始更新推薦清單 ===")
+        logger.info("開始更新推薦清單")
         current_date = datetime.date.today()
-        print(f"今日日期: {str(current_date)}")
+        logger.info(f"今日日期 {str(current_date)}")
         market_data_df = update_market_data(current_date)
         watch_list_df = update_watch_list(market_data_df)
         if watch_list_df.shape[0] == 0:
-            print("=== 今日休市：不進行更新與推播 ===")
+            logger.info("休市不進行更新與推播")
             return
-        print("=== 推薦清單更新完成 ===")
-        print("=== 開始進行好友推播 ===")
+        logger.info("推薦清單更新完成")
+        logger.info("開始進行好友推播")
         broadcast_watch_list(current_date, watch_list_df)
-        print("=== 好友推播執行完成 ===")
+        logger.info("好友推播執行完成")
         return
 
 
@@ -145,22 +151,20 @@ def update_market_data(date) -> pd.DataFrame:
     # 重新按股票代碼排序
     market_data_df = market_data_df.sort_index()
     # 印出台積電資料，確保爬蟲取得資料的正確性
-    print("---------------------")
-    print("核對 [2330 台積電] 今日交易資訊:")
+    logger.info("核對 [2330 台積電] 今日交易資訊")
     tsmc = market_data_df.loc["2330"]
     for column, value in tsmc.items():
         if type(value) == list and len(value) > 0:
-            print(f"{column}: {value[-1]} (history length={len(value)})")
+            logger.info(f"{column}: {value[-1]} (history length={len(value)})")
         else:
-            print(f"{column}: {value}")
-    print("---------------------")
+            logger.info(f"{column}: {value}")
     return market_data_df
 
 
 # 更新股票推薦清單
 def update_watch_list(market_data_df):
     # 顯示目前狀態
-    print(f"股市資料表大小: {market_data_df.shape}")
+    logger.info(f"股市資料表大小 {market_data_df.shape}")
 
     # 股票基本面篩選條件
     fundimental_mask = [
@@ -403,15 +407,15 @@ def broadcast_watch_list(current_date, watch_list_df):
     # 建構推播訊息
     if len(watch_list_df) == 0:
         final_recommendation_text = f"🔎 今日無 [推薦觀察] 股票\n"
-        print("今日無 [推薦觀察] 股票")
+        logger.info("今日無 [推薦觀察] 股票")
     else:
         final_recommendation_text = (
             f"🔎 [推薦觀察]  股票有 {len(watch_list_df)} 檔\n" + "\n###########\n\n"
         )
-        print(f"[推薦觀察] 股票有 {len(watch_list_df)} 檔")
+        logger.info(f"[推薦觀察] 股票有 {len(watch_list_df)} 檔")
         for i, v in watch_list_df.iterrows():
             final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
-            print(f"{i} {v['名稱']}  {v['產業別']}")
+            logger.info(f"{i} {v['名稱']}  {v['產業別']}")
     # 加上末尾分隔線
     final_recommendation_text += "\n###########\n\n"
     # 加上資料來源說明
