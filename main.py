@@ -14,7 +14,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextSendMessage
 
 from crawlers import other, tpex, twse
-from logging_config import logger
+from config import logger
 from strategies import chip_strategy, fundamental_strategy, technical_strategy
 from utils import helper
 
@@ -108,10 +108,11 @@ def update_and_broadcast():
         watch_list_df = update_watch_list(market_data_df)
         if watch_list_df.shape[0] == 0:
             logger.info("休市不進行更新與推播")
-        logger.info("推薦清單更新完成")
-        logger.info("開始進行好友推播")
-        broadcast_watch_list(current_date, watch_list_df)
-        logger.info("好友推播執行完成")
+        else:
+            logger.info("推薦清單更新完成")
+            logger.info("開始進行好友推播")
+            broadcast_watch_list(current_date, watch_list_df)
+            logger.info("好友推播執行完成")
 
 
 # 更新股票市場資訊
