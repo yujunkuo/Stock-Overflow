@@ -4,7 +4,7 @@ import time
 
 import pandas as pd
 import requests
-from ..config import logger
+from .. import config
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
@@ -54,7 +54,7 @@ def get_industry_category() -> pd.DataFrame:
             df = df.set_index("代號")
             return df
         except:
-            logger.warning(f"Attempt {get_industry_category.__name__} failed.")
+            config.logger.warning(f"Attempt {get_industry_category.__name__} failed.")
             time.sleep(3)
     return pd.DataFrame(columns=["代號", "名稱", "產業別", "股票類型"]).set_index(
         "代號"
@@ -109,7 +109,7 @@ def get_mom_yoy() -> pd.DataFrame:
             df = df.sort_index()
             return df
         except:
-            logger.warning(f"Attempt {get_mom_yoy.__name__} failed.")
+            config.logger.warning(f"Attempt {get_mom_yoy.__name__} failed.")
             time.sleep(3)
     return pd.DataFrame(
         columns=[
@@ -184,7 +184,7 @@ def get_technical_indicators(input_df: pd.DataFrame) -> pd.DataFrame:
     # test_data = _get_technical_indicators_from_stock_id("2330")
     # test_date = test_data["daily_k"][-1][0]
     # if test_date != datetime.date.today():
-    #     logger.warning("取得技術指標失敗，搜尋日期與今日日期不相符")
+    #     config.logger.warning("取得技術指標失敗，搜尋日期與今日日期不相符")
     #     return df
     current_finish_, total_ = 0, len(df.index)
     print_flag = False
@@ -195,7 +195,7 @@ def get_technical_indicators(input_df: pd.DataFrame) -> pd.DataFrame:
                 df.loc[[str(i)], each] = [technical_data[each]]
             current_finish_ += 1
             if print_flag or current_finish_ % 100 == 0:
-                logger.info(
+                config.logger.info(
                     f"Finish technical data: {current_finish_}/{total_}, index = {i}"
                 )
                 print_flag = False
@@ -205,7 +205,9 @@ def get_technical_indicators(input_df: pd.DataFrame) -> pd.DataFrame:
                 print_flag = True
     end_time_ = time.time()
     spent_time_ = end_time_ - start_time_
-    logger.info(f"取得技術指標花費時間: {datetime.timedelta(seconds=int(spent_time_))}")
+    config.logger.info(
+        f"取得技術指標花費時間: {datetime.timedelta(seconds=int(spent_time_))}"
+    )
     return df
 
 
@@ -266,7 +268,9 @@ def _get_technical_indicators_from_stock_id(stock_id: str) -> dict:
             }
         except:
             if "請休息一下再試試" in r.text:
-                logger.error("The web crawler has been blocked by the website...")
+                config.logger.error(
+                    "The web crawler has been blocked by the website..."
+                )
             continue
     return None
 

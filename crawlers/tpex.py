@@ -5,7 +5,7 @@ import pandas as pd
 import requests
 from bs4 import BeautifulSoup
 from io import StringIO
-from ..config import logger
+from .. import config
 
 import warnings
 
@@ -63,12 +63,12 @@ def get_tpex_final(date):
         df = df.set_index("代號")
         _end_time = time.time()
         _spent_time = _end_time - _start_time
-        logger.info(
+        config.logger.info(
             f"取得上櫃資料表花費時間: {datetime.timedelta(seconds=int(_spent_time))}"
         )
         return df
     except:
-        logger.error("無法取得上櫃資料表")
+        config.logger.error("無法取得上櫃資料表")
         return None
 
 
@@ -118,7 +118,7 @@ def _get_tpex_price(date) -> pd.DataFrame:
             df["股票類型"] = "tpex"
             return df
         except:
-            logger.warning(f"Attempt {_get_tpex_price.__name__} failed.")
+            config.logger.warning(f"Attempt {_get_tpex_price.__name__} failed.")
             time.sleep(3)
     return pd.DataFrame(
         columns=[
@@ -187,7 +187,7 @@ def _get_tpex_fundamental(date) -> pd.DataFrame:
             df["股票類型"] = "tpex"
             return df
         except:
-            logger.warning(f"Attempt {_get_tpex_fundamental.__name__} failed.")
+            config.logger.warning(f"Attempt {_get_tpex_fundamental.__name__} failed.")
             time.sleep(3)
     return pd.DataFrame(
         columns=[
@@ -297,7 +297,9 @@ def _get_tpex_margin_trading(date) -> pd.DataFrame:
             df["股票類型"] = "tpex"
             return df
         except:
-            logger.warning(f"Attempt {_get_tpex_margin_trading.__name__} failed.")
+            config.logger.warning(
+                f"Attempt {_get_tpex_margin_trading.__name__} failed."
+            )
             time.sleep(3)
     return pd.DataFrame(
         columns=[
@@ -391,7 +393,7 @@ def _get_tpex_institutional(date) -> pd.DataFrame:
             df["股票類型"] = "tpex"
             return df
         except:
-            logger.warning(f"Attempt {_get_tpex_institutional.__name__} failed.")
+            config.logger.warning(f"Attempt {_get_tpex_institutional.__name__} failed.")
             time.sleep(3)
     return pd.DataFrame(
         columns=[
@@ -472,6 +474,8 @@ def _get_tpex_hold_percentage(date) -> pd.DataFrame:
             df["股票類型"] = "tpex"
             return df
         except:
-            logger.warning(f"Attempt {_get_tpex_hold_percentage.__name__} failed.")
+            config.logger.warning(
+                f"Attempt {_get_tpex_hold_percentage.__name__} failed."
+            )
             time.sleep(3)
     return pd.DataFrame(columns=["代號", "名稱", "外資持股比率(%)", "股票類型"])
