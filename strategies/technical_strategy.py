@@ -1,9 +1,16 @@
+import sys
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, ".."))
+
+from config import logger
+
 import datetime
 import time
 
 import twstock
 
-from .. import config
 
 ## 技術面策略
 
@@ -461,10 +468,10 @@ def is_skyrocket(
             ):
                 short_term_flag = True
                 break
-        config.logger.info(
+        logger.info(
             f"{stock_id}: [long_term = {long_term_flag} / short_term = {short_term_flag} / data_length = {len(historical_data)}]"
         )
         return long_term_flag and short_term_flag
     except:
-        config.logger.warning(f"{stock_id}: [取得歷史資料失敗]")
+        logger.warning(f"{stock_id}: [取得歷史資料失敗]")
         return False

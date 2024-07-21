@@ -1,10 +1,17 @@
+import sys
+import os
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+sys.path.append(os.path.join(current_dir, ".."))
+
+from config import logger
+
 import datetime
 import time
 
 import pandas as pd
 import requests
 from io import StringIO
-from .. import config
 
 ## 取得證交所當日所有上市股票資料
 
@@ -58,12 +65,12 @@ def get_twse_final(date):
         df = df.set_index("代號")
         _end_time = time.time()
         _spent_time = _end_time - _start_time
-        config.logger.info(
+        logger.info(
             f"取得上市資料表花費時間: {datetime.timedelta(seconds=int(_spent_time))}"
         )
         return df
     except:
-        config.logger.error("無法取得上市資料表")
+        logger.error("無法取得上市資料表")
         return None
 
 
@@ -146,7 +153,7 @@ def _get_twse_price(date) -> pd.DataFrame:
             df["股票類型"] = "twse"
             return df
         except:
-            config.logger.warning(f"Attempt {_get_twse_price.__name__} failed.")
+            logger.warning(f"Attempt {_get_twse_price.__name__} failed.")
             time.sleep(3)
     return pd.DataFrame(
         columns=[
@@ -208,7 +215,7 @@ def _get_twse_fundamental(date) -> pd.DataFrame:
             df["股票類型"] = "twse"
             return df
         except:
-            config.logger.warning(f"Attempt {_get_twse_fundamental.__name__} failed.")
+            logger.warning(f"Attempt {_get_twse_fundamental.__name__} failed.")
             time.sleep(3)
     return pd.DataFrame(
         columns=[
@@ -305,9 +312,7 @@ def _get_twse_margin_trading(date) -> pd.DataFrame:
             df["股票類型"] = "twse"
             return df
         except:
-            config.logger.warning(
-                f"Attempt {_get_twse_margin_trading.__name__} failed."
-            )
+            logger.warning(f"Attempt {_get_twse_margin_trading.__name__} failed.")
             time.sleep(3)
     return pd.DataFrame(
         columns=[
@@ -399,7 +404,7 @@ def _get_twse_institutional(date) -> pd.DataFrame:
             df["股票類型"] = "twse"
             return df
         except:
-            config.logger.warning(f"Attempt {_get_twse_institutional.__name__} failed.")
+            logger.warning(f"Attempt {_get_twse_institutional.__name__} failed.")
             time.sleep(3)
     return pd.DataFrame(
         columns=[
@@ -465,8 +470,6 @@ def _get_twse_hold_percentage(date) -> pd.DataFrame:
             df["股票類型"] = "twse"
             return df
         except:
-            config.logger.warning(
-                f"Attempt {_get_twse_hold_percentage.__name__} failed."
-            )
+            logger.warning(f"Attempt {_get_twse_hold_percentage.__name__} failed.")
             time.sleep(3)
     return pd.DataFrame(columns=["代號", "名稱", "外資持股比率(%)", "股票類型"])
