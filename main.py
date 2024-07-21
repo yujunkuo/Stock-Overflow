@@ -100,15 +100,15 @@ def wakeup():
 def update_and_broadcast():
     current_date = datetime.date.today()
     logger.info(f"資料日期 {str(current_date)}")
-    if not helper.check_weekday():
+    if not helper.is_weekday():
         logger.info("假日不進行更新與推播")
     else:
-        logger.info("開始更新推薦清單")
         market_data_df = update_market_data(current_date)
-        watch_list_df = update_watch_list(market_data_df)
-        if watch_list_df.shape[0] == 0:
+        if market_data_df.shape[0] == 0:
             logger.info("休市不進行更新與推播")
         else:
+            logger.info("開始更新推薦清單")
+            watch_list_df = update_watch_list(market_data_df)
             logger.info("推薦清單更新完成")
             logger.info("開始進行好友推播")
             broadcast_watch_list(current_date, watch_list_df)

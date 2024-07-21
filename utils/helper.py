@@ -1,4 +1,4 @@
-import datetime
+from datetime import datetime
 from functools import reduce
 
 ## 工具函數
@@ -10,9 +10,9 @@ def df_mask_helper(df, mask_list):
 
 
 # 計算當前時間是否介於兩時間之間
-def check_time_between(begin_time, end_time):
+def is_time_between(begin_time, end_time):
     # 當前時間
-    check_time = datetime.datetime.now().time()
+    check_time = datetime.now().time()
     # 判斷區間
     if begin_time < end_time:
         return check_time >= begin_time and check_time < end_time
@@ -21,9 +21,9 @@ def check_time_between(begin_time, end_time):
 
 
 # 計算今天是否為工作日
-def check_weekday():
+def is_weekday():
     # 當前日期
-    check_date = datetime.datetime.now().date()
+    check_date = datetime.now().date()
     # 當前工作日計數 (Monday=0, Tuesday=1, ... ,Sunday=6)
     weekday_count = check_date.weekday()
     # 判斷是否為工作日

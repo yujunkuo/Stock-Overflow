@@ -3,6 +3,8 @@ import time
 
 import twstock
 
+from ..config import logger
+
 ## 技術面策略
 
 ##### 價量指標 #####
@@ -459,10 +461,10 @@ def is_skyrocket(
             ):
                 short_term_flag = True
                 break
-        print(
+        logger.info(
             f"{stock_id}: [long_term = {long_term_flag} / short_term = {short_term_flag} / data_length = {len(historical_data)}]"
         )
         return long_term_flag and short_term_flag
     except:
-        print(f"{stock_id}: [取得歷史資料失敗]")
+        logger.warning(f"{stock_id}: [取得歷史資料失敗]")
         return False
