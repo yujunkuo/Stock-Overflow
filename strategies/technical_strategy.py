@@ -33,21 +33,7 @@ def _today_price_is_max_check_row(row, price_type, days) -> bool:
         return False
 
 
-# 2. (Public) 今天成交量不能為 N 天中最低
-def today_volume_is_not_min_check_df(df, days=3):
-    return df.apply(_today_volume_is_not_min_check_row, days=days, axis=1)
-
-
-def _today_volume_is_not_min_check_row(row, days) -> bool:
-    try:
-        last_n_days_data = row["volume"][-1 : (-1 - days) : -1]
-        last_n_days_volume = [each[1] for each in last_n_days_data]
-        return last_n_days_volume[0] != min(last_n_days_volume)
-    except:
-        return False
-
-
-# 3. (Public) 近 N 天成交量皆大於等於 X 「張」
+# 2. (Public) 近 N 天成交量皆大於等於 X 「張」
 def volume_greater_check_df(df, shares_threshold=500, days=1):
     return df.apply(
         _volume_greater_check_row, shares_threshold=shares_threshold, days=days, axis=1
@@ -69,7 +55,7 @@ def _volume_greater_check_row(row, shares_threshold, days) -> bool:
         return False
 
 
-# 4. (Public) 今天某類型價格不是 N 天中最低 (price_type=開盤/最高/最低／收盤)
+# 3. (Public) 今天某類型價格不是 N 天中最低 (price_type=開盤/最高/最低／收盤)
 def today_price_is_not_min_check_df(df, price_type="收盤", days=3):
     return df.apply(
         _today_price_is_not_min_check_row, price_type=price_type, days=days, axis=1
@@ -85,7 +71,7 @@ def _today_price_is_not_min_check_row(row, price_type, days) -> bool:
         return False
 
 
-# 5. (Public) 今天某類型價格或技術指標不是 N 天中最高 (price_type=開盤/最高/最低／收盤 or 技術指標)
+# 4. (Public) 今天某類型價格或技術指標不是 N 天中最高 (price_type=開盤/最高/最低／收盤 or 技術指標)
 def today_price_is_not_max_check_df(df, price_type="收盤", days=3):
     return df.apply(
         _today_price_is_not_max_check_row, price_type=price_type, days=days, axis=1
@@ -108,7 +94,7 @@ def _today_price_is_not_max_check_row(row, price_type, days) -> bool:
 ##### 技術指標 #####
 
 
-# 6. (Public) 今天的 X 指標「大於或小於」(k * 今天的 Y 指標) (ex. MA1 > MA5 or K9 > D9) 並持續至少 N 天
+# 5. (Public) 今天的 X 指標「大於或小於」(k * 今天的 Y 指標) (ex. MA1 > MA5 or K9 > D9) 並持續至少 N 天
 #  (indicator = 'k9', 'd9', 'dif', 'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume', '開盤', '收盤', '最高', '最低')
 def technical_indicator_greater_or_less_one_day_check_df(
     df, indicator_1="收盤", indicator_2="mean5", direction="more", threshold=1, days=1
@@ -158,7 +144,7 @@ def _technical_indicator_greater_or_less_one_day_check_row(
         return False
 
 
-# 7. (Public) 今天的 X 指標與今天的 Y 指標差距小於 Z (ex. |D9-K9| < 10) 並持續至少 N 天
+# 6. (Public) 今天的 X 指標與今天的 Y 指標差距小於 Z (ex. |D9-K9| < 10) 並持續至少 N 天
 #  (indicator = 'k9', 'd9', 'dif', 'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume', '開盤', '收盤', '最高', '最低')
 def technical_indicator_difference_one_day_check_df(
     df, indicator_1="k9", indicator_2="d9", difference_threshold=10, days=1
@@ -201,7 +187,7 @@ def _technical_indicator_difference_one_day_check_row(
         return False
 
 
-# 8. (Public) 今天的 X 指標「大於或小於」(k * 昨天的 Y 指標) (ex. K9 > K9 or OSC > OSC or 今收 < 1.08昨收) 並持續至少 N 天
+# 7. (Public) 今天的 X 指標「大於或小於」(k * 昨天的 Y 指標) (ex. K9 > K9 or OSC > OSC or 今收 < 1.08昨收) 並持續至少 N 天
 #  (indicator = 'k9', 'd9', 'dif', 'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume', '開盤', '收盤', '最高', '最低')
 def technical_indicator_greater_or_less_two_day_check_df(
     df, indicator_1="k9", indicator_2="k9", direction="more", threshold=1, days=1
@@ -253,7 +239,7 @@ def _technical_indicator_greater_or_less_two_day_check_row(
         return False
 
 
-# **. (Public) (今天的 X 指標 - 今天的 Y 指標)「大於或小於」(k * 昨天的 Z 指標) (ex. (今高-今收) < (0.035*昨收)) 並持續至少 N 天
+# 8. (Public) (今天的 X 指標 - 今天的 Y 指標)「大於或小於」(k * 昨天的 Z 指標) (ex. (今高-今收) < (0.035*昨收)) 並持續至少 N 天
 #  (indicator = 'k9', 'd9', 'dif', 'macd', 'osc', 'mean5', 'mean10', 'mean20', 'mean60', 'volume', '開盤', '收盤', '最高', '最低')
 def technical_indicator_difference_two_day_check_df(
     df,

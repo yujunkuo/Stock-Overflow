@@ -166,8 +166,6 @@ def update_watch_list(market_data_df):
 
     # 股票基本面篩選條件
     fundimental_mask = [
-        ## (不改的條件 @ 20220723) 不用看基本面，基本面差的個股一樣會飆
-        ## 不用看 MOM
         # # 月營收年增率 > 20%
         # market_data_df["(月)營收年增率(%)"] > 20,
         # # 累積營收年增率 > 10%
@@ -176,11 +174,10 @@ def update_watch_list(market_data_df):
 
     # 股票技術面篩選條件
     technical_mask = [
-        # (新條件 @ 20230312) 收盤價必須高於 30 (不碰低價股)
+        # 收盤價 > 30
         technical_strategy.technical_indicator_constant_check_df(
             market_data_df, indicator="收盤", direction="more", threshold=30, days=1
         ),
-        ## (不改的條件 @ 20220603) 收盤價站上 5, 10, 20, 60 均線
         # MA1 > MA5
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
@@ -217,7 +214,7 @@ def update_watch_list(market_data_df):
             threshold=1,
             days=1,
         ),
-        ## (不改的條件 @ 20220723) 今天收紅 K & 實體 K 棒漲幅大於 1% (收盤價 > 1.01 * 開盤價)
+        # 收盤價 > 1.01 * 開盤價 (今天收紅 K & 實體 K 棒漲幅大於 1%)
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
             indicator_1="收盤",
@@ -226,12 +223,12 @@ def update_watch_list(market_data_df):
             threshold=1.01,
             days=1,
         ),
-        ## (不改的條件 @ 20220723) K 棒底底高
+        # # K 棒底底高
         # (technical_strategy.technical_indicator_greater_or_less_two_day_check_df(market_data_df, indicator_1="開盤", indicator_2="開盤", direction="more", threshold=1, days=1) |\
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(market_data_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1)),
-        ## (不改的條件 @ 20220723) 今天開盤價 > 昨天收盤價 (開高表示主力表態拉抬)
+        # # 今天開盤價 > 昨天收盤價
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(market_data_df, indicator_1="開盤", indicator_2="收盤", direction="more", threshold=1, days=1),
-        ## (不改的條件 @ 20220723) 今天收盤 > 昨天最高（頭頭高）
+        # 今天收盤 > 昨天最高
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(
             market_data_df,
             indicator_1="收盤",
@@ -240,7 +237,7 @@ def update_watch_list(market_data_df):
             threshold=1,
             days=1,
         ),
-        ## (不改的條件 @ 20220724) 今天 K9 > 昨天 K9
+        # 今天 K9 > 昨天 K9
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(
             market_data_df,
             indicator_1="k9",
@@ -251,7 +248,7 @@ def update_watch_list(market_data_df):
         ),
         # # 今天 OSC > 昨天 OSC
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(market_data_df, indicator_1="osc", indicator_2="osc", direction="more", threshold=1, days=1),
-        ## |今天D9 - 今天K9| < 22
+        # |D9 - K9| < 22
         technical_strategy.technical_indicator_difference_one_day_check_df(
             market_data_df,
             indicator_1="k9",
@@ -259,18 +256,18 @@ def update_watch_list(market_data_df):
             difference_threshold=22,
             days=1,
         ),
-        ## 今天的 K9 要介於 49 ~ 87 之間
+        # # K9 between 49 ~ 87
         # technical_strategy.technical_indicator_constant_check_df(market_data_df, indicator="k9", direction="more", threshold=49, days=1),
         # technical_strategy.technical_indicator_constant_check_df(market_data_df, indicator="k9", direction="less", threshold=87, days=1),
-        # 今天的 J9 要小於 100
+        # J9 < 100
         technical_strategy.technical_indicator_constant_check_df(
             market_data_df, indicator="j9", direction="less", threshold=100, days=1
         ),
-        ## (今天 k9-d9) 大於等於 (昨天 k9-d9)
+        # # (今天 k9-d9) >= (昨天 k9-d9)
         # technical_strategy.technical_indicator_difference_greater_two_day_check_df(market_data_df, indicator_1="k9", indicator_2="d9", days=1),
-        # # 5 日線趨勢向上 (MA5 趨勢向上)
+        # # MA5 趨勢向上
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(market_data_df, indicator_1="mean5", indicator_2="mean5", direction="more", threshold=1, days=1),
-        ## (不改的條件 @ 20220724) 今天收盤 > 1.03 * 昨天收盤 (只抓今日漲幅 3% 以上的股票)
+        # 今天收盤 > 1.03 * 昨天收盤 (漲幅 3% 以上)
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(
             market_data_df,
             indicator_1="收盤",
@@ -279,7 +276,7 @@ def update_watch_list(market_data_df):
             threshold=1.03,
             days=1,
         ),
-        ## (不改的條件 @ 20220724) 不能連續兩天漲幅超過 5%
+        # 不能連續兩天漲幅都超過 5%
         ~technical_strategy.technical_indicator_greater_or_less_two_day_check_df(
             market_data_df,
             indicator_1="收盤",
@@ -288,13 +285,13 @@ def update_watch_list(market_data_df):
             threshold=1.05,
             days=2,
         ),
-        # ## 今天收盤 < 1.1 * Mean5 or Mean10 or Mean20 (不抓取乖離過大的股票)
+        # # 今天收盤 < 1.1 * Mean5 or Mean10 or Mean20 (均線乖離不能過大)
         # technical_strategy.technical_indicator_greater_or_less_one_day_check_df(market_data_df, indicator_1="收盤", indicator_2="mean5", direction="less", threshold=1.1, days=1) |\
         # technical_strategy.technical_indicator_greater_or_less_one_day_check_df(market_data_df, indicator_1="收盤", indicator_2="mean10", direction="less", threshold=1.1, days=1) |\
         # technical_strategy.technical_indicator_greater_or_less_one_day_check_df(market_data_df, indicator_1="收盤", indicator_2="mean20", direction="less", threshold=1.1, days=1),
-        ## 今天最高價不是一年內的最高 (不追高) -> 今天最高價不是四個月內的最高 (只抓得到四個月)
+        # # 今天最高價不是四個月內最高 (只抓得到四個月的資料)
         # technical_strategy.today_price_is_not_max_check_df(market_data_df, price_type="最高", days=80),
-        ## (不改的條件 @ 20220822) 上影線長度不能超過昨天收盤價的 2.2% (0.022) / 0% (0.000001) 以上
+        # 上影線長度不能超過昨天收盤價的 2.2% (0.022) / 0% (0.000001) 以上
         technical_strategy.technical_indicator_difference_two_day_check_df(
             market_data_df,
             indicator_1="最高",
@@ -304,9 +301,9 @@ def update_watch_list(market_data_df):
             indicator_3="收盤",
             days=1,
         ),
-        # # OSC 必須要大於0 (經驗顯示 OSC 大於 0 後勢出現強勁漲幅的機會較高)
+        # # OSC > 0 (出現強勁漲幅的機會較高)
         # technical_strategy.technical_indicator_constant_check_df(market_data_df, indicator="osc", direction="more", threshold=0, days=1),
-        # DIF 要大於 0
+        # # DIF > 0
         # technical_strategy.technical_indicator_constant_check_df(market_data_df, indicator="dif", direction="more", threshold=0, days=1),
         # [(DIF / 收盤價) < 0.03] 或 [DIF 不是四個月內的最高]
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(
@@ -324,13 +321,11 @@ def update_watch_list(market_data_df):
 
     # 股票籌碼面篩選條件
     chip_mask = [
-        ## (不改的條件 @ 20220723) 今天成交量 > 2000 張
+        # 成交量 > 2000 張
         technical_strategy.volume_greater_check_df(
             market_data_df, shares_threshold=2000, days=1
         ),
-        ## 今天成交量不能是 2 天內最低量 (今天成交量要比昨天高)
-        # technical_strategy.today_volume_is_not_min_check_df(market_data_df, days=2),
-        ## (不改的條件 @ 20220603) 今天成交量要大於昨天成交量
+        # 今天成交量 > 昨天成交量
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(
             market_data_df,
             indicator_1="volume",
@@ -339,7 +334,7 @@ def update_watch_list(market_data_df):
             threshold=1,
             days=1,
         ),
-        ## (不改的條件 @ 20220603) 今量 > 5日均量
+        # 今天成交量 > 5日均量
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
             indicator_1="volume",
@@ -350,7 +345,7 @@ def update_watch_list(market_data_df):
         ),
         # # 5日均量 > 20日均量
         # technical_strategy.technical_indicator_greater_or_less_one_day_check_df(market_data_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", direction="more", threshold=1, days=1),
-        # 5日均量 > 1000
+        # 5日均量 > 1000 張
         technical_strategy.technical_indicator_constant_check_df(
             market_data_df,
             indicator="mean_5_volume",
@@ -358,7 +353,7 @@ def update_watch_list(market_data_df):
             threshold=1000,
             days=1,
         ),
-        # 20日均量 > 1000
+        # 20日均量 > 1000 張
         technical_strategy.technical_indicator_constant_check_df(
             market_data_df,
             indicator="mean_20_volume",
@@ -366,7 +361,7 @@ def update_watch_list(market_data_df):
             threshold=1000,
             days=1,
         ),
-        ## 「今天的5日均量」要大於「昨天的5日均量」
+        # 「今天的5日均量」要大於「昨天的5日均量」
         technical_strategy.technical_indicator_greater_or_less_two_day_check_df(
             market_data_df,
             indicator_1="mean_5_volume",
@@ -375,17 +370,17 @@ def update_watch_list(market_data_df):
             threshold=1,
             days=1,
         ),
-        # 單一法人至少買超成交量的 10%
+        # # 單一法人至少買超成交量的 10%
         # chip_strategy.single_institutional_buy_check_df(market_data_df, single_volume_threshold=10),
-        # 三大法人合計買超至少超過成交量的 1%
+        # # 法人合計至少買超成交量的 1%
         # chip_strategy.total_institutional_buy_check_df(market_data_df, total_volume_threshold=1),
-        # 外資買超至少超過 -1 股 (大於等於 0) (200 張 -> threshold=2e5)
+        # 外資買超 >= 0 股 (200 張 -> threshold=2e5)
         chip_strategy.foreign_buy_positive_check_df(market_data_df, threshold=-1),
-        # # 投信買超至少超過 50 張
+        # # 投信買超 > 50,000 股
         # chip_strategy.investment_buy_positive_check_df(market_data_df, threshold=5e4),
-        ## (不改的條件 @ 20220723) 自定義法人買超張數篩選 (法人買賣常常跟起漲點相反)
+        # # 自定義法人買超篩選
         # chip_strategy.buy_positive_check_df(market_data_df),
-        ## (不改的條件 @ 20220723) 三大法人合計買超為正值 (法人買賣常常跟起漲點相反)
+        # # 法人合計買超 > 0 股
         # chip_strategy.total_institutional_buy_positive_check_df(market_data_df, threshold=0),
     ]
 
