@@ -187,28 +187,28 @@ def update_watch_list(market_data_df):
             threshold=1,
             days=1,
         ),
-        # MA1 > MA10
+        # MA5 > MA10
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
-            indicator_1="收盤",
+            indicator_1="mean5",
             indicator_2="mean10",
             direction="more",
             threshold=1,
             days=1,
         ),
-        # MA1 > MA20
+        # MA10 > MA20
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
-            indicator_1="收盤",
+            indicator_1="mean10",
             indicator_2="mean20",
             direction="more",
             threshold=1,
             days=1,
         ),
-        # MA1 > MA60
+        # MA20 > MA60
         technical_strategy.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
-            indicator_1="收盤",
+            indicator_1="mean20",
             indicator_2="mean60",
             direction="more",
             threshold=1,
