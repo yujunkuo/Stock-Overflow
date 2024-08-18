@@ -312,13 +312,13 @@ def update_watch_list(market_data_df):
         # # 今天最高價不是四個月內最高 (只抓得到四個月的資料)
         # technical_strategy.today_price_is_not_max_check_df(market_data_df, price_type="最高", days=80),
         
-        # 上影線長度不能超過昨天收盤價的 2.2% (0.022) / 0% (0.000001) 以上
+        # 上影線長度不能超過昨天收盤價的 3% (0.03) / 0% (0.000001) 以上
         technical_strategy.technical_indicator_difference_two_day_check_df(
             market_data_df,
             indicator_1="最高",
             indicator_2="收盤",
             direction="less",
-            threshold=0.022,
+            threshold=0.03,
             indicator_3="收盤",
             days=1,
         ),
