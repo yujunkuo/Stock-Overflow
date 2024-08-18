@@ -175,9 +175,9 @@ def update_watch_list(market_data_df):
 
     # 股票技術面篩選條件
     technical_mask = [
-        # 收盤價 > 30
+        # 收盤價 > 20
         technical_strategy.technical_indicator_constant_check_df(
-            market_data_df, indicator="收盤", direction="more", threshold=30, days=1
+            market_data_df, indicator="收盤", direction="more", threshold=20, days=1
         ),
         
         # MA1 > MA5
