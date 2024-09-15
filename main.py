@@ -250,6 +250,14 @@ def update_watch_list(market_data_df):
             threshold=1,
             days=1,
         ),
+        # 今天 D9 < 90
+        technical_strategy.technical_indicator_constant_check_df(
+            market_data_df, 
+            indicator="d9", 
+            direction="less", 
+            threshold=90, 
+            days=1
+        ),
         # # 今天 OSC > 昨天 OSC
         # technical_strategy.technical_indicator_greater_or_less_two_day_check_df(market_data_df, indicator_1="osc", indicator_2="osc", direction="more", threshold=1, days=1),
         # |D9 - K9| < 22
