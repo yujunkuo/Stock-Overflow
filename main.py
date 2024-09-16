@@ -7,13 +7,15 @@ import threading
 
 import pandas as pd
 import psutil
+from crawlers.tpex import tpex
+from crawlers.twse import twse
 from dotenv import load_dotenv
 from flask import Flask, Response, abort, request
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextSendMessage
 
-from crawlers import other, tpex, twse
+from crawlers import other
 from config import logger
 from strategies import chip_strategy, fundamental_strategy, technical_strategy
 from utils import helper
@@ -47,6 +49,10 @@ api_access_token = os.getenv("API_ACCESS_TOKEN")
 
 ####################################################
 
+# TODO: URL Routing path optimization: /, /test, /wakeup, /update
+# TODO: Update README.md
+# TODO: Server avaliability optimization
+# TODO: Unit test
 
 # 接收 LINE 資訊（固定寫法）
 @app.route("/callback", methods=["POST"])
