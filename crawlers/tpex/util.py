@@ -73,7 +73,7 @@ def clean_tpex_data(data_type, df):
     df.columns = [column.strip() for column in df.columns]
     # Unify the column names of the stock code
     df = df.rename(columns=COLUMN_RENAME_SETTING)
-    # Update the data type and remove leading and trailing spaces from the values
+    # Update the data type and remove leading and trailing spaces
     df["名稱"] = df["名稱"].astype(str).str.strip()
     df["代號"] = df["代號"].astype(str).str.strip()
     # Filter out the rows with invalid stock codes
