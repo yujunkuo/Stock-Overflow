@@ -5,7 +5,6 @@ from model.data_type import DataType
 from config import COLUMN_RENAME_SETTING, COLUMN_KEEP_SETTING
 
 # TODO: Stock calculate number unit: 1000 or 1?
-# TODO: TWSE encoding
 # TODO: When to fillna?
 
 REQUEST_SETTING = {

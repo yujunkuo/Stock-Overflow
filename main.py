@@ -7,19 +7,24 @@ import threading
 
 import pandas as pd
 import psutil
-from crawlers.tpex import tpex
-from crawlers.twse import twse
+
 from dotenv import load_dotenv
 from flask import Flask, Response, abort, request
 from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextSendMessage
 
-from crawlers.other import other
 from config import logger
 from strategies import chip_strategy, fundamental_strategy, technical_strategy
 from utils import helper
 
+from crawlers import (
+    get_twse_final,
+    get_tpex_final,
+    get_industry_category,
+    get_mom_yoy,
+    get_technical_indicators
+)
 
 #################### 全域變數設定 ####################
 
@@ -124,16 +129,16 @@ def update_and_broadcast():
 # 更新股票市場資訊
 def update_market_data(date) -> pd.DataFrame:
     # 取得上市資料表
-    twse_df = twse.get_twse_final(date)
+    twse_df = get_twse_final(date)
     # 取得上櫃資料表
-    tpex_df = tpex.get_tpex_final(date)
+    tpex_df = get_tpex_final(date)
     # 兩張表接起來
     market_data_df = pd.concat([twse_df, tpex_df])
     # 若今日休市則不進行後續更新與推播
     if market_data_df.shape[0] == 0:
         return market_data_df
     # 取得產業別
-    industry_category_df = other.get_industry_category()
+    industry_category_df = get_industry_category()
     # 合併資料表
     market_data_df = pd.merge(
         industry_category_df,
@@ -142,14 +147,14 @@ def update_market_data(date) -> pd.DataFrame:
         on=["代號", "名稱", "股票類型"],
     )
     # 補上 MoM 與 YoY
-    mom_yoy_df = other.get_mom_yoy()
+    mom_yoy_df = get_mom_yoy()
     market_data_df = pd.merge(
         market_data_df, mom_yoy_df, how="left", on=["代號", "名稱"]
     )
     # 先移除重複的股票
     market_data_df = market_data_df[~market_data_df.index.duplicated(keep="first")]
     # 補上技術指標
-    market_data_df = other.get_technical_indicators(market_data_df)
+    market_data_df = get_technical_indicators(market_data_df)
     # 再次移除重複的股票
     market_data_df = market_data_df[~market_data_df.index.duplicated(keep="first")]
     # 重新按股票代碼排序
