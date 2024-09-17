@@ -10,21 +10,33 @@ from config import COLUMN_RENAME_SETTING, COLUMN_KEEP_SETTING
 REQUEST_SETTING = {
     DataType.PRICE: {
         "url": "https://www.tpex.org.tw/web/stock/aftertrading/otc_quotes_no1430/stk_wn1430_result.php?l=zh-tw&o=csv&charset=UTF-8&d={date_str}&se=AL",
+        "headers": {
+            "Host": "www.tpex.org.tw",
+        },
         "encoding": "utf-8",
         "header_num": 3,
     },
     DataType.FUNDAMENTAL: {
         "url": "https://www.tpex.org.tw/web/stock/aftertrading/peratio_analysis/pera_result.php?l=zh-tw&o=csv&charset=UTF-8&d={date_str}",
+        "headers": {
+            "Host": "www.tpex.org.tw",
+        },
         "encoding": "utf-8",
         "header_num": 3,
     },  
     DataType.MARGIN_TRADING: {
         "url": "https://www.tpex.org.tw/web/stock/margin_trading/margin_balance/margin_bal_result.php?l=zh-tw&o=csv&charset=UTF-8&d={date_str}",
+        "headers": {
+            "Host": "www.tpex.org.tw",
+        },
         "encoding": "utf-8",
         "header_num": 2,
     },
     DataType.INSTITUTIONAL: {
         "url": "https://www.tpex.org.tw/web/stock/3insti/daily_trade/3itrade_hedge_result.php?l=zh-tw&o=csv&d={date_str}&t=D",
+        "headers": {
+            "Host": "www.tpex.org.tw",
+        },
         "encoding": "big5",
         "header_num": 1,
     },
@@ -36,7 +48,7 @@ def get_tpex_data(data_type, data_date):
     year, month, day = data_date.year - 1911, data_date.month, data_date.day
     date_str = f"{year}/{month:02}/{day:02}"
     url = setting["url"].format(date_str=date_str)
-    response = requests.get(url)
+    response = requests.get(url, headers=setting["headers"])
     response.encoding = setting["encoding"]
     header_num = setting["header_num"]
     df = pd.read_csv(StringIO(response.text), header=header_num)
