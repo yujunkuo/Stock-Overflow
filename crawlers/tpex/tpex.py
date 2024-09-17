@@ -41,13 +41,13 @@ def get_tpex_final(date):
 # Get the price data of TPEX
 def _get_tpex_price(date) -> pd.DataFrame:
     for _ in range(MAX_REQUEST_RETRIES):
-        try:
+        # try:
             price_raw_data = get_tpex_data(DataType.PRICE, date)
             price_df = clean_tpex_data(DataType.PRICE, price_raw_data)
             return price_df
-        except:
-            logger.warning(f"Attempt {_get_tpex_price.__name__} failed.")
-            time.sleep(3)
+        # except:
+        #     logger.warning(f"Attempt {_get_tpex_price.__name__} failed.")
+        #     time.sleep(3)
     return pd.DataFrame(columns=COLUMN_KEEP_SETTING[DataType.PRICE])
 
 
