@@ -1,4 +1,5 @@
 import requests
+import cloudscraper
 import pandas as pd
 from io import StringIO
 from model.data_type import DataType
@@ -48,8 +49,8 @@ def get_tpex_data(data_type, data_date):
     year, month, day = data_date.year - 1911, data_date.month, data_date.day
     date_str = f"{year}/{month:02}/{day:02}"
     url = setting["url"].format(date_str=date_str)
-    session = requests.Session()
-    response = session.get(url, headers=setting["headers"], timeout=10)
+    scraper = cloudscraper.create_scraper()
+    response = scraper.get(url, headers=setting["headers"])
     print(response)
     response.encoding = setting["encoding"]
     header_num = setting["header_num"]

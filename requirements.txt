@@ -11,6 +11,7 @@ bs4==0.0.2
 certifi==2023.11.17
 charset-normalizer==3.3.2
 click==8.1.7
+cloudscraper==1.2.71
 Deprecated==1.2.14
 fake-useragent==1.4.0
 Flask==3.0.1
