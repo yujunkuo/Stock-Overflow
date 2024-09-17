@@ -15,7 +15,7 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextSendMessage
 
-from crawlers import other
+from crawlers.other import other
 from config import logger
 from strategies import chip_strategy, fundamental_strategy, technical_strategy
 from utils import helper

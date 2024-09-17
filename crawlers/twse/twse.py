@@ -10,9 +10,9 @@ import datetime
 import warnings
 import pandas as pd
 
-from config import logger
+from config import logger, COLUMN_KEEP_SETTING
 from model.data_type import DataType
-from .util import get_twse_data, clean_twse_data, COLUMN_KEEP_SETTING
+from .util import get_twse_data, clean_twse_data
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 

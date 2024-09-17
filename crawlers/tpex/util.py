@@ -2,6 +2,7 @@ import requests
 import pandas as pd
 from io import StringIO
 from model.data_type import DataType
+from config import COLUMN_RENAME_SETTING, COLUMN_KEEP_SETTING
 
 # TODO: Stock calculate number unit: 1000 or 1?
 
@@ -24,35 +25,9 @@ REQUEST_SETTING = {
     },
     DataType.INSTITUTIONAL: {
         "url": "https://www.tpex.org.tw/web/stock/3insti/daily_trade/3itrade_hedge_result.php?l=zh-tw&o=csv&d={date_str}&t=D",
-        "encoding": "big-5",
+        "encoding": "big5",
         "header_num": 1,
     },
-}
-
-
-COLUMN_RENAME_SETTING = {
-    "股票代號": "代號",
-    "資買": "融資買進",
-    "資賣": "融資賣出",
-    "前資餘額(張)": "融資前日餘額",
-    "資餘額": "融資今日餘額",
-    "券買": "融券買進",
-    "券賣": "融券賣出",
-    "前券餘額(張)": "融券前日餘額",
-    "券餘額": "融券今日餘額",
-    "資券相抵(張)": "資券互抵",
-    "外資及陸資(不含外資自營商)-買賣超股數": "外資買賣超股數",
-    "投信-買賣超股數": "投信買賣超股數",
-    "自營商-買賣超股數": "自營商買賣超股數",
-    "三大法人買賣超股數合計": "三大法人買賣超股數",
-}
-
-
-COLUMN_KEEP_SETTING = {
-    DataType.PRICE: ["代號", "名稱", "收盤", "漲跌", "開盤", "最高", "最低", "成交股數", "股票類型"],
-    DataType.FUNDAMENTAL: ["代號", "名稱", "本益比", "股利年度", "殖利率(%)", "股價淨值比", "股票類型"],
-    DataType.MARGIN_TRADING: ["代號", "名稱", "融資買進", "融資賣出", "融資前日餘額", "融資今日餘額", "融券買進", "融券賣出", "融券前日餘額", "融券今日餘額", "資券互抵", "融資變化量", "融券變化量", "券資比(%)", "股票類型"],
-    DataType.INSTITUTIONAL: ["代號", "名稱", "外資買賣超股數", "投信買賣超股數", "自營商買賣超股數", "三大法人買賣超股數", "股票類型"],
 }
 
 
@@ -88,9 +63,9 @@ def clean_tpex_data(data_type, df):
     )
     # Add additional columns
     if data_type == DataType.MARGIN_TRADING:
-        df["融資變化量"] = df["融資今日餘額"] - df["融資前日餘額"]
-        df["融券變化量"] = df["融券今日餘額"] - df["融券前日餘額"]
-        df["券資比(%)"] = round((df["融券今日餘額"] / df["融資今日餘額"]) * 100, 2)
+        df["融資變化量"] = df["融資買進"] - df["融資賣出"] - df["現金償還"]
+        df["融券變化量"] = df["融券賣出"] - df["融券買進"] - df["現券償還"]
+        df["券資比(%)"] = round((df["融券餘額"] / df["融資餘額"]) * 100, 2).fillna(0)
     # Add the stock type column
     df["股票類型"] = "tpex"
     # Only keep the columns needed
