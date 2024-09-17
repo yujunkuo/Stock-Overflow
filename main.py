@@ -58,6 +58,7 @@ api_access_token = os.getenv("API_ACCESS_TOKEN")
 # TODO: Update README.md
 # TODO: Server avaliability optimization
 # TODO: Unit test
+# TODO: Use target_date to replace now or today
 
 # 接收 LINE 資訊（固定寫法）
 @app.route("/callback", methods=["POST"])
@@ -102,19 +103,39 @@ def wakeup():
         update_and_broadcast_thread = threading.Thread(target=update_and_broadcast)
         update_and_broadcast_thread.start()
         return Response(status=200)
+    
+    
+# 功能測試
+@app.route("/test", methods=["GET"])
+def test():
+    # 檢查 request 是否有提供 'API-Access-Token' header
+    if "API-Access-Token" not in request.headers:
+        return Response("Missing API-Access-Token", status=401)
+    # 驗證提供的 token 是否正確
+    elif request.headers["API-Access-Token"] != api_access_token:
+        return Response("Invalid API-Access-Token", status=401)
+    else:
+        logger.info("開始進行測試")
+        # 指派更新與推播
+        target_date_str = request.headers["Target-Date"]  # with format "YYYY-MM-DD"
+        target_date = datetime.datetime.strptime(target_date_str, "%Y-%m-%d").date()
+        update_and_broadcast_thread = threading.Thread(target=update_and_broadcast, args=(target_date, False))
+        update_and_broadcast_thread.start()
+        return Response(status=200)
 
 
 ####################################################
 
 
-# 更新與推播當日推薦清單
-def update_and_broadcast():
-    current_date = datetime.date.today()
-    logger.info(f"資料日期 {str(current_date)}")
-    if not helper.is_weekday():
+# 更新與推播推薦清單
+def update_and_broadcast(target_date=None, need_broadcast=True):
+    if not target_date:
+        target_date = datetime.date.today()
+    logger.info(f"資料日期 {str(target_date)}")
+    if not helper.is_weekday(target_date):
         logger.info("假日不進行更新與推播")
     else:
-        market_data_df = update_market_data(current_date)
+        market_data_df = update_market_data(target_date)
         if market_data_df.shape[0] == 0:
             logger.info("休市不進行更新與推播")
         else:
@@ -122,16 +143,16 @@ def update_and_broadcast():
             watch_list_df = update_watch_list(market_data_df)
             logger.info("推薦清單更新完成")
             logger.info("開始進行好友推播")
-            broadcast_watch_list(current_date, watch_list_df)
+            broadcast_watch_list(target_date, watch_list_df, need_broadcast)
             logger.info("好友推播執行完成")
 
 
 # 更新股票市場資訊
-def update_market_data(date) -> pd.DataFrame:
+def update_market_data(target_date) -> pd.DataFrame:
     # 取得上市資料表
-    twse_df = get_twse_final(date)
+    twse_df = get_twse_final(target_date)
     # 取得上櫃資料表
-    tpex_df = get_tpex_final(date)
+    tpex_df = get_tpex_final(target_date)
     # 兩張表接起來
     market_data_df = pd.concat([twse_df, tpex_df])
     # 若今日休市則不進行後續更新與推播
@@ -421,7 +442,7 @@ def update_watch_list(market_data_df):
 
 
 # 推播股票推薦清單
-def broadcast_watch_list(current_date, watch_list_df):
+def broadcast_watch_list(target_date, watch_list_df, need_broadcast=True):
     # 建構推播訊息
     if len(watch_list_df) == 0:
         final_recommendation_text = f"🔎 今日無 [推薦觀察] 股票\n"
@@ -437,11 +458,14 @@ def broadcast_watch_list(current_date, watch_list_df):
     # 加上末尾分隔線
     final_recommendation_text += "\n###########\n\n"
     # 加上資料來源說明
-    final_recommendation_text += f"資料來源: 台股 {str(current_date)}"
+    final_recommendation_text += f"資料來源: 台股 {str(target_date)}"
     # 加上版權聲明
     final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
     # 透過 LINE API 進行推播
-    line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
+    if need_broadcast:
+        line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
+    else:
+        logger.debug(final_recommendation_text)
 
 
 ####################################################
