@@ -48,7 +48,7 @@ def get_tpex_data(data_type, data_date):
     year, month, day = data_date.year - 1911, data_date.month, data_date.day
     date_str = f"{year}/{month:02}/{day:02}"
     url = setting["url"].format(date_str=date_str)
-    response = requests.get(url, headers=setting["headers"])
+    response = requests.get(url, headers=setting["headers"], allow_redirects=False, timeout=10)
     response.encoding = setting["encoding"]
     header_num = setting["header_num"]
     df = pd.read_csv(StringIO(response.text), header=header_num)
