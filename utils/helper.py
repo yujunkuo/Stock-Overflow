@@ -1,14 +1,17 @@
 from datetime import datetime
 from functools import reduce
 
-## 工具函數
+# Convert timestamp in milliseconds to date
+def convert_milliseconds_to_date(timestamp_ms: int):
+    return datetime.fromtimestamp(timestamp_ms / 1000).date()
 
-# (Public) 從 df 中透過多個條件 mask_list 取交集來過濾
+
+# Filter dataframe with multiple conditions in mask_list
 def df_mask_helper(df, mask_list):
     return df[reduce(lambda x, y: (x & y), mask_list)]
 
 
-# 計算今天是否為工作日
+# Check if the input date is a weekday
 def is_weekday(check_date=None):
     if not check_date:
         check_date = datetime.now().date()

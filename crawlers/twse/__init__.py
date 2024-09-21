@@ -1,1 +1,1 @@
-from .twse import get_twse_final
+from .twse import get_twse_data

@@ -19,8 +19,8 @@ from strategies import chip_strategy, fundamental_strategy, technical_strategy
 from utils import helper
 
 from crawlers import (
-    get_twse_final,
-    get_tpex_final,
+    get_twse_data,
+    get_tpex_data,
     get_industry_category,
     get_mom_yoy,
     get_technical_indicators
@@ -150,9 +150,9 @@ def update_and_broadcast(target_date=None, need_broadcast=True):
 # 更新股票市場資訊
 def update_market_data(target_date) -> pd.DataFrame:
     # 取得上市資料表
-    twse_df = get_twse_final(target_date)
+    twse_df = get_twse_data(target_date)
     # 取得上櫃資料表
-    tpex_df = get_tpex_final(target_date)
+    tpex_df = get_tpex_data(target_date)
     # 兩張表接起來
     market_data_df = pd.concat([twse_df, tpex_df])
     # 若今日休市則不進行後續更新與推播

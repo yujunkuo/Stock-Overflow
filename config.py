@@ -2,6 +2,7 @@ import logging
 from model.data_type import DataType
 
 # TODO: We need more complicated configuration settings
+# TODO: add typing and comment language unification
 
 # Logging configuration
 
@@ -45,6 +46,11 @@ COLUMN_RENAME_SETTING = {
     "賣出.1": "融券賣出",
     "買進.1": "融券買進",
     "外陸資買賣超股數(不含外資自營商)": "外資買賣超股數",
+    # Industry Category Settings
+    "stock_id": "代號",
+    "stock_name": "名稱",
+    "industry_category": "產業別",
+    "type": "股票類型",
 }
 
 
@@ -53,4 +59,6 @@ COLUMN_KEEP_SETTING = {
     DataType.FUNDAMENTAL: ["代號", "名稱", "本益比", "股價淨值比", "殖利率(%)", "股票類型"],
     DataType.MARGIN_TRADING: ["代號", "名稱", "融資餘額", "融資變化量", "融券餘額", "融券變化量", "券資比(%)", "股票類型"],
     DataType.INSTITUTIONAL: ["代號", "名稱", "外資買賣超股數", "投信買賣超股數", "自營商買賣超股數", "三大法人買賣超股數", "股票類型"],
+    DataType.INDUSTRY_CATEGORY: ["代號", "名稱", "產業別", "股票類型"],
+    DataType.MOM_YOY: ["代號", "名稱", "(月)營收月增率(%)", "(月)營收年增率(%)", "(月)累積營收年增率(%)"],
 }

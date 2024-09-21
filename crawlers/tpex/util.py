@@ -1,11 +1,14 @@
+import time
 import requests
 import pandas as pd
+
 from io import StringIO
 from model.data_type import DataType
-from config import COLUMN_RENAME_SETTING, COLUMN_KEEP_SETTING
+from config import logger, COLUMN_RENAME_SETTING, COLUMN_KEEP_SETTING
 
 # TODO: Stock calculate number unit: 1000 or 1?
 
+MAX_REQUEST_RETRIES = 3
 
 REQUEST_SETTING = {
     DataType.PRICE: {
@@ -43,19 +46,25 @@ REQUEST_SETTING = {
 }
 
 
-def get_tpex_data(data_type, data_date):
-    setting = REQUEST_SETTING[data_type]
-    year, month, day = data_date.year - 1911, data_date.month, data_date.day
-    date_str = f"{year}/{month:02}/{day:02}"
-    url = setting["url"].format(date_str=date_str)
-    response = requests.get(url, headers=setting["headers"])
-    response.encoding = setting["encoding"]
-    header_num = setting["header_num"]
-    df = pd.read_csv(StringIO(response.text), header=header_num)
-    return df
+def _request_data(data_type, data_date):
+    for _ in range(MAX_REQUEST_RETRIES):
+        try:
+            setting = REQUEST_SETTING[data_type]
+            year, month, day = data_date.year - 1911, data_date.month, data_date.day
+            date_str = f"{year}/{month:02}/{day:02}"
+            url = setting["url"].format(date_str=date_str)
+            response = requests.get(url, headers=setting["headers"])
+            response.encoding = setting["encoding"]
+            header_num = setting["header_num"]
+            df = pd.read_csv(StringIO(response.text), header=header_num)
+            return df
+        except:
+            logger.warning(f"Attempt {_request_data.__name__} for {data_type.value} failed.")
+            time.sleep(3)
+    return pd.DataFrame(columns=COLUMN_KEEP_SETTING[data_type])
 
 
-def clean_tpex_data(data_type, df):
+def _clean_data(data_type, df):
     # Remove leading and trailing spaces from column names
     df.columns = [column.strip() for column in df.columns]
     # Unify the column names of the stock code
@@ -87,4 +96,10 @@ def clean_tpex_data(data_type, df):
     # Reset index
     df = df.reset_index(drop=True)
     return df
-    
+
+
+# Get the TPEX data
+def get_data(data_type, data_date):
+    df = _request_data(data_type, data_date)
+    df = _clean_data(data_type, df)
+    return df
