@@ -464,8 +464,6 @@ def broadcast_watch_list(target_date, watch_list_df, need_broadcast=True):
     # 透過 LINE API 進行推播
     if need_broadcast:
         line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
-    else:
-        logger.debug(final_recommendation_text)
 
 
 ####################################################
