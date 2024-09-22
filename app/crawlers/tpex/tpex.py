@@ -4,16 +4,15 @@ import datetime
 import warnings
 import pandas as pd
 
-from config import logger, COLUMN_KEEP_SETTING
+from config.config import logger, COLUMN_KEEP_SETTING
 from model.data_type import DataType
 from .util import get_data
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
-# TODO: Error handling
 
-# (Public) Get the final data of TWSE
-def get_twse_data(data_date):
+# (Public) Get the final data of TPEX
+def get_tpex_data(data_date):
     start_time = time.time()
     price_df = get_data(DataType.PRICE, data_date)
     fundamental_df = get_data(DataType.FUNDAMENTAL, data_date)
@@ -30,8 +29,8 @@ def get_twse_data(data_date):
         df = df.set_index("代號")
         end_time = time.time()
         time_spent = end_time - start_time
-        logger.info(f"取得上市資料表花費時間: {datetime.timedelta(seconds=int(time_spent))}")
+        logger.info(f"取得上櫃資料表花費時間: {datetime.timedelta(seconds=int(time_spent))}")
         return df
     except:
-        logger.error("無法取得上市資料表")
+        logger.error("無法取得上櫃資料表")
         return None

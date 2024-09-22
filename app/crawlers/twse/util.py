@@ -4,7 +4,7 @@ import pandas as pd
 
 from io import StringIO
 from model.data_type import DataType
-from config import logger, COLUMN_RENAME_SETTING, COLUMN_KEEP_SETTING
+from config.config import logger, COLUMN_RENAME_SETTING, COLUMN_KEEP_SETTING
 
 # TODO: Stock calculate number unit: 1000 or 1?
 # TODO: When to fillna?

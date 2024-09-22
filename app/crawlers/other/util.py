@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 from model.data_type import DataType
 from utils.helper import convert_milliseconds_to_date
-from config import logger, COLUMN_RENAME_SETTING, COLUMN_KEEP_SETTING
+from config.config import logger, COLUMN_RENAME_SETTING, COLUMN_KEEP_SETTING
 
 MAX_REQUEST_RETRIES = 2
 

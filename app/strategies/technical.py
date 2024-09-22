@@ -1,4 +1,4 @@
-from config import logger
+from config.config import logger
 
 import datetime
 import time

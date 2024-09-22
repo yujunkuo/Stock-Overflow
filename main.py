@@ -15,7 +15,7 @@ from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextSendMessage
 
 from utils import helper
-from config import logger
+from config.config import logger
 from strategies import fundamental_strategy, technical_strategy, chip_strategy
 
 from crawlers import get_twse_data, get_tpex_data, get_other_data
