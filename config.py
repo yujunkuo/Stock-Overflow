@@ -4,7 +4,8 @@ from model.data_type import DataType
 # TODO: We need more complicated configuration settings
 # TODO: add typing and comment language unification
 
-# Logging configuration
+
+## Logging configuration
 
 logging.basicConfig(
     format="[%(asctime)s] [%(process)d] [%(levelname)s] %(message)s",
@@ -15,7 +16,7 @@ logging.basicConfig(
 logger = logging.getLogger()
 
 
-# Data column settings
+## Data column settings
 
 COLUMN_RENAME_SETTING = {
     # TPEX Settings

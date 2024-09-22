@@ -14,41 +14,32 @@ from linebot import LineBotApi, WebhookHandler
 from linebot.exceptions import InvalidSignatureError
 from linebot.models import TextSendMessage
 
-from config import logger
-from strategies import chip_strategy, fundamental_strategy, technical_strategy
 from utils import helper
+from config import logger
+from strategies import fundamental_strategy, technical_strategy, chip_strategy
 
-from crawlers import (
-    get_twse_data,
-    get_tpex_data,
-    get_industry_category,
-    get_mom_yoy,
-    get_technical_indicators
-)
+from crawlers import get_twse_data, get_tpex_data, get_other_data
 
-#################### 全域變數設定 ####################
 
-# 版本年份
+#################### Global Variables ####################
+
+# Year of the version
 YEAR = "2024"
 
-# 版本號
+# Version number
 VERSION = "v4.3"
-
 
 # API Interface
 app = Flask(__name__)
 
-
-# 載入環境變數
+# Load environment variables
 load_dotenv()
 
-
-# 設定 LINE Bot 基本資料
+# Set up Line Bot information
 line_bot_api = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN"))
 handler = WebhookHandler(os.getenv("CHANNEL_SECRET"))
 
-
-# 設定 API Access Token
+# Set up API access token
 api_access_token = os.getenv("API_ACCESS_TOKEN")
 
 
@@ -60,7 +51,7 @@ api_access_token = os.getenv("API_ACCESS_TOKEN")
 # TODO: Unit test
 # TODO: Use target_date to replace now or today
 
-# 接收 LINE 資訊（固定寫法）
+# Line Bot Testing route
 @app.route("/callback", methods=["POST"])
 def callback():
     signature = request.headers["X-Line-Signature"]
@@ -76,47 +67,51 @@ def callback():
     return "OK"
 
 
-# 檢查主機並清理記憶體
+# Default route
 @app.route("/", methods=["GET"])
 def home():
-    # 清除冗余的記憶體使用
+    return Response(status=200)
+
+
+# Wakeup route - for server health check and memory clean
+@app.route("/wakeup", methods=["GET"])
+def wakeup():
     gc.collect()
-    # 檢查目前的記憶體使用量
     process = psutil.Process()
     memory_usage = process.memory_info().rss / 1024**2
     logger.info(f"目前記憶體使用量 {memory_usage:.2f} MB")
     return Response(status=200)
 
 
-# 喚醒主機並製作推薦清單
-@app.route("/wakeup", methods=["GET"])
-def wakeup():
-    # 檢查 request 是否有提供 'API-Access-Token' header
+# Update route - for updating and broadcasting
+@app.route("/update", methods=["GET"])
+def update():
+    # Check if API-Access-Token header is provided
     if "API-Access-Token" not in request.headers:
         return Response("Missing API-Access-Token", status=401)
-    # 驗證提供的 token 是否正確
+    # Check if the provided token is correct
     elif request.headers["API-Access-Token"] != api_access_token:
         return Response("Invalid API-Access-Token", status=401)
     else:
-        logger.info("開始喚醒主機")
-        # 指派更新與推播
+        logger.info("開始進行推薦")
+        # Assign update and broadcast
         update_and_broadcast_thread = threading.Thread(target=update_and_broadcast)
         update_and_broadcast_thread.start()
         return Response(status=200)
     
     
-# 功能測試
+# Test route - for testing usage
 @app.route("/test", methods=["GET"])
 def test():
-    # 檢查 request 是否有提供 'API-Access-Token' header
+    # Check if API-Access-Token header is provided
     if "API-Access-Token" not in request.headers:
         return Response("Missing API-Access-Token", status=401)
-    # 驗證提供的 token 是否正確
+    # Check if the provided token is correct
     elif request.headers["API-Access-Token"] != api_access_token:
         return Response("Invalid API-Access-Token", status=401)
     else:
         logger.info("開始進行測試")
-        # 指派更新與推播
+        # Assign update and broadcast
         target_date_str = request.headers["Target-Date"]  # with format "YYYY-MM-DD"
         target_date = datetime.datetime.strptime(target_date_str, "%Y-%m-%d").date()
         update_and_broadcast_thread = threading.Thread(target=update_and_broadcast, args=(target_date, False))
@@ -126,8 +121,7 @@ def test():
 
 ####################################################
 
-
-# 更新與推播推薦清單
+# Update and broadcast the recommendation list
 def update_and_broadcast(target_date=None, need_broadcast=True):
     if not target_date:
         target_date = datetime.date.today()
@@ -147,40 +141,29 @@ def update_and_broadcast(target_date=None, need_broadcast=True):
             logger.info("好友推播執行完成")
 
 
-# 更新股票市場資訊
+# Update the market data
 def update_market_data(target_date) -> pd.DataFrame:
-    # 取得上市資料表
+    # Get the TWSE/TPEX data, and merge them
     twse_df = get_twse_data(target_date)
-    # 取得上櫃資料表
     tpex_df = get_tpex_data(target_date)
-    # 兩張表接起來
     market_data_df = pd.concat([twse_df, tpex_df])
-    # 若今日休市則不進行後續更新與推播
+    # If the market data is empty, return it directly
     if market_data_df.shape[0] == 0:
         return market_data_df
-    # 取得產業別
-    industry_category_df = get_industry_category()
-    # 合併資料表
+    # Get the other data
+    other_df = get_other_data()
+    # Merge the other data with the market data
     market_data_df = pd.merge(
-        industry_category_df,
+        other_df,
         market_data_df,
         how="left",
-        on=["代號", "名稱", "股票類型"],
+        on=["代號", "名稱"],
     )
-    # 補上 MoM 與 YoY
-    mom_yoy_df = get_mom_yoy()
-    market_data_df = pd.merge(
-        market_data_df, mom_yoy_df, how="left", on=["代號", "名稱"]
-    )
-    # 先移除重複的股票
+    # Drop the duplicated rows
     market_data_df = market_data_df[~market_data_df.index.duplicated(keep="first")]
-    # 補上技術指標
-    market_data_df = get_technical_indicators(market_data_df)
-    # 再次移除重複的股票
-    market_data_df = market_data_df[~market_data_df.index.duplicated(keep="first")]
-    # 重新按股票代碼排序
+    # Sort the index
     market_data_df = market_data_df.sort_index()
-    # 印出台積電資料，確保爬蟲取得資料的正確性
+    # Print TSMC data to check the correctness
     logger.info("核對 [2330 台積電] 今日交易資訊")
     tsmc = market_data_df.loc["2330"]
     for column, value in tsmc.items():
@@ -191,12 +174,12 @@ def update_market_data(target_date) -> pd.DataFrame:
     return market_data_df
 
 
-# 更新股票推薦清單
+# Update the watch list
 def update_watch_list(market_data_df):
-    # 顯示目前狀態
+    # Print the market data size
     logger.info(f"股市資料表大小 {market_data_df.shape}")
 
-    # 股票基本面篩選條件
+    # Fundamental strategy filters
     fundamental_mask = [
         # # 月營收年增率 > 20%
         # market_data_df["(月)營收年增率(%)"] > 20,
@@ -204,7 +187,7 @@ def update_watch_list(market_data_df):
         # market_data_df["(月)累積營收年增率(%)"] > 10,
     ]
 
-    # 股票技術面篩選條件
+    # Technical strategy filters
     technical_mask = [
         # 收盤價 > 20
         technical_strategy.technical_indicator_constant_check_df(
@@ -363,7 +346,7 @@ def update_watch_list(market_data_df):
         # ),
     ]
 
-    # 股票籌碼面篩選條件
+    # Chip strategy filters
     chip_mask = [
         # 成交量 > 2000 張
         technical_strategy.volume_greater_check_df(
@@ -430,7 +413,7 @@ def update_watch_list(market_data_df):
         # chip_strategy.total_institutional_buy_positive_check_df(market_data_df, threshold=0),
     ]
 
-    # 取得推薦觀察清單
+    # Combine all the filters
     watch_list_df = helper.df_mask_helper(
         market_data_df, fundamental_mask + technical_mask + chip_mask
     )
@@ -441,9 +424,9 @@ def update_watch_list(market_data_df):
     return watch_list_df
 
 
-# 推播股票推薦清單
+# Broadcast the watch list
 def broadcast_watch_list(target_date, watch_list_df, need_broadcast=True):
-    # 建構推播訊息
+    # Construct the final recommendation text message
     if len(watch_list_df) == 0:
         final_recommendation_text = f"🔎 今日無 [推薦觀察] 股票\n"
         logger.info("今日無 [推薦觀察] 股票")
@@ -455,13 +438,13 @@ def broadcast_watch_list(target_date, watch_list_df, need_broadcast=True):
         for i, v in watch_list_df.iterrows():
             final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
             logger.info(f"{i} {v['名稱']}  {v['產業別']}")
-    # 加上末尾分隔線
+    # Append the separator
     final_recommendation_text += "\n###########\n\n"
-    # 加上資料來源說明
+    # Append the source information
     final_recommendation_text += f"資料來源: 台股 {str(target_date)}"
-    # 加上版權聲明
+    # Append the version information
     final_recommendation_text += f"\nJohnKuo © {YEAR} ({VERSION})"
-    # 透過 LINE API 進行推播
+    # Broadcast the final recommendation text message if needed
     if need_broadcast:
         line_bot_api.broadcast(TextSendMessage(text=final_recommendation_text))
 
