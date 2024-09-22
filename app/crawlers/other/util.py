@@ -1,17 +1,15 @@
 import json
 import time
-import datetime
 import requests
 import pandas as pd
 
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
-from model.data_type import DataType
-from utils.helper import convert_milliseconds_to_date
-from config.config import logger, COLUMN_RENAME_SETTING, COLUMN_KEEP_SETTING
+from models.data_type import DataType
+from app.utils import convert_milliseconds_to_date
+from config import config, logger
 
 MAX_REQUEST_RETRIES = 2
-
 
 ##### Industry Category Data #####
 
@@ -28,14 +26,14 @@ def _request_industry_category():
         except:
             logger.warning(f"Attempt {_request_industry_category.__name__} failed.")
             time.sleep(3)
-    return pd.DataFrame(columns=COLUMN_KEEP_SETTING[DataType.INDUSTRY_CATEGORY])
+    return pd.DataFrame(columns=config.COLUMN_KEEP_SETTING[DataType.INDUSTRY_CATEGORY])
 
 
 def _clean_industry_category(df):
     # Remove leading and trailing spaces from column names
     df.columns = [column.strip() for column in df.columns]
     # Rename columns
-    df = df.rename(columns=COLUMN_RENAME_SETTING)
+    df = df.rename(columns=config.COLUMN_RENAME_SETTING)
     # Update the data type and remove leading and trailing spaces
     df["名稱"] = df["名稱"].astype(str).str.strip()
     df["代號"] = df["代號"].astype(str).str.strip()
@@ -46,7 +44,7 @@ def _clean_industry_category(df):
         & (df["代號"].str.isdigit())
     ]
     # Only keep the columns needed
-    df = df[COLUMN_KEEP_SETTING[DataType.INDUSTRY_CATEGORY]]
+    df = df[config.COLUMN_KEEP_SETTING[DataType.INDUSTRY_CATEGORY]]
     # Sort the rows
     df = df.sort_values(by=["代號"])
     # Reset index
@@ -82,12 +80,12 @@ def _request_mom_yoy():
                 ]
                 for x in range(0, len(data), 6)
             ]
-            df = pd.DataFrame(mom_yoy_list, columns=COLUMN_KEEP_SETTING[DataType.MOM_YOY])
+            df = pd.DataFrame(mom_yoy_list, columns=config.COLUMN_KEEP_SETTING[DataType.MOM_YOY])
             return df
         except:
             logger.warning(f"Attempt {_request_mom_yoy.__name__} failed.")
             time.sleep(3)
-    return pd.DataFrame(columns=COLUMN_KEEP_SETTING[DataType.MOM_YOY])
+    return pd.DataFrame(columns=config.COLUMN_KEEP_SETTING[DataType.MOM_YOY])
 
 
 def _clean_mom_yoy(df):

@@ -1,12 +1,11 @@
 import time
 import datetime
-
 import warnings
 import pandas as pd
 
-from config.config import logger, COLUMN_KEEP_SETTING
-from model.data_type import DataType
 from .util import get_data
+from config import config, logger
+from models.data_type import DataType
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
@@ -25,7 +24,7 @@ def get_twse_data(data_date):
         df = pd.merge(df, margin_trading_df, how="left", on=["代號", "名稱", "股票類型"])
         df = pd.merge(df, institutional_df, how="left", on=["代號", "名稱", "股票類型"])
         # Fill zero for those without institutional data
-        df[COLUMN_KEEP_SETTING[DataType.INSTITUTIONAL]] = df[COLUMN_KEEP_SETTING[DataType.INSTITUTIONAL]].fillna(value=0)
+        df[config.COLUMN_KEEP_SETTING[DataType.INSTITUTIONAL]] = df[config.COLUMN_KEEP_SETTING[DataType.INSTITUTIONAL]].fillna(value=0)
         # Set index
         df = df.set_index("代號")
         end_time = time.time()

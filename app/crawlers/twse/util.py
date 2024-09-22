@@ -3,8 +3,8 @@ import requests
 import pandas as pd
 
 from io import StringIO
-from model.data_type import DataType
-from config.config import logger, COLUMN_RENAME_SETTING, COLUMN_KEEP_SETTING
+from config import config, logger
+from models.data_type import DataType
 
 # TODO: Stock calculate number unit: 1000 or 1?
 # TODO: When to fillna?
@@ -47,14 +47,14 @@ def _request_data(data_type, data_date):
         except:
             logger.warning(f"Attempt {_request_data.__name__} for {data_type.value} failed.")
             time.sleep(3)
-    return pd.DataFrame(columns=COLUMN_KEEP_SETTING[data_type])
+    return pd.DataFrame(columns=config.COLUMN_KEEP_SETTING[data_type])
 
 
 def _clean_data(data_type, df):
     # Remove leading and trailing spaces from column names
     df.columns = [column.strip() for column in df.columns]
     # Unify the column names of the stock code
-    df = df.rename(columns=COLUMN_RENAME_SETTING)
+    df = df.rename(columns=config.COLUMN_RENAME_SETTING)
     # Update the data type and remove leading and trailing spaces
     df["名稱"] = df["名稱"].astype(str).str.strip()
     df["代號"] = df["代號"].astype(str).str.strip()
@@ -79,7 +79,7 @@ def _clean_data(data_type, df):
     # Add the stock type column
     df["股票類型"] = "twse"
     # Only keep the columns needed
-    df = df[COLUMN_KEEP_SETTING[data_type]]  
+    df = df[config.COLUMN_KEEP_SETTING[data_type]]  
     # Sort the rows
     df = df.sort_values(by=["代號"])
     # Reset index

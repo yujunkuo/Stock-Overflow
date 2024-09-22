@@ -1,9 +1,8 @@
 import time
 import datetime
-
 import pandas as pd
 
-from config.config import logger
+from config import logger
 from .util import (
     get_industry_category,
     get_mom_yoy,

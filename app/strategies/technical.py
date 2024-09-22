@@ -1,10 +1,8 @@
-from config.config import logger
-
-import datetime
 import time
-
+import datetime
 import twstock
 
+from config import logger
 
 ## 技術面策略
 
