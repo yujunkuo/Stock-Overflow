@@ -291,13 +291,13 @@ def _update_watch_list(market_data_df):
         # chip.single_institutional_buy_check_df(market_data_df, single_volume_threshold=10),
         # # 法人合計至少買超成交量的 1%
         # chip.total_institutional_buy_check_df(market_data_df, total_volume_threshold=1),
-        # 外資買超 >= 0 股 (200 張 -> threshold=2e5)
-        chip.foreign_buy_positive_check_df(market_data_df, threshold=-1),
-        # # 投信買超 > 50,000 股
-        # chip.investment_buy_positive_check_df(market_data_df, threshold=5e4),
+        # 外資買超 >= 0 張
+        chip.foreign_buy_positive_check_df(market_data_df, threshold=0),
+        # # 投信買超 >= 50 張
+        # chip.investment_buy_positive_check_df(market_data_df, threshold=50),
         # # 自定義法人買超篩選
         # chip.buy_positive_check_df(market_data_df),
-        # # 法人合計買超 > 0 股
+        # # 法人合計買超 >= 0 張
         # chip.total_institutional_buy_positive_check_df(market_data_df, threshold=0),
     ]
 

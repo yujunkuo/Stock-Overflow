@@ -6,8 +6,6 @@ from io import StringIO
 from models.data_type import DataType
 from config import config, logger
 
-# TODO: Stock calculate number unit: 1000 or 1?
-
 MAX_REQUEST_RETRIES = 3
 
 REQUEST_SETTING = {
@@ -83,10 +81,17 @@ def _clean_data(data_type, df):
         )
     )
     # Add additional columns
+    if data_type == DataType.PRICE:
+        df["成交量"] = round(df["成交量"] / 1000)
     if data_type == DataType.MARGIN_TRADING:
         df["融資變化量"] = df["融資買進"] - df["融資賣出"] - df["現金償還"]
         df["融券變化量"] = df["融券賣出"] - df["融券買進"] - df["現券償還"]
         df["券資比(%)"] = round((df["融券餘額"] / df["融資餘額"]) * 100, 2).fillna(0)
+    if data_type == DataType.INSTITUTIONAL:
+        df["外資買賣超"] = round(df["外資買賣超"] / 1000)
+        df["投信買賣超"] = round(df["投信買賣超"] / 1000)
+        df["自營商買賣超"] = round(df["自營商買賣超"] / 1000)
+        df["三大法人買賣超"] = round(df["三大法人買賣超"] / 1000)
     # Add the stock type column
     df["股票類型"] = "tpex"
     # Only keep the columns needed
