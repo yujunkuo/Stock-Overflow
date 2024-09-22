@@ -1,7 +1,3 @@
 from .twse import get_twse_data
 from .tpex import get_tpex_data
-from .other import (
-    get_industry_category,
-    get_mom_yoy,
-    get_technical_indicators,
-)
+from .other import get_other_data
