@@ -124,11 +124,15 @@ def _get_j9_list(k9_list: list, d9_list: list) -> list:
     return j9_list
 
 
-def _format_technical_indicator_list(technical_indicator_list: list) -> list:
-    for i, (indicator_time, indicator_value) in enumerate(technical_indicator_list):
+def _format_technical_indicator_list(technical_indicator_list: list, data_date) -> list:
+    filtered_indicators = []
+    for indicator_time, indicator_value in technical_indicator_list:
         indicator_time = convert_milliseconds_to_date(indicator_time)
-        technical_indicator_list[i] = [indicator_time, indicator_value]
-    return technical_indicator_list
+        if indicator_time <= data_date:
+            filtered_indicators.append([indicator_time, indicator_value])
+        else:
+            break
+    return filtered_indicators
 
 
 def _format_daily_k_list(daily_k_list: list) -> list:
@@ -165,22 +169,22 @@ def _request_technical_indicators(stock_id: str):
     return None
 
 
-def _clean_technical_indicators(technical_indicators):
+def _clean_technical_indicators(technical_indicators, data_date):
     if not technical_indicators:
         return None
-    k9 = _format_technical_indicator_list(json.loads(technical_indicators["K9"]))
-    d9 = _format_technical_indicator_list(json.loads(technical_indicators["D9"]))
+    k9 = _format_technical_indicator_list(json.loads(technical_indicators["K9"]), data_date)
+    d9 = _format_technical_indicator_list(json.loads(technical_indicators["D9"]), data_date)
     j9 = _get_j9_list(k9, d9)
-    dif = _format_technical_indicator_list(json.loads(technical_indicators["DIF"]))
-    macd = _format_technical_indicator_list(json.loads(technical_indicators["MACD"]))
-    osc = _format_technical_indicator_list(json.loads(technical_indicators["OSC"]))
-    mean5 = _format_technical_indicator_list(json.loads(technical_indicators["Mean5"]))
-    mean10 = _format_technical_indicator_list(json.loads(technical_indicators["Mean10"]))
-    mean20 = _format_technical_indicator_list(json.loads(technical_indicators["Mean20"]))
-    mean60 = _format_technical_indicator_list(json.loads(technical_indicators["Mean60"]))
-    volume = _format_technical_indicator_list(json.loads(technical_indicators["Volume"]))
-    mean_5_volume = _format_technical_indicator_list(json.loads(technical_indicators["Mean5Volume"]))
-    mean_20_volume = _format_technical_indicator_list(json.loads(technical_indicators["Mean20Volume"]))
+    dif = _format_technical_indicator_list(json.loads(technical_indicators["DIF"]), data_date)
+    macd = _format_technical_indicator_list(json.loads(technical_indicators["MACD"]), data_date)
+    osc = _format_technical_indicator_list(json.loads(technical_indicators["OSC"]), data_date)
+    mean5 = _format_technical_indicator_list(json.loads(technical_indicators["Mean5"]), data_date)
+    mean10 = _format_technical_indicator_list(json.loads(technical_indicators["Mean10"]), data_date)
+    mean20 = _format_technical_indicator_list(json.loads(technical_indicators["Mean20"]), data_date)
+    mean60 = _format_technical_indicator_list(json.loads(technical_indicators["Mean60"]), data_date)
+    volume = _format_technical_indicator_list(json.loads(technical_indicators["Volume"]), data_date)
+    mean_5_volume = _format_technical_indicator_list(json.loads(technical_indicators["Mean5Volume"]), data_date)
+    mean_20_volume = _format_technical_indicator_list(json.loads(technical_indicators["Mean20Volume"]), data_date)
     daily_k = _format_daily_k_list(json.loads(technical_indicators["DailyK"]))
     return {
         "k9": k9,
@@ -200,14 +204,14 @@ def _clean_technical_indicators(technical_indicators):
     }
 
 
-def _get_technical_indicators_by_stock_id(stock_id: str) -> dict:
+def _get_technical_indicators_by_stock_id(stock_id: str, data_date) -> dict:
     technical_indicators = _request_technical_indicators(stock_id)
-    technical_indicators = _clean_technical_indicators(technical_indicators)
+    technical_indicators = _clean_technical_indicators(technical_indicators, data_date)
     return technical_indicators
 
 
 # Get technical indicators data
-def get_technical_indicators(reference_df: pd.DataFrame) -> pd.DataFrame:
+def get_technical_indicators(reference_df: pd.DataFrame, data_date) -> pd.DataFrame:
     df = reference_df[["名稱", "代號"]].copy()
     technical_columns = [
         "k9", "d9", "j9", "dif", "macd", "osc",
@@ -219,7 +223,7 @@ def get_technical_indicators(reference_df: pd.DataFrame) -> pd.DataFrame:
     for i, row in df.iterrows():
         try:
             stock_id = row["代號"]
-            technical_indicators = _get_technical_indicators_by_stock_id(stock_id)
+            technical_indicators = _get_technical_indicators_by_stock_id(stock_id, data_date)
             for col in technical_columns:
                 df.at[i, col] = technical_indicators.get(col)
             if (i+1) % 100 == 0 or print_flag:

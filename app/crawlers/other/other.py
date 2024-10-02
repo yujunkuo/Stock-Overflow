@@ -11,11 +11,11 @@ from .util import (
 
 
 # (Public) Get other data: industry category, MoM/YoY, and technical indicators
-def get_other_data():
+def get_other_data(data_date):
     start_time = time.time()
     industry_category_df = get_industry_category()
     mom_yoy_df = get_mom_yoy()
-    technical_indicators_df = get_technical_indicators(industry_category_df)
+    technical_indicators_df = get_technical_indicators(industry_category_df, data_date)
     try:
         # Merge all data
         df = pd.merge(industry_category_df, mom_yoy_df, how="left", on=["代號", "名稱"])

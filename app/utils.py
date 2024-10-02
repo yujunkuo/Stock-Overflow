@@ -13,7 +13,7 @@ def df_mask_helper(df, mask_list):
 
 # Check if the input date is a weekday
 def is_weekday(check_date=None):
-    check_date = check_date if check_date else datetime.datetime.now().date()
+    check_date = check_date if check_date else datetime.date.today()
     # Weekday count: Monday=0, Tuesday=1, ..., Sunday=6
     weekday_count = check_date.weekday()
     return False if weekday_count in [5, 6] else True

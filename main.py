@@ -1,10 +1,10 @@
 import os
 from app import create_app
 
-# TODO: Update technical strategy settings
 # TODO: Unit test
-# TODO: Use target_date to replace now or today & test with specific date
-# TODO: Server avaliability optimization
+# TODO: Server availability optimization
+# TODO: Update technical strategy settings
+# TODO: Use target_date to replace today & test with specific date (skyrocket)
 
 app = create_app()
 

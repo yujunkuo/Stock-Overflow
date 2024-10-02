@@ -39,7 +39,7 @@ def _update_market_data(target_date) -> pd.DataFrame:
     if market_data_df.shape[0] == 0:
         return market_data_df
     # Get the other data
-    other_df = get_other_data()
+    other_df = get_other_data(target_date)
     # Merge the other data with the market data
     market_data_df = pd.merge(
         other_df,
@@ -52,7 +52,7 @@ def _update_market_data(target_date) -> pd.DataFrame:
     # Sort the index
     market_data_df = market_data_df.sort_index()
     # Print TSMC data to check the correctness
-    logger.info("核對 [2330 台積電] 今日交易資訊")
+    logger.info(f"核對 [2330 台積電] {target_date} 交易資訊")
     tsmc = market_data_df.loc["2330"]
     for column, value in tsmc.items():
         if type(value) == list and len(value) > 0:
