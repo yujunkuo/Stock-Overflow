@@ -10,7 +10,7 @@ from .crawlers import get_twse_data, get_tpex_data, get_other_data
 
 
 # Update and broadcast the recommendation list
-def update_and_broadcast(target_date=None, need_broadcast=True):
+def update_and_broadcast(target_date=None, need_broadcast=False):
     with current_app.app_context():
         if not target_date:
             target_date = datetime.date.today()
@@ -314,7 +314,7 @@ def _update_watch_list(market_data_df):
 
 
 # Broadcast the watch list
-def _broadcast_watch_list(target_date, watch_list_df, need_broadcast=True):
+def _broadcast_watch_list(target_date, watch_list_df, need_broadcast):
     # Construct the final recommendation text message
     if len(watch_list_df) == 0:
         final_recommendation_text = f"🔎 今日無 [推薦觀察] 股票\n"
