@@ -43,6 +43,8 @@ def _clean_industry_category(df):
         & (df["代號"].str[:2] != "00")
         & (df["代號"].str.isdigit())
     ]
+    # Remove duplicate rows, and keep the row with the shortest industry category
+    df = df.loc[df.groupby("代號")["產業別"].apply(lambda x: x.str.len().idxmin())]
     # Only keep the columns needed
     df = df[config.COLUMN_KEEP_SETTING[DataType.INDUSTRY_CATEGORY]]
     # Sort the rows
