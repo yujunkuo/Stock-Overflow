@@ -137,17 +137,21 @@ def _format_technical_indicator_list(technical_indicator_list: list, data_date) 
     return filtered_indicators
 
 
-def _format_daily_k_list(daily_k_list: list) -> list:
-    for i, (k_time, *k_values) in enumerate(daily_k_list):
+def _format_daily_k_list(daily_k_list: list, data_date) -> list:
+    filtered_ks = []
+    for k_time, *k_values in daily_k_list:
         k_time = convert_milliseconds_to_date(k_time)
-        k_value = {
-            "開盤": k_values[0],
-            "最高": k_values[1],
-            "最低": k_values[2],
-            "收盤": k_values[3],
-        }
-        daily_k_list[i] = [k_time, k_value]
-    return daily_k_list
+        if k_time <= data_date:
+            k_value = {
+                "開盤": k_values[0],
+                "最高": k_values[1],
+                "最低": k_values[2],
+                "收盤": k_values[3],
+            }
+            filtered_ks.append([k_time, k_value])
+        else:
+            break
+    return filtered_ks
 
 
 def _request_technical_indicators(stock_id: str):
@@ -187,7 +191,7 @@ def _clean_technical_indicators(technical_indicators, data_date):
     volume = _format_technical_indicator_list(json.loads(technical_indicators["Volume"]), data_date)
     mean_5_volume = _format_technical_indicator_list(json.loads(technical_indicators["Mean5Volume"]), data_date)
     mean_20_volume = _format_technical_indicator_list(json.loads(technical_indicators["Mean20Volume"]), data_date)
-    daily_k = _format_daily_k_list(json.loads(technical_indicators["DailyK"]))
+    daily_k = _format_daily_k_list(json.loads(technical_indicators["DailyK"]), data_date)
     return {
         "k9": k9,
         "d9": d9,

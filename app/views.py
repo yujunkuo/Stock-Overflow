@@ -11,22 +11,23 @@ from .crawlers import get_twse_data, get_tpex_data, get_other_data
 
 # Update and broadcast the recommendation list
 def update_and_broadcast(target_date=None, need_broadcast=True):
-    if not target_date:
-        target_date = datetime.date.today()
-    logger.info(f"資料日期 {str(target_date)}")
-    if not is_weekday(target_date):
-        logger.info("假日不進行更新與推播")
-    else:
-        market_data_df = _update_market_data(target_date)
-        if market_data_df.shape[0] == 0:
-            logger.info("休市不進行更新與推播")
+    with current_app.app_context():
+        if not target_date:
+            target_date = datetime.date.today()
+        logger.info(f"資料日期 {str(target_date)}")
+        if not is_weekday(target_date):
+            logger.info("假日不進行更新與推播")
         else:
-            logger.info("開始更新推薦清單")
-            watch_list_df = _update_watch_list(market_data_df)
-            logger.info("推薦清單更新完成")
-            logger.info("開始進行好友推播")
-            _broadcast_watch_list(target_date, watch_list_df, need_broadcast)
-            logger.info("好友推播執行完成")
+            market_data_df = _update_market_data(target_date)
+            if market_data_df.shape[0] == 0:
+                logger.info("休市不進行更新與推播")
+            else:
+                logger.info("開始更新推薦清單")
+                watch_list_df = _update_watch_list(market_data_df)
+                logger.info("推薦清單更新完成")
+                logger.info("開始進行好友推播")
+                _broadcast_watch_list(target_date, watch_list_df, need_broadcast)
+                logger.info("好友推播執行完成")
 
 
 # Update the market data
@@ -45,7 +46,7 @@ def _update_market_data(target_date) -> pd.DataFrame:
         other_df,
         market_data_df,
         how="left",
-        on=["代號", "名稱"],
+        on=["代號", "名稱", "股票類型"],
     )
     # Drop the duplicated rows
     market_data_df = market_data_df[~market_data_df.index.duplicated(keep="first")]
