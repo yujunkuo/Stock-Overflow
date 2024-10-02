@@ -16,11 +16,11 @@ class BasicConfig:
     VERSION = "v4.3"
 
     # Line Bot settings
-    LINE_BOT_API = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN"))
-    WEBHOOK_HANDLER = WebhookHandler(os.getenv("CHANNEL_SECRET"))
+    LINE_BOT_API = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN", "default_channel_access_token"))
+    WEBHOOK_HANDLER = WebhookHandler(os.getenv("CHANNEL_SECRET", "default_channel_secret"))
 
     # API Access Token
-    API_ACCESS_TOKEN = os.getenv("API_ACCESS_TOKEN")
+    API_ACCESS_TOKEN = os.getenv("API_ACCESS_TOKEN", "default_api_access_token")
 
     # Data Settings
     COLUMN_RENAME_SETTING = {

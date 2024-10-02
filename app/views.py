@@ -331,7 +331,7 @@ def _broadcast_watch_list(target_date, watch_list_df, need_broadcast=True):
     # Append the source information
     final_recommendation_text += f"資料來源: 台股 {str(target_date)}"
     # Append the version information
-    final_recommendation_text += f"\nJohnKuo © {current_app.config["YEAR"]} ({current_app.config["VERSION"]})"
+    final_recommendation_text += f"\nJohnKuo © {current_app.config['YEAR']} ({current_app.config['VERSION']})"
     # Broadcast the final recommendation text message if needed
     if need_broadcast:
         line_bot_api = current_app.config["LINE_BOT_API"]
