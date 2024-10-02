@@ -10,8 +10,8 @@ from .crawlers import get_twse_data, get_tpex_data, get_other_data
 
 
 # Update and broadcast the recommendation list
-def update_and_broadcast(target_date=None, need_broadcast=False):
-    with current_app.app_context():
+def update_and_broadcast(app, target_date=None, need_broadcast=False):
+    with app.app_context():
         if not target_date:
             target_date = datetime.date.today()
         logger.info(f"資料日期 {str(target_date)}")

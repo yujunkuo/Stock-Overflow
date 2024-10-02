@@ -95,6 +95,7 @@ def init_routes(app):
             need_broadcast = request.headers.get("Need-Broadcast", "false").lower() == "true"
             logger.info("開始進行推薦")
             # Assign update and broadcast
-            update_and_broadcast_thread = threading.Thread(target=update_and_broadcast, args=(target_date, need_broadcast))
+            app = current_app._get_current_object()
+            update_and_broadcast_thread = threading.Thread(target=update_and_broadcast, args=(app, target_date, need_broadcast))
             update_and_broadcast_thread.start()
             return Response(status=200)
