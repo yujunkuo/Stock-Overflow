@@ -50,6 +50,9 @@ def _request_data(data_type, data_date):
 
 
 def _clean_data(data_type, df):
+    # If the DataFrame is empty, return it directly
+    if df.empty:
+        return df
     # Remove leading and trailing spaces from column names
     df.columns = [column.strip() for column in df.columns]
     # Unify the column names of the stock code
