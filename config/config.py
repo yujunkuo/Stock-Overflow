@@ -26,6 +26,7 @@ class BasicConfig:
     COLUMN_RENAME_SETTING = {
         # TPEX Settings
         "股票代號": "代號",
+        "公司名稱": "名稱",
         "成交股數": "成交量",
         "資餘額": "融資餘額",
         "資買": "融資買進",

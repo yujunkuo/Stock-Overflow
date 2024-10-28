@@ -14,7 +14,7 @@ REQUEST_SETTING = {
         "headers": {
             "Host": "www.tpex.org.tw",
         },
-        "encoding": "utf-8",
+        "encoding": "big5",
         "header_num": 3,
     },
     DataType.FUNDAMENTAL: {
@@ -22,7 +22,7 @@ REQUEST_SETTING = {
         "headers": {
             "Host": "www.tpex.org.tw",
         },
-        "encoding": "utf-8",
+        "encoding": "big5",
         "header_num": 3,
     },  
     DataType.MARGIN_TRADING: {
@@ -30,7 +30,7 @@ REQUEST_SETTING = {
         "headers": {
             "Host": "www.tpex.org.tw",
         },
-        "encoding": "utf-8",
+        "encoding": "big5",
         "header_num": 2,
     },
     DataType.INSTITUTIONAL: {
