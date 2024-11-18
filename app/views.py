@@ -24,7 +24,7 @@ def update_and_broadcast(app, target_date=None, need_broadcast=False):
             else:
                 logger.info("開始更新推薦清單")
                 watch_list_df_1 = _update_watch_list(market_data_df, _get_strategy_1)
-                watch_list_df_2 = _update_watch_list(market_data_df, _get_strategy_2)
+                watch_list_df_2 = _update_watch_list(market_data_df, _get_strategy_2, is_skyrocket=False)
                 watch_list_dfs = [watch_list_df_1, watch_list_df_2]
                 logger.info("推薦清單更新完成")
                 logger.info("開始進行好友推播")
@@ -66,15 +66,16 @@ def _update_market_data(target_date) -> pd.DataFrame:
 
 
 # Update the watch list
-def _update_watch_list(market_data_df, get_strategy_func) -> pd.DataFrame:
+def _update_watch_list(market_data_df, strategy_func, is_skyrocket=True) -> pd.DataFrame:
     # Print the market data size
     logger.info(f"股市資料表大小 {market_data_df.shape}")
     # Get the strategy
-    fundamental_mask, technical_mask, chip_mask = get_strategy_func(market_data_df)
+    fundamental_mask, technical_mask, chip_mask = strategy_func(market_data_df)
     # Combine all the filters
     watch_list_df = df_mask_helper(market_data_df, fundamental_mask + technical_mask + chip_mask)
     watch_list_df = watch_list_df.sort_values(by=["產業別"], ascending=False)
-    watch_list_df = watch_list_df[watch_list_df.index.to_series().apply(technical.is_skyrocket)]
+    if is_skyrocket:
+        watch_list_df = watch_list_df[watch_list_df.index.to_series().apply(technical.is_skyrocket)]
     return watch_list_df
 
 
@@ -172,7 +173,7 @@ def _get_strategy_1(market_data_df) -> tuple:
             indicator="d9", 
             direction="less", 
             threshold=90, 
-            days=1
+            days=1,
         ),
         # # 今天 OSC > 昨天 OSC
         # technical.technical_indicator_greater_or_less_two_day_check_df(market_data_df, indicator_1="osc", indicator_2="osc", direction="more", threshold=1, days=1),
@@ -320,6 +321,14 @@ def _get_strategy_1(market_data_df) -> tuple:
 def _get_strategy_2(market_data_df) -> tuple:
     fundamental_mask = []
     technical_mask = [
+        # 收盤價 > 20
+        technical.technical_indicator_constant_check_df(
+            market_data_df,
+            indicator="收盤",
+            direction="more",
+            threshold=20,
+            days=1,
+        ),
         # MA1 > MA5
         technical.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
@@ -336,6 +345,14 @@ def _get_strategy_2(market_data_df) -> tuple:
             indicator_2="d9",
             direction="more",
             threshold=1,
+            days=1,
+        ),
+        # OSC > 0 (?)
+        technical.technical_indicator_constant_check_df(
+            market_data_df,
+            indicator="osc",
+            direction="more",
+            threshold=0,
             days=1,
         ),
         # 今天 MA60 > 昨天 MA60
