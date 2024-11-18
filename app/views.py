@@ -67,7 +67,17 @@ def _update_market_data(target_date) -> pd.DataFrame:
 def _update_watch_list(market_data_df):
     # Print the market data size
     logger.info(f"股市資料表大小 {market_data_df.shape}")
+    # Get the strategy
+    fundamental_mask, technical_mask, chip_mask = _get_strategy(market_data_df)
+    # Combine all the filters
+    watch_list_df = df_mask_helper(market_data_df, fundamental_mask + technical_mask + chip_mask)
+    watch_list_df = watch_list_df.sort_values(by=["產業別"], ascending=False)
+    watch_list_df = watch_list_df[watch_list_df.index.to_series().apply(technical.is_skyrocket)]
+    return watch_list_df
 
+
+# Get the strategy
+def _get_strategy(market_data_df):
     # Fundamental strategy filters
     fundamental_mask = [
         # # 月營收年增率 > 20%
@@ -301,16 +311,7 @@ def _update_watch_list(market_data_df):
         # # 法人合計買超 >= 0 張
         # chip.total_institutional_buy_positive_check_df(market_data_df, threshold=0),
     ]
-
-    # Combine all the filters
-    watch_list_df = df_mask_helper(
-        market_data_df, fundamental_mask + technical_mask + chip_mask
-    )
-    watch_list_df = watch_list_df.sort_values(by=["產業別"], ascending=False)
-    watch_list_df = watch_list_df[
-        watch_list_df.index.to_series().apply(technical.is_skyrocket)
-    ]
-    return watch_list_df
+    return fundamental_mask, technical_mask, chip_mask
 
 
 # Broadcast the watch list
