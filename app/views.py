@@ -23,10 +23,12 @@ def update_and_broadcast(app, target_date=None, need_broadcast=False):
                 logger.info("休市不進行更新與推播")
             else:
                 logger.info("開始更新推薦清單")
-                watch_list_df = _update_watch_list(market_data_df)
+                watch_list_df_1 = _update_watch_list(market_data_df, _get_strategy_1)
+                watch_list_df_2 = _update_watch_list(market_data_df, _get_strategy_2)
+                watch_list_dfs = [watch_list_df_1, watch_list_df_2]
                 logger.info("推薦清單更新完成")
                 logger.info("開始進行好友推播")
-                _broadcast_watch_list(target_date, watch_list_df, need_broadcast)
+                _broadcast_watch_list(target_date, watch_list_dfs, need_broadcast)
                 logger.info("好友推播執行完成")
 
 
@@ -64,11 +66,11 @@ def _update_market_data(target_date) -> pd.DataFrame:
 
 
 # Update the watch list
-def _update_watch_list(market_data_df):
+def _update_watch_list(market_data_df, get_strategy_func) -> pd.DataFrame:
     # Print the market data size
     logger.info(f"股市資料表大小 {market_data_df.shape}")
     # Get the strategy
-    fundamental_mask, technical_mask, chip_mask = _get_strategy(market_data_df)
+    fundamental_mask, technical_mask, chip_mask = get_strategy_func(market_data_df)
     # Combine all the filters
     watch_list_df = df_mask_helper(market_data_df, fundamental_mask + technical_mask + chip_mask)
     watch_list_df = watch_list_df.sort_values(by=["產業別"], ascending=False)
@@ -76,8 +78,8 @@ def _update_watch_list(market_data_df):
     return watch_list_df
 
 
-# Get the strategy
-def _get_strategy(market_data_df):
+# Get the strategy 1
+def _get_strategy_1(market_data_df) -> tuple:
     # Fundamental strategy filters
     fundamental_mask = [
         # # 月營收年增率 > 20%
@@ -314,22 +316,100 @@ def _get_strategy(market_data_df):
     return fundamental_mask, technical_mask, chip_mask
 
 
+# Get the strategy 2
+def _get_strategy_2(market_data_df) -> tuple:
+    fundamental_mask = []
+    technical_mask = [
+        # MA1 > MA5
+        technical.technical_indicator_greater_or_less_one_day_check_df(
+            market_data_df,
+            indicator_1="收盤",
+            indicator_2="mean5",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
+        # K9 > D9
+        technical.technical_indicator_greater_or_less_one_day_check_df(
+            market_data_df,
+            indicator_1="k9",
+            indicator_2="d9",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
+        # 今天 MA60 > 昨天 MA60
+        technical.technical_indicator_greater_or_less_two_day_check_df(
+            market_data_df,
+            indicator_1="mean60",
+            indicator_2="mean60",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
+        # 今天 J9 > 昨天 J9
+        technical.technical_indicator_greater_or_less_two_day_check_df(
+            market_data_df,
+            indicator_1="j9",
+            indicator_2="j9",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
+        # 今天 OSC > 昨天 OSC
+        technical.technical_indicator_greater_or_less_two_day_check_df(
+            market_data_df,
+            indicator_1="osc",
+            indicator_2="osc",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
+    ]
+    chip_mask = [
+        # 成交量 > 1500 張
+        technical.volume_greater_check_df(
+            market_data_df,
+            shares_threshold=1500,
+            days=1,
+        ),
+        # (今天成交量 > 5日均量) or (今天成交量 > 20日均量)
+        technical.technical_indicator_greater_or_less_one_day_check_df(
+            market_data_df,
+            indicator_1="volume",
+            indicator_2="mean_5_volume",
+            direction="more",
+            threshold=1,
+            days=1,
+        ) |\
+        technical.technical_indicator_greater_or_less_one_day_check_df(
+            market_data_df,
+            indicator_1="volume",
+            indicator_2="mean_20_volume",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
+    ]
+    return fundamental_mask, technical_mask, chip_mask
+
+
 # Broadcast the watch list
-def _broadcast_watch_list(target_date, watch_list_df, need_broadcast):
+def _broadcast_watch_list(target_date, watch_list_dfs, need_broadcast):
     # Construct the final recommendation text message
-    if len(watch_list_df) == 0:
-        final_recommendation_text = f"🔎 今日無 [推薦觀察] 股票\n"
-        logger.info("今日無 [推薦觀察] 股票")
-    else:
-        final_recommendation_text = (
-            f"🔎 [推薦觀察]  股票有 {len(watch_list_df)} 檔\n" + "\n###########\n\n"
-        )
-        logger.info(f"[推薦觀察] 股票有 {len(watch_list_df)} 檔")
-        for i, v in watch_list_df.iterrows():
-            final_recommendation_text += f"{i} {v['名稱']}  {v['產業別']}\n"
-            logger.info(f"{i} {v['名稱']}  {v['產業別']}")
-    # Append the separator
-    final_recommendation_text += "\n###########\n\n"
+    final_recommendation_text = ""
+    for i, watch_list_df in enumerate(watch_list_dfs):
+        if len(watch_list_df) == 0:
+            final_recommendation_text += f"🔎 [策略{i+1}]  無推薦股票\n"
+            logger.info(f"[策略{i+1}] 無推薦股票")
+        else:
+            final_recommendation_text += f"🔎 [策略{i+1}]  股票有 {len(watch_list_df)} 檔\n" + "\n###########\n\n"
+            logger.info(f"[策略{i+1}] 股票有 {len(watch_list_df)} 檔")
+            for stock_id, v in watch_list_df.iterrows():
+                final_recommendation_text += f"{stock_id} {v['名稱']}  {v['產業別']}\n"
+                logger.info(f"{stock_id} {v['名稱']}  {v['產業別']}")
+        # Append the separator
+        final_recommendation_text += "\n###########\n\n"
     # Append the source information
     final_recommendation_text += f"資料來源: 台股 {str(target_date)}"
     # Append the version information
