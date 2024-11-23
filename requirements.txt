@@ -38,6 +38,7 @@ requests==2.31.0
 setuptools==65.5.1
 six==1.16.0
 soupsieve==2.4.1
+ta==0.11.0
 twstock==1.4.0
 typing-extensions==4.7.1
 urllib3==2.0.7

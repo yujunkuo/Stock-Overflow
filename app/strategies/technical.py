@@ -1,8 +1,10 @@
 import time
 import datetime
 import twstock
+import pandas as pd
 
 from config import logger
+from ta.trend import PSARIndicator
 
 ## 技術面策略
 
@@ -427,9 +429,7 @@ def is_skyrocket(
         time.sleep(5)
         stock = twstock.Stock(stock_id)
         six_months_ago = datetime.datetime.now() - datetime.timedelta(days=180)
-        historical_data = stock.fetch_from(six_months_ago.year, six_months_ago.month)[
-            :-5
-        ]
+        historical_data = stock.fetch_from(six_months_ago.year, six_months_ago.month)[:-5]
         # 檢查飆股兩個面向特徵
         long_term_flag, short_term_flag = False, False
         # 檢查是否有在任意 n_days 內漲幅達 k_change
@@ -446,10 +446,29 @@ def is_skyrocket(
             ):
                 short_term_flag = True
                 break
-        logger.info(
-            f"{stock_id}: [long_term = {long_term_flag} / short_term = {short_term_flag} / data_length = {len(historical_data)}]"
-        )
+        logger.info(f"{stock_id}: [long_term = {long_term_flag} / short_term = {short_term_flag} / data_length = {len(historical_data)}]")
         return long_term_flag and short_term_flag
     except:
-        logger.warning(f"{stock_id}: [取得歷史資料失敗]")
+        logger.info(f"{stock_id}: [取得歷史資料失敗]")
+        return False
+
+
+# 13. (Public) [twstock] 檢查該股票 SAR 是否大於收盤價
+def is_sar_above_close(stock_id):
+    try:
+        time.sleep(5)
+        stock = twstock.Stock(stock_id)
+        six_months_ago = datetime.datetime.now() - datetime.timedelta(days=180)
+        historical_data = stock.fetch_from(six_months_ago.year, six_months_ago.month)
+        data = pd.DataFrame({
+            "high": [record.high for record in historical_data],
+            "low": [record.low for record in historical_data],
+            "close": [record.close for record in historical_data],
+        })
+        sar = PSARIndicator(high=data["high"], low=data["low"], close=data["close"], step=0.02, max_step=0.2)
+        sar_list = sar.psar().to_list()
+        logger.info(f"{stock_id}: [close_price = {historical_data[-1].close} / SAR_indicator = {round(sar_list[-1], 2)} / data_length = {len(historical_data)}]")
+        return sar_list[-1] > historical_data[-1].close
+    except:
+        logger.info(f"{stock_id}: [取得歷史資料失敗]")
         return False
