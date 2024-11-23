@@ -338,28 +338,20 @@ def _get_strategy_2(market_data_df) -> tuple:
             threshold=1,
             days=1,
         ),
+        # MA1 > MA20
+        technical.technical_indicator_greater_or_less_one_day_check_df(
+            market_data_df,
+            indicator_1="收盤",
+            indicator_2="mean20",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
         # K9 > D9
         technical.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
             indicator_1="k9",
             indicator_2="d9",
-            direction="more",
-            threshold=1,
-            days=1,
-        ),
-        # OSC > 0 (?)
-        technical.technical_indicator_constant_check_df(
-            market_data_df,
-            indicator="osc",
-            direction="more",
-            threshold=0,
-            days=1,
-        ),
-        # 今天 MA60 > 昨天 MA60
-        technical.technical_indicator_greater_or_less_two_day_check_df(
-            market_data_df,
-            indicator_1="mean60",
-            indicator_2="mean60",
             direction="more",
             threshold=1,
             days=1,
@@ -394,28 +386,20 @@ def _get_strategy_2(market_data_df) -> tuple:
             shares_threshold=1500,
             days=1,
         ),
-        # (今天成交量 > 5日均量) or (今天成交量 > 20日均量)
-        technical.technical_indicator_greater_or_less_one_day_check_df(
-            market_data_df,
-            indicator_1="volume",
-            indicator_2="mean_5_volume",
-            direction="more",
-            threshold=1,
-            days=1,
-        ) |\
-        technical.technical_indicator_greater_or_less_one_day_check_df(
-            market_data_df,
-            indicator_1="volume",
-            indicator_2="mean_20_volume",
-            direction="more",
-            threshold=1,
-            days=1,
-        ),
         # 今天成交量 > 昨天成交量
         technical.technical_indicator_greater_or_less_two_day_check_df(
             market_data_df,
             indicator_1="volume",
             indicator_2="volume",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
+        # 今天成交量 > 5日均量
+        technical.technical_indicator_greater_or_less_one_day_check_df(
+            market_data_df,
+            indicator_1="volume",
+            indicator_2="mean_5_volume",
             direction="more",
             threshold=1,
             days=1,
