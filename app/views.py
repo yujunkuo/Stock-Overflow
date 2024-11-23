@@ -84,10 +84,10 @@ def _update_watch_list(market_data_df, strategy_func, other_funcs=None) -> pd.Da
 def _get_strategy_1(market_data_df) -> tuple:
     # Fundamental strategy filters
     fundamental_mask = [
-        # # 月營收年增率 > 20%
-        # market_data_df["(月)營收年增率(%)"] > 20,
-        # # 累積營收年增率 > 10%
-        # market_data_df["(月)累積營收年增率(%)"] > 10,
+        # 營收成長至少其中一項 > 0%
+        (market_data_df["(月)營收月增率(%)"] > 0 |\
+        market_data_df["(月)營收年增率(%)"] > 0 |\
+        market_data_df["(月)累積營收年增率(%)"] > 0),
     ]
 
     # Technical strategy filters
@@ -109,19 +109,10 @@ def _get_strategy_1(market_data_df) -> tuple:
             threshold=1,
             days=1,
         ),
-        # MA5 > MA10
+        # MA5 > MA20
         technical.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
             indicator_1="mean5",
-            indicator_2="mean10",
-            direction="more",
-            threshold=1,
-            days=1,
-        ),
-        # MA10 > MA20
-        technical.technical_indicator_greater_or_less_one_day_check_df(
-            market_data_df,
-            indicator_1="mean10",
             indicator_2="mean20",
             direction="more",
             threshold=1,
@@ -320,7 +311,12 @@ def _get_strategy_1(market_data_df) -> tuple:
 
 # Get the strategy 2
 def _get_strategy_2(market_data_df) -> tuple:
-    fundamental_mask = []
+    fundamental_mask = [
+        # 營收成長至少其中一項 > 0%
+        (market_data_df["(月)營收月增率(%)"] > 0 |\
+        market_data_df["(月)營收年增率(%)"] > 0 |\
+        market_data_df["(月)累積營收年增率(%)"] > 0),
+    ]
     technical_mask = [
         # 收盤價 > 20
         technical.technical_indicator_constant_check_df(
