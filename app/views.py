@@ -23,8 +23,8 @@ def update_and_broadcast(app, target_date=None, need_broadcast=False):
                 logger.info("休市不進行更新與推播")
             else:
                 logger.info("開始更新推薦清單")
-                watch_list_df_1 = _update_watch_list(market_data_df, _get_strategy_1)
-                watch_list_df_2 = _update_watch_list(market_data_df, _get_strategy_2, is_skyrocket=False)
+                watch_list_df_1 = _update_watch_list(market_data_df, _get_strategy_1, other_funcs=[technical.is_skyrocket])
+                watch_list_df_2 = _update_watch_list(market_data_df, _get_strategy_2, other_funcs=[technical.is_sar_above_close])
                 watch_list_dfs = [watch_list_df_1, watch_list_df_2]
                 logger.info("推薦清單更新完成")
                 logger.info("開始進行好友推播")
@@ -66,7 +66,7 @@ def _update_market_data(target_date) -> pd.DataFrame:
 
 
 # Update the watch list
-def _update_watch_list(market_data_df, strategy_func, is_skyrocket=True) -> pd.DataFrame:
+def _update_watch_list(market_data_df, strategy_func, other_funcs=None) -> pd.DataFrame:
     # Print the market data size
     logger.info(f"股市資料表大小 {market_data_df.shape}")
     # Get the strategy
@@ -74,8 +74,9 @@ def _update_watch_list(market_data_df, strategy_func, is_skyrocket=True) -> pd.D
     # Combine all the filters
     watch_list_df = df_mask_helper(market_data_df, fundamental_mask + technical_mask + chip_mask)
     watch_list_df = watch_list_df.sort_values(by=["產業別"], ascending=False)
-    if is_skyrocket:
-        watch_list_df = watch_list_df[watch_list_df.index.to_series().apply(technical.is_skyrocket)]
+    if other_funcs:
+        for func in other_funcs:
+            watch_list_df = watch_list_df[watch_list_df.index.to_series().apply(func)]
     return watch_list_df
 
 
