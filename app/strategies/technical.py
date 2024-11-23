@@ -423,7 +423,7 @@ def _technical_indicator_constant_check_row(row, indicator, direction, threshold
 
 # 12. (Public) [twstock] 檢查該股票是否具備飆股特徵 (自定義長短線特徵)
 def is_skyrocket(
-    stock_id, n_days=40, k_change=0.40, consecutive_red_no_upper_shadow_days=2
+    stock_id, n_days=10, k_change=0.20, consecutive_red_no_upper_shadow_days=2
 ):
     try:
         time.sleep(5)
