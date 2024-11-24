@@ -85,9 +85,9 @@ def _get_strategy_1(market_data_df) -> tuple:
     # Fundamental strategy filters
     fundamental_mask = [
         # 營收成長至少其中一項 > 0%
-        (market_data_df["(月)營收月增率(%)"] > 0 |\
-        market_data_df["(月)營收年增率(%)"] > 0 |\
-        market_data_df["(月)累積營收年增率(%)"] > 0),
+        (market_data_df["(月)營收月增率(%)"] > 0) |\
+        (market_data_df["(月)營收年增率(%)"] > 0) |\
+        (market_data_df["(月)累積營收年增率(%)"] > 0),
     ]
 
     # Technical strategy filters
@@ -313,9 +313,9 @@ def _get_strategy_1(market_data_df) -> tuple:
 def _get_strategy_2(market_data_df) -> tuple:
     fundamental_mask = [
         # 營收成長至少其中一項 > 0%
-        (market_data_df["(月)營收月增率(%)"] > 0 |\
-        market_data_df["(月)營收年增率(%)"] > 0 |\
-        market_data_df["(月)累積營收年增率(%)"] > 0),
+        (market_data_df["(月)營收月增率(%)"] > 0) |\
+        (market_data_df["(月)營收年增率(%)"] > 0) |\
+        (market_data_df["(月)累積營收年增率(%)"] > 0),
     ]
     technical_mask = [
         # 收盤價 > 20
