@@ -344,6 +344,15 @@ def _get_strategy_2(market_data_df) -> tuple:
             threshold=1,
             days=1,
         ),
+        # 今天 MA60 > 昨天 MA60
+        technical.technical_indicator_greater_or_less_two_day_check_df(
+            market_data_df,
+            indicator_1="mean60",
+            indicator_2="mean60",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
         # K9 > D9
         technical.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
