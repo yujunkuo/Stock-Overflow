@@ -3,6 +3,7 @@ import pandas as pd
 
 from config import logger
 from flask import current_app
+from functools import partial
 from linebot.models import TextSendMessage
 from .strategies import technical, chip
 from .utils import is_weekday, df_mask_helper
@@ -24,8 +25,8 @@ def update_and_broadcast(app, target_date=None, need_broadcast=False):
             else:
                 logger.info("開始更新推薦清單")
                 watch_list_df_1 = _update_watch_list(market_data_df, _get_strategy_1, other_funcs=[technical.is_skyrocket])
-                watch_list_df_2 = _update_watch_list(market_data_df, _get_strategy_2, other_funcs=[technical.is_sar_above_close, technical.is_skyrocket])
-                watch_list_df_3 = _update_watch_list(market_data_df, _get_strategy_3, other_funcs=[technical.is_skyrocket])
+                watch_list_df_2 = _update_watch_list(market_data_df, _get_strategy_2, other_funcs=[technical.is_sar_above_close, partial(technical.is_skyrocket, consecutive_red_no_upper_shadow_days=0)])
+                watch_list_df_3 = _update_watch_list(market_data_df, _get_strategy_3, other_funcs=[partial(technical.is_skyrocket, consecutive_red_no_upper_shadow_days=0)])
                 combined_watch_list_df = pd.concat([watch_list_df_1, watch_list_df_2]).drop_duplicates().reset_index()
                 watch_list_dfs = [combined_watch_list_df, watch_list_df_3]
                 logger.info("推薦清單更新完成")
