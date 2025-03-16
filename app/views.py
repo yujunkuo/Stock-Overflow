@@ -25,9 +25,9 @@ def update_and_broadcast(app, target_date=None, need_broadcast=False):
                 logger.info("開始更新推薦清單")
                 watch_list_df_1 = _update_watch_list(market_data_df, _get_strategy_1, other_funcs=[technical.is_skyrocket])
                 watch_list_df_2 = _update_watch_list(market_data_df, _get_strategy_2, other_funcs=[technical.is_sar_above_close, technical.is_skyrocket])
+                watch_list_df_3 = _update_watch_list(market_data_df, _get_strategy_3, other_funcs=[technical.is_skyrocket])
                 combined_watch_list_df = pd.concat([watch_list_df_1, watch_list_df_2]).drop_duplicates().reset_index()
-                watch_list_dfs = [combined_watch_list_df]
-                # watch_list_dfs = [watch_list_df_1, watch_list_df_2]
+                watch_list_dfs = [combined_watch_list_df, watch_list_df_3]
                 logger.info("推薦清單更新完成")
                 logger.info("開始進行好友推播")
                 _broadcast_watch_list(target_date, watch_list_dfs, need_broadcast)
@@ -412,6 +412,109 @@ def _get_strategy_2(market_data_df) -> tuple:
             threshold=1,
             days=1,
         ),
+    ]
+    return fundamental_mask, technical_mask, chip_mask
+
+
+# Get the strategy 3
+def _get_strategy_3(market_data_df) -> tuple:
+    # Fundamental strategy filters
+    fundamental_mask = []
+    # Technical strategy filters
+    technical_mask = [
+        # 收盤價 > 20
+        technical.technical_indicator_constant_check_df(
+            market_data_df,
+            indicator="收盤",
+            direction="more",
+            threshold=20,
+            days=1,
+        ),
+        # 今天收盤 > 1.01 * 昨天收盤 (漲幅 1% 以上)
+        technical.technical_indicator_greater_or_less_two_day_check_df(
+            market_data_df,
+            indicator_1="收盤",
+            indicator_2="收盤",
+            direction="more",
+            threshold=1.01,
+            days=1,
+        ),
+        # 今天收紅 K
+        technical.technical_indicator_greater_or_less_one_day_check_df(
+            market_data_df,
+            indicator_1="收盤",
+            indicator_2="開盤",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
+        # MA1 > MA60
+        technical.technical_indicator_greater_or_less_one_day_check_df(
+            market_data_df,
+            indicator_1="收盤",
+            indicator_2="mean60",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
+        # 今天 MA60 > 昨天 MA60
+        technical.technical_indicator_greater_or_less_two_day_check_df(
+            market_data_df,
+            indicator_1="mean60",
+            indicator_2="mean60",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
+        # 五天內最低價曾經跌到 MA20 以下
+        ~technical.technical_indicator_greater_or_less_one_day_check_df(
+            market_data_df,
+            indicator_1="最低",
+            indicator_2="mean20",
+            direction="more",
+            threshold=1,
+            days=5,
+        ),
+        # 昨天下跌
+        ~technical.technical_indicator_greater_or_less_two_day_check_df(
+            market_data_df,
+            indicator_1="收盤",
+            indicator_2="收盤",
+            direction="more",
+            threshold=1,
+            days=2,
+        ),
+        # 今天 K9 > 昨天 K9
+        technical.technical_indicator_greater_or_less_two_day_check_df(
+            market_data_df,
+            indicator_1="k9",
+            indicator_2="k9",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
+        # 今天 K9 > 20
+        technical.technical_indicator_constant_check_df(
+            market_data_df,
+            indicator="k9",
+            direction="more",
+            threshold=20,
+            days=1,
+        ),
+    ]
+    # Chip strategy filters
+    chip_mask = [
+        # 今天成交量 < 昨天成交量
+        technical.technical_indicator_greater_or_less_two_day_check_df(
+            market_data_df,
+            indicator_1="volume",
+            indicator_2="volume",
+            direction="less",
+            threshold=1,
+            days=1,
+        ),
+        # 外資買超 >= 0 張
+        chip.foreign_buy_positive_check_df(market_data_df, threshold=0),
     ]
     return fundamental_mask, technical_mask, chip_mask
 
