@@ -10,10 +10,10 @@ class BasicConfig:
     """Base config class for shared configuration."""
     
     # Version year
-    YEAR = "2024"
+    YEAR = "2025"
 
     # Version number
-    VERSION = "v5.1"
+    VERSION = "v5.2"
 
     # Line Bot settings
     LINE_BOT_API = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN", "default_channel_access_token"))
