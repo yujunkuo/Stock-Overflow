@@ -7,7 +7,7 @@ from functools import partial
 from linebot.models import TextSendMessage
 from .strategies import technical, chip
 from .utils import is_weekday, df_mask_helper
-from .crawlers import get_twse_data, get_tpex_data, get_other_data
+from .crawlers import get_twse_data, get_tpex_data, get_other_data, get_economic_events
 
 
 # Update and broadcast the recommendation list
@@ -30,8 +30,13 @@ def update_and_broadcast(app, target_date=None, need_broadcast=False):
                 # combined_watch_list_df = pd.concat([watch_list_df_1, watch_list_df_2]).drop_duplicates(subset=["代號"]).reset_index(drop=True)
                 watch_list_dfs = [watch_list_df_1, watch_list_df_3]
                 logger.info("推薦清單更新完成")
+                logger.info("開始讀取經濟事件")
+                start_date = (target_date + datetime.timedelta(days=1)).strftime("%Y-%m-%d")
+                end_date = (target_date + datetime.timedelta(days=3)).strftime("%Y-%m-%d")
+                economic_events = get_economic_events(start_date, end_date)
+                logger.info("經濟事件讀取完成")
                 logger.info("開始進行好友推播")
-                _broadcast_watch_list(target_date, watch_list_dfs, need_broadcast)
+                _broadcast_watch_list(target_date, watch_list_dfs, economic_events, need_broadcast)
                 logger.info("好友推播執行完成")
 
 
@@ -521,9 +526,10 @@ def _get_strategy_3(market_data_df) -> tuple:
 
 
 # Broadcast the watch list
-def _broadcast_watch_list(target_date, watch_list_dfs, need_broadcast):
-    # Construct the final recommendation text message
+def _broadcast_watch_list(target_date, watch_list_dfs, economic_events, need_broadcast):
+    # Final recommendation text message
     final_recommendation_text = ""
+    # Append the recommendation stocks
     for i, watch_list_df in enumerate(watch_list_dfs):
         if len(watch_list_df) == 0:
             final_recommendation_text += f"🔎 [策略{i+1}]  無推薦股票\n"
@@ -534,7 +540,14 @@ def _broadcast_watch_list(target_date, watch_list_dfs, need_broadcast):
             for stock_id, v in watch_list_df.iterrows():
                 final_recommendation_text += f"{stock_id} {v['名稱']}  {v['產業別']}\n"
                 logger.info(f"{stock_id} {v['名稱']}  {v['產業別']}")
-        # Append the separator
+        final_recommendation_text += "\n###########\n\n"
+    # Append the economic events
+    if len(economic_events) != 0:
+        final_recommendation_text += "📆 預計經濟事件\n" + "\n###########\n\n"
+        logger.info("預計經濟事件")
+        for event in economic_events:
+            final_recommendation_text += f"{event['date']} - {event['country']} - {event['title']}\n"
+            logger.info(f"{event['date']} - {event['country']} - {event['title']}")
         final_recommendation_text += "\n###########\n\n"
     # Append the source information
     final_recommendation_text += f"資料來源: 台股 {str(target_date)}"
