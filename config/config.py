@@ -1,6 +1,6 @@
 import os
 
-from models.data_type import DataType
+from model.data_type import DataType
 from linebot import LineBotApi, WebhookHandler
 
 # TODO: We need more complicated configuration settings

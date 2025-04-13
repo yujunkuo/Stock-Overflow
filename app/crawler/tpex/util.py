@@ -3,7 +3,7 @@ import requests
 import pandas as pd
 
 from io import StringIO
-from models.data_type import DataType
+from model.data_type import DataType
 from config import config, logger
 
 MAX_REQUEST_RETRIES = 3

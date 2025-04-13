@@ -5,9 +5,9 @@ from config import logger
 from flask import current_app
 from functools import partial
 from linebot.models import TextSendMessage
-from .strategies import technical, chip
+from .strategy import technical, chip
 from .utils import is_weekday, df_mask_helper
-from .crawlers import get_twse_data, get_tpex_data, get_other_data, get_economic_events
+from .crawler import get_twse_data, get_tpex_data, get_other_data, get_economic_events
 
 
 # Update and broadcast the recommendation list

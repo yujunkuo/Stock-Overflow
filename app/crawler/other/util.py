@@ -5,7 +5,7 @@ import pandas as pd
 
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
-from models.data_type import DataType
+from model.data_type import DataType
 from app.utils import convert_milliseconds_to_date
 from config import config, logger
 

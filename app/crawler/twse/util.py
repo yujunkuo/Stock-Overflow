@@ -4,7 +4,7 @@ import pandas as pd
 
 from io import StringIO
 from config import config, logger
-from models.data_type import DataType
+from model.data_type import DataType
 
 # TODO: When to fillna?
 
