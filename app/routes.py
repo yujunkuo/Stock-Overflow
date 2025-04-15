@@ -10,7 +10,6 @@ from linebot.exceptions import InvalidSignatureError
 
 
 def init_routes(app):
-    
     @app.route("/", methods=["GET"])
     def home():
         """

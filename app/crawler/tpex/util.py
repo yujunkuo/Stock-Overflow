@@ -5,6 +5,7 @@ import pandas as pd
 from io import StringIO
 from model.data_type import DataType
 from config import config, logger
+from app.crawler.common.decorator import retry_on_failure
 
 MAX_REQUEST_RETRIES = 3
 
@@ -44,22 +45,17 @@ REQUEST_SETTING = {
 }
 
 
+@retry_on_failure(max_retries=MAX_REQUEST_RETRIES)
 def _request_data(data_type, data_date):
-    for _ in range(MAX_REQUEST_RETRIES):
-        try:
-            setting = REQUEST_SETTING[data_type]
-            year, month, day = data_date.year - 1911, data_date.month, data_date.day
-            date_str = f"{year}/{month:02}/{day:02}"
-            url = setting["url"].format(date_str=date_str)
-            response = requests.get(url, headers=setting["headers"])
-            response.encoding = setting["encoding"]
-            header_num = setting["header_num"]
-            df = pd.read_csv(StringIO(response.text), header=header_num)
-            return df
-        except:
-            logger.warning(f"Attempt {_request_data.__name__} for {data_type.value} failed.")
-            time.sleep(3)
-    return pd.DataFrame(columns=config.COLUMN_KEEP_SETTING[data_type])
+    setting = REQUEST_SETTING[data_type]
+    year, month, day = data_date.year - 1911, data_date.month, data_date.day
+    date_str = f"{year}/{month:02}/{day:02}"
+    url = setting["url"].format(date_str=date_str)
+    response = requests.get(url, headers=setting["headers"])
+    response.encoding = setting["encoding"]
+    header_num = setting["header_num"]
+    df = pd.read_csv(StringIO(response.text), header=header_num)
+    return df
 
 
 def _clean_data(data_type, df):

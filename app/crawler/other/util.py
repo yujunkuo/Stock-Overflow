@@ -8,25 +8,21 @@ from fake_useragent import UserAgent
 from model.data_type import DataType
 from app.utils import convert_milliseconds_to_date
 from config import config, logger
+from app.crawler.common.decorator import retry_on_failure
 
 MAX_REQUEST_RETRIES = 2
 
 ##### Industry Category Data #####
 
-def _request_industry_category():
-    for _ in range(MAX_REQUEST_RETRIES):
-        try:
-            params = {
-                "dataset": "TaiwanStockInfo",
-                "token": "",
-            }
-            response = requests.get("https://api.finmindtrade.com/api/v4/data", params=params)
-            df = pd.DataFrame(response.json()["data"])
-            return df
-        except:
-            logger.warning(f"Attempt {_request_industry_category.__name__} failed.")
-            time.sleep(3)
-    return pd.DataFrame(columns=config.COLUMN_KEEP_SETTING[DataType.INDUSTRY_CATEGORY])
+@retry_on_failure(max_retries=MAX_REQUEST_RETRIES)
+def _request_industry_category(data_type=DataType.INDUSTRY_CATEGORY):
+    params = {
+        "dataset": "TaiwanStockInfo",
+        "token": "",
+    }
+    response = requests.get("https://api.finmindtrade.com/api/v4/data", params=params)
+    df = pd.DataFrame(response.json()["data"])
+    return df
 
 
 def _clean_industry_category(df):
@@ -63,31 +59,26 @@ def get_industry_category() -> pd.DataFrame:
 
 ##### MoM/YoY Data #####
 
-def _request_mom_yoy():
-    for _ in range(MAX_REQUEST_RETRIES):
-        try:
-            headers = {
-                "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
-            }
-            response = requests.get("https://stock.wespai.com/p/44850", headers=headers)
-            soup = BeautifulSoup(response.text, "html.parser")
-            data = soup.find_all("td")
-            mom_yoy_list = [
-                [
-                    data[x].text,
-                    data[x+1].select_one("a").text,
-                    data[x+3].text,
-                    data[x+4].text,
-                    data[x+5].text,
-                ]
-                for x in range(0, len(data), 6)
-            ]
-            df = pd.DataFrame(mom_yoy_list, columns=config.COLUMN_KEEP_SETTING[DataType.MOM_YOY])
-            return df
-        except:
-            logger.warning(f"Attempt {_request_mom_yoy.__name__} failed.")
-            time.sleep(3)
-    return pd.DataFrame(columns=config.COLUMN_KEEP_SETTING[DataType.MOM_YOY])
+@retry_on_failure(max_retries=MAX_REQUEST_RETRIES)
+def _request_mom_yoy(data_type=DataType.MOM_YOY):
+    headers = {
+        "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
+    }
+    response = requests.get("https://stock.wespai.com/p/44850", headers=headers)
+    soup = BeautifulSoup(response.text, "html.parser")
+    data = soup.find_all("td")
+    mom_yoy_list = [
+        [
+            data[x].text,
+            data[x+1].select_one("a").text,
+            data[x+3].text,
+            data[x+4].text,
+            data[x+5].text,
+        ]
+        for x in range(0, len(data), 6)
+    ]
+    df = pd.DataFrame(mom_yoy_list, columns=config.COLUMN_KEEP_SETTING[DataType.MOM_YOY])
+    return df
 
 
 def _clean_mom_yoy(df):
