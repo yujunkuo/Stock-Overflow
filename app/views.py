@@ -1,13 +1,17 @@
+# Standard library imports
 import datetime
-import pandas as pd
-
-from config import logger
-from flask import current_app
 from functools import partial
+
+# Third-party imports
+import pandas as pd
+from flask import current_app
 from linebot.models import TextSendMessage
-from .strategy import technical, chip
-from .utils import is_weekday, df_mask_helper
-from .crawler import get_twse_data, get_tpex_data, get_other_data, get_economic_events
+
+# Local imports
+from config import logger
+from .crawler import get_economic_events, get_other_data, get_tpex_data, get_twse_data
+from .strategy import chip, technical
+from .utils import df_mask_helper, is_weekday
 
 
 # Update and broadcast the recommendation list

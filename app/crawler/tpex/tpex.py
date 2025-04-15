@@ -1,11 +1,15 @@
-import time
+# Standard library imports
 import datetime
+import time
 import warnings
+
+# Third-party imports
 import pandas as pd
 
-from .util import get_data
+# Local imports
 from config import config, logger
 from model.data_type import DataType
+from .util import get_data
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 

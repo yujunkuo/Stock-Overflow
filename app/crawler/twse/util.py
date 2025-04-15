@@ -1,10 +1,14 @@
-import requests
-import pandas as pd
-
+# Standard library imports
 from io import StringIO
+
+# Third-party imports
+import pandas as pd
+import requests
+
+# Local imports
+from app.crawler.common.decorator import retry_on_failure
 from config import config
 from model.data_type import DataType
-from app.crawler.common.decorator import retry_on_failure
 
 # TODO: When to fillna?
 

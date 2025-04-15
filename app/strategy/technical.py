@@ -1,10 +1,17 @@
+# Standard library imports
 import time
 import datetime
+
+
+# Third-party imports
 import twstock
 import pandas as pd
-
-from config import logger
 from ta.trend import PSARIndicator
+
+
+# Local imports
+from config import logger
+
 
 ## 技術面策略
 

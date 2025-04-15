@@ -1,14 +1,18 @@
+# Standard library imports
 import json
 import time
-import requests
-import pandas as pd
 
+# Third-party imports
+import pandas as pd
+import requests
 from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
-from model.data_type import DataType
+
+# Local imports
+from app.crawler.common.decorator import retry_on_failure
 from app.utils import convert_milliseconds_to_date
 from config import config, logger
-from app.crawler.common.decorator import retry_on_failure
+from model.data_type import DataType
 
 MAX_REQUEST_RETRIES = 2
 

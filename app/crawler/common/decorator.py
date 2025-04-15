@@ -1,7 +1,11 @@
-import time
+# Standard library imports
 import functools
+import time
+
+# Third-party imports
 import pandas as pd
 
+# Local imports
 from config import config, logger
 
 

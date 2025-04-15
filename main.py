@@ -1,4 +1,7 @@
+# Standard library imports
 import os
+
+# Local imports
 from app import create_app
 
 # TODO: Unit test

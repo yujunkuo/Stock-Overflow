@@ -1,4 +1,7 @@
+# Third-party imports
 from flask import Flask
+
+# Local imports
 from config import config
 from .routes import init_routes
 

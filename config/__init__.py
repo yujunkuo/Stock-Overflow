@@ -1,6 +1,10 @@
+# Standard library imports
 import logging
 
+# Third-party imports
 from dotenv import load_dotenv
+
+# Local imports
 from .config import BasicConfig
 
 # Load envs

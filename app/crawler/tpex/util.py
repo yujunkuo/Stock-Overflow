@@ -1,11 +1,15 @@
+# Standard library imports
 import time
-import requests
-import pandas as pd
-
 from io import StringIO
-from model.data_type import DataType
-from config import config, logger
+
+# Third-party imports
+import pandas as pd
+import requests
+
+# Local imports
 from app.crawler.common.decorator import retry_on_failure
+from config import config, logger
+from model.data_type import DataType
 
 MAX_REQUEST_RETRIES = 3
 

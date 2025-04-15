@@ -1,8 +1,12 @@
+# Standard library imports
 import re
-import requests
 from datetime import datetime
+
+# Third-party imports
+import requests
 from bs4 import BeautifulSoup
 
+# Local imports
 from config import logger
 
 

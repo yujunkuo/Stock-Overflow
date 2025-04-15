@@ -1,3 +1,4 @@
+# Local imports
 from .util import fetch_economic_calendar, parse_events_from_calendar
 
 # (Public) Get the economic events from Investing.com calendar

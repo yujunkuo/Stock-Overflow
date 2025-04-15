@@ -1,7 +1,11 @@
-import time
+# Standard library imports
 import datetime
+import time
+
+# Third-party imports
 import pandas as pd
 
+# Local imports
 from config import logger
 from .util import (
     get_industry_category,

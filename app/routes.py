@@ -1,12 +1,16 @@
-import gc
-import psutil
+# Standard library imports
 import datetime
+import gc
 import threading
 
+# Third-party imports
+import psutil
+from flask import Response, current_app, request
+from linebot.exceptions import InvalidSignatureError
+
+# Local imports
 from config import logger
 from .views import update_and_broadcast
-from flask import current_app, request, Response
-from linebot.exceptions import InvalidSignatureError
 
 
 def init_routes(app):
