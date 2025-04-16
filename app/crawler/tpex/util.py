@@ -11,7 +11,6 @@ from app.crawler.common.decorator import retry_on_failure
 from config import config, logger
 from model.data_type import DataType
 
-MAX_REQUEST_RETRIES = 3
 
 REQUEST_SETTING = {
     DataType.PRICE: {
@@ -49,7 +48,7 @@ REQUEST_SETTING = {
 }
 
 
-@retry_on_failure(max_retries=MAX_REQUEST_RETRIES)
+@retry_on_failure(max_retries=3)
 def _request_data(data_type, data_date):
     setting = REQUEST_SETTING[data_type]
     year, month, day = data_date.year - 1911, data_date.month, data_date.day

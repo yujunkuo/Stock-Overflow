@@ -14,11 +14,10 @@ from app.utils import convert_milliseconds_to_date
 from config import config, logger
 from model.data_type import DataType
 
-MAX_REQUEST_RETRIES = 2
 
 ##### Industry Category Data #####
 
-@retry_on_failure(max_retries=MAX_REQUEST_RETRIES)
+@retry_on_failure(max_retries=2)
 def _request_industry_category(data_type=DataType.INDUSTRY_CATEGORY):
     params = {
         "dataset": "TaiwanStockInfo",
@@ -63,7 +62,7 @@ def get_industry_category() -> pd.DataFrame:
 
 ##### MoM/YoY Data #####
 
-@retry_on_failure(max_retries=MAX_REQUEST_RETRIES)
+@retry_on_failure(max_retries=2)
 def _request_mom_yoy(data_type=DataType.MOM_YOY):
     headers = {
         "user-agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.114 Safari/537.36",
@@ -150,7 +149,7 @@ def _format_daily_k_list(daily_k_list: list, data_date) -> list:
 
 
 def _request_technical_indicators(stock_id: str):
-    for _ in range(MAX_REQUEST_RETRIES):
+    for _ in range(2):
         try:
             headers = {
                 "User-Agent": UserAgent().random,
