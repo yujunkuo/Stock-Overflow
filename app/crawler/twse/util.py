@@ -9,20 +9,19 @@ import pandas as pd
 import requests
 
 # Local imports
+from app.crawler.common.base import DataFetcher, DataProcessor, ApiEndpointConfig
 from app.crawler.common.decorator import retry_on_failure
 from config import config, logger
 from model.data_type import DataType
 
 
 @dataclass
-class TWSEApiEndpointConfig:
+class TWSEApiEndpointConfig(ApiEndpointConfig):
     """Configuration for TWSE API endpoints."""
-    url: str
-    header_row: Optional[int]
     special_header_detection: Optional[Callable[[str], int]] = None
 
 
-class TWSEDataFetcher:
+class TWSEDataFetcher(DataFetcher):
     """Class to handle API requests to TWSE."""
     
     # Class-level configuration
@@ -49,14 +48,15 @@ class TWSEDataFetcher:
     @staticmethod
     def _format_date_for_api(data_date: datetime.date) -> str:
         """Format date for TWSE API request."""
-        return f"{data_date.year}{data_date.month:02}{data_date.day:02}"
+        year, month, day = data_date.year, data_date.month, data_date.day
+        return f"{year}{month:02}{day:02}"
     
     @staticmethod
-    def _determine_header_row(response_text: str, config: TWSEApiEndpointConfig) -> int:
+    def _determine_header_row(response_text: str, endpoint_config: TWSEApiEndpointConfig) -> int:
         """Determine the correct header row for the response."""
-        if config.special_header_detection:
-            return config.special_header_detection(response_text)
-        return config.header_row
+        if endpoint_config.special_header_detection:
+            return endpoint_config.special_header_detection(response_text)
+        return endpoint_config.header_row
     
     @classmethod
     @retry_on_failure(
@@ -67,16 +67,7 @@ class TWSEDataFetcher:
         )
     )
     def fetch_data(cls, data_type: DataType, data_date: datetime.date) -> pd.DataFrame:
-        """
-        Fetch data from TWSE API with retry mechanism.
-        
-        Args:
-            data_type: Type of data to fetch
-            data_date: Date for which to fetch data
-            
-        Returns:
-            pd.DataFrame: Raw data from TWSE
-        """
+        """Fetch data from TWSE API with retry mechanism."""
         endpoint_config = cls.API_ENDPOINTS.get(data_type)
         date_str = cls._format_date_for_api(data_date)
         url = endpoint_config.url.format(date_str=date_str)
@@ -84,11 +75,11 @@ class TWSEDataFetcher:
         response = requests.get(url)
         response.raise_for_status()
 
-        header_row = cls._determine_header_row(response.text, config)
+        header_row = cls._determine_header_row(response.text, endpoint_config)
         return pd.read_csv(StringIO(response.text.replace("=", "")), header=header_row)
 
 
-class TWSEDataProcessor:
+class TWSEDataProcessor(DataProcessor):
     """Class to handle TWSE data processing operations."""
     
     # Class-level configuration
@@ -130,7 +121,6 @@ class TWSEDataProcessor:
         df["漲跌(+/-)"] = df["漲跌(+/-)"].map({"+": 1, "-": -1}).fillna(0)
         df["漲跌"] = df["漲跌(+/-)"] * df["漲跌價差"]
         df["成交量"] = (df["成交量"] / 1000).round()
-        
         return df
 
     @staticmethod
@@ -154,16 +144,7 @@ class TWSEDataProcessor:
 
     @classmethod
     def process_data(cls, data_type: DataType, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Orchestrates all data processing operations.
-        
-        Args:
-            data_type: Type of data being processed
-            df: DataFrame to process
-            
-        Returns:
-            pd.DataFrame: Processed DataFrame
-        """
+        """Process TWSE data for a specific type."""
         if df.empty:
             return df
         
@@ -194,15 +175,6 @@ class TWSEDataProcessor:
 
 
 def fetch_and_process_twse_data(data_type: DataType, data_date: datetime.date) -> pd.DataFrame:
-    """
-    Fetch and process TWSE data.
-    
-    Args:
-        data_type: Type of data to fetch
-        data_date: Date for which to fetch data
-        
-    Returns:
-        pd.DataFrame: Processed TWSE data
-    """
+    """Fetch and process TWSE data."""
     df = TWSEDataFetcher.fetch_data(data_type, data_date)
     return TWSEDataProcessor.process_data(data_type, df)

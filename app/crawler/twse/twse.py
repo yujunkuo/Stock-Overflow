@@ -1,17 +1,22 @@
 # Standard library imports
 import datetime
+import warnings
 from typing import List, Optional
 
 # Third-party imports
 import pandas as pd
 
 # Local imports
-from config import config, logger
+from config import config
 from model.data_type import DataType
+from app.crawler.common.base import DataAggregator
 from app.crawler.common.decorator import log_execution_time
 from .util import fetch_and_process_twse_data
 
-class TWSEDataAggregator:
+warnings.simplefilter(action="ignore", category=FutureWarning)
+
+
+class TWSEDataAggregator(DataAggregator):
     """Class to handle TWSE data aggregating for different data types."""
     
     # Class-level configuration
@@ -39,39 +44,16 @@ class TWSEDataAggregator:
 
     @classmethod
     def _fill_missing_values(cls, df: pd.DataFrame) -> pd.DataFrame:
-        """
-        Fill missing values for all data types after merging.
-        
-        This ensures that any stock in the final dataframe has all required columns
-        filled with appropriate default values, even if it was missing from some
-        of the original dataframes.
-        """
-        # # Fill missing values for fundamental data
-        # fundamental_columns = df.columns.intersection(config.COLUMN_KEEP_SETTING[DataType.FUNDAMENTAL])
-        # df[fundamental_columns] = df[fundamental_columns].fillna(value=0)
-        
-        # # Fill missing values for margin trading data
-        # margin_columns = df.columns.intersection(config.COLUMN_KEEP_SETTING[DataType.MARGIN_TRADING])
-        # df[margin_columns] = df[margin_columns].fillna(value=0)
-        
+        """Fill missing values for all data types after merging."""
         # Fill missing values for institutional data
         institutional_columns = df.columns.intersection(config.COLUMN_KEEP_SETTING[DataType.INSTITUTIONAL])
         df[institutional_columns] = df[institutional_columns].fillna(value=0)
-        
         return df
     
     @classmethod
     @log_execution_time(log_message="取得上市資料表花費時間")
     def aggregate_data(cls, data_date: datetime.date) -> Optional[pd.DataFrame]:
-        """
-        Aggregate all TWSE data for a given date.
-        
-        Args:
-            data_date: The date for which to fetch data
-            
-        Returns:
-            Optional[pd.DataFrame]: Aggregated dataframe containing all TWSE data, or None if there's an error
-        """
+        """Aggregate all TWSE data for a given date."""
         # Retrieve dataframes for all data types
         dfs = cls._retrieve_all_dataframes(data_date)
         
@@ -88,13 +70,5 @@ class TWSEDataAggregator:
 
 
 def get_twse_data(data_date: datetime.date) -> Optional[pd.DataFrame]:
-    """
-    Get final aggregated TWSE data for a given date.
-    
-    Args:
-        data_date: The date for which to fetch data
-        
-    Returns:
-        Optional[pd.DataFrame]: Aggregated dataframe containing all TWSE data, or None if there's an error
-    """
+    """Get final aggregated TWSE data for a given date."""
     return TWSEDataAggregator.aggregate_data(data_date)
