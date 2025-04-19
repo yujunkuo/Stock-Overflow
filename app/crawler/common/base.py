@@ -1,8 +1,13 @@
+# Standard library imports
+import datetime
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Callable
-import datetime
+from typing import List, Optional
+
+# Third-party imports
 import pandas as pd
+
+# Local imports
 from model.data_type import DataType
 
 

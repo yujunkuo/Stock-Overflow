@@ -2,7 +2,7 @@
 import datetime
 from dataclasses import dataclass
 from io import StringIO
-from typing import Dict, Optional
+from typing import Dict
 
 # Third-party imports
 import pandas as pd
