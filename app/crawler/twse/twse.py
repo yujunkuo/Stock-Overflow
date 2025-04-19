@@ -33,14 +33,6 @@ class TWSEDataAggregator(DataAggregator):
         """Retrieve all required dataframes for a given date."""
         return [fetch_and_process_twse_data(data_type, data_date) 
                 for data_type in cls.DATA_TYPES]
-    
-    @classmethod
-    def _combine_dataframes(cls, dfs: List[pd.DataFrame]) -> pd.DataFrame:
-        """Combine multiple dataframes on common keys."""
-        combined_df = dfs[0]
-        for df in dfs[1:]:
-            combined_df = combined_df.merge(df, how="left", on=cls.MERGE_KEYS)
-        return combined_df
 
     @classmethod
     def _fill_missing_values(cls, df: pd.DataFrame) -> pd.DataFrame:

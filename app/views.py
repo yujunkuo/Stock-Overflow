@@ -273,17 +273,17 @@ def _get_strategy_1(market_data_df) -> tuple:
         technical.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
             indicator_1="volume",
-            indicator_2="mean_5_volume",
+            indicator_2="mean5volume",
             direction="more",
             threshold=1,
             days=1,
         ),
         # # 5日均量 > 20日均量
-        # technical.technical_indicator_greater_or_less_one_day_check_df(market_data_df, indicator_1="mean_5_volume", indicator_2="mean_20_volume", direction="more", threshold=1, days=1),
+        # technical.technical_indicator_greater_or_less_one_day_check_df(market_data_df, indicator_1="mean5volume", indicator_2="mean20volume", direction="more", threshold=1, days=1),
         # 5日均量 > 1000 張
         technical.technical_indicator_constant_check_df(
             market_data_df,
-            indicator="mean_5_volume",
+            indicator="mean5volume",
             direction="more",
             threshold=1000,
             days=1,
@@ -291,7 +291,7 @@ def _get_strategy_1(market_data_df) -> tuple:
         # 20日均量 > 1000 張
         technical.technical_indicator_constant_check_df(
             market_data_df,
-            indicator="mean_20_volume",
+            indicator="mean20volume",
             direction="more",
             threshold=1000,
             days=1,
@@ -299,8 +299,8 @@ def _get_strategy_1(market_data_df) -> tuple:
         # 「今天的5日均量」要大於「昨天的5日均量」
         technical.technical_indicator_greater_or_less_two_day_check_df(
             market_data_df,
-            indicator_1="mean_5_volume",
-            indicator_2="mean_5_volume",
+            indicator_1="mean5volume",
+            indicator_2="mean5volume",
             direction="more",
             threshold=1,
             days=1,
@@ -417,7 +417,7 @@ def _get_strategy_2(market_data_df) -> tuple:
         technical.technical_indicator_greater_or_less_one_day_check_df(
             market_data_df,
             indicator_1="volume",
-            indicator_2="mean_5_volume",
+            indicator_2="mean5volume",
             direction="more",
             threshold=1,
             days=1,

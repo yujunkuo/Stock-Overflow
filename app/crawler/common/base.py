@@ -8,6 +8,7 @@ from typing import List, Optional
 import pandas as pd
 
 # Local imports
+from config import config
 from model.data_type import DataType
 
 
@@ -15,19 +16,20 @@ from model.data_type import DataType
 class ApiEndpointConfig:
     """Base configuration for API endpoints."""
     url: str
-    header_row: Optional[int]
 
 
 class DataFetcher(ABC):
     """Abstract base class for data fetching operations."""
     
-    @abstractmethod
-    def _format_date_for_api(self, data_date: datetime.date) -> str:
+    @staticmethod
+    def _format_date_for_api(data_date: datetime.date) -> str:
         """Format date for API request."""
-        pass
+        year, month, day = data_date.year, data_date.month, data_date.day
+        return f"{year}{month:02}{day:02}"
     
+    @classmethod
     @abstractmethod
-    def fetch_data(self, data_type: DataType, data_date: datetime.date) -> pd.DataFrame:
+    def fetch_data(cls, *args, **kwargs):
         """Fetch data from API."""
         pass
 
@@ -37,10 +39,19 @@ class DataProcessor(ABC):
     
     NON_NUMERIC_COLUMNS = ["代號", "名稱"]
     
-    @abstractmethod
-    def _standardize_columns(self, df: pd.DataFrame) -> pd.DataFrame:
+    @staticmethod
+    def _standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
         """Standardize column names and values."""
-        pass
+        df.columns = [col.strip() if isinstance(col, str) else col for col in df.columns]
+        df = df.rename(columns=config.COLUMN_RENAME_SETTING)
+        
+        df["名稱"] = df["名稱"].astype(str).str.strip()
+        df["代號"] = df["代號"].astype(str).str.strip()
+        
+        # Exclude non-regular stocks such as ETFs
+        df = df[df["代號"].str.match(r"^[1-9]\d{3}$")]
+        
+        return df
     
     @classmethod
     def _convert_to_numeric(cls, df: pd.DataFrame) -> pd.DataFrame:
@@ -78,10 +89,12 @@ class DataProcessor(ABC):
         """Process institutional specific data."""
         columns = ["外資買賣超", "投信買賣超", "自營商買賣超", "三大法人買賣超"]
         df[columns] = (df[columns] / 1000).round()
+        
         return df
     
+    @classmethod
     @abstractmethod
-    def process_data(self, data_type: DataType, df: pd.DataFrame) -> pd.DataFrame:
+    def process_data(cls, *args, **kwargs):
         """Process data for a specific type."""
         pass
 
@@ -97,8 +110,9 @@ class DataAggregator(ABC):
         DataType.INSTITUTIONAL,
     ]
     
+    @classmethod
     @abstractmethod
-    def _retrieve_all_dataframes(self, data_date: datetime.date) -> List[pd.DataFrame]:
+    def _retrieve_all_dataframes(cls, data_date: datetime.date) -> List[pd.DataFrame]:
         """Retrieve all required dataframes for a given date."""
         pass
     
@@ -110,12 +124,13 @@ class DataAggregator(ABC):
             combined_df = combined_df.merge(df, how="left", on=cls.MERGE_KEYS)
         return combined_df
     
-    @abstractmethod
-    def _fill_missing_values(self, df: pd.DataFrame) -> pd.DataFrame:
+    @classmethod
+    def _fill_missing_values(cls, df: pd.DataFrame) -> pd.DataFrame:
         """Fill missing values for all data types after merging."""
-        pass
+        return df
     
+    @classmethod
     @abstractmethod
-    def aggregate_data(self, data_date: datetime.date) -> Optional[pd.DataFrame]:
+    def aggregate_data(cls, data_date: datetime.date) -> Optional[pd.DataFrame]:
         """Aggregate all data for a given date."""
         pass 

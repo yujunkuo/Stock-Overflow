@@ -18,6 +18,7 @@ from model.data_type import DataType
 @dataclass
 class TWSEApiEndpointConfig(ApiEndpointConfig):
     """Configuration for TWSE API endpoints."""
+    header_row: Optional[int] = None
     special_header_detection: Optional[Callable[[str], int]] = None
 
 
@@ -28,7 +29,6 @@ class TWSEDataFetcher(DataFetcher):
     API_ENDPOINTS: Dict[DataType, TWSEApiEndpointConfig] = {
         DataType.PRICE: TWSEApiEndpointConfig(
             url="https://www.twse.com.tw/exchangeReport/MI_INDEX?response=csv&date={date_str}&type=ALL",
-            header_row=None,
             special_header_detection=lambda text: ["證券代號" in line for line in text.split("\n")].index(True) - 1
         ),
         DataType.FUNDAMENTAL: TWSEApiEndpointConfig(
@@ -76,6 +76,7 @@ class TWSEDataFetcher(DataFetcher):
         response.raise_for_status()
 
         header_row = cls._determine_header_row(response.text, endpoint_config)
+        
         return pd.read_csv(StringIO(response.text.replace("=", "")), header=header_row)
 
 
@@ -85,35 +86,6 @@ class TWSEDataProcessor(DataProcessor):
     # Class-level configuration
     NON_NUMERIC_COLUMNS = ["代號", "名稱", "漲跌(+/-)"]
     STOCK_TYPE = "twse"
-    
-    @staticmethod
-    def _standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
-        """Standardize column names and values."""
-        df.columns = df.columns.str.strip()
-        df = df.rename(columns=config.COLUMN_RENAME_SETTING)
-        
-        df["名稱"] = df["名稱"].astype(str).str.strip()
-        df["代號"] = df["代號"].astype(str).str.strip()
-        
-        # Exclude non-regular stocks such as ETFs
-        df = df[df["代號"].str.match(r"^[1-9]\d{3}$")]
-        
-        return df
-
-    @classmethod
-    def _convert_to_numeric(cls, df: pd.DataFrame) -> pd.DataFrame:
-        """Convert columns to numeric where applicable."""
-        def convert_col(series):
-            if series.name in cls.NON_NUMERIC_COLUMNS:
-                return series
-            
-            # Convert strings to numeric, replacing commas
-            return pd.to_numeric(
-                series.astype(str).str.replace(",", ""),
-                errors="coerce"
-            )
-            
-        return df.apply(convert_col)
 
     @staticmethod
     def _process_price_data(df: pd.DataFrame) -> pd.DataFrame:
@@ -121,25 +93,6 @@ class TWSEDataProcessor(DataProcessor):
         df["漲跌(+/-)"] = df["漲跌(+/-)"].map({"+": 1, "-": -1}).fillna(0)
         df["漲跌"] = df["漲跌(+/-)"] * df["漲跌價差"]
         df["成交量"] = (df["成交量"] / 1000).round()
-        return df
-
-    @staticmethod
-    def _process_margin_trading_data(df: pd.DataFrame) -> pd.DataFrame:
-        """Process margin trading specific data."""
-        df["融資變化量"] = df["融資買進"] - df["融資賣出"] - df["現金償還"]
-        df["融券變化量"] = df["融券賣出"] - df["融券買進"] - df["現券償還"]
-
-        df["券資比(%)"] = (df["融券餘額"] / df["融資餘額"].replace(0, pd.NA)).fillna(0) * 100
-        df["券資比(%)"] = df["券資比(%)"].round(2)
-        
-        return df
-
-    @staticmethod
-    def _process_institutional_data(df: pd.DataFrame) -> pd.DataFrame:
-        """Process institutional specific data."""
-        columns = ["外資買賣超", "投信買賣超", "自營商買賣超", "三大法人買賣超"]
-        df[columns] = (df[columns] / 1000).round()
-        
         return df
 
     @classmethod

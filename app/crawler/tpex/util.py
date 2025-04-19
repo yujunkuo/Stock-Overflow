@@ -2,7 +2,7 @@
 import datetime
 from dataclasses import dataclass
 from io import StringIO
-from typing import Dict
+from typing import Dict, Optional
 
 # Third-party imports
 import pandas as pd
@@ -20,6 +20,7 @@ class TPEXApiEndpointConfig(ApiEndpointConfig):
     """Configuration for TPEX API endpoints."""
     headers: Dict[str, str]
     encoding: str
+    header_row: Optional[int]
 
 
 class TPEXDataFetcher(DataFetcher):
@@ -85,20 +86,6 @@ class TPEXDataProcessor(DataProcessor):
     
     # Class-level configuration
     STOCK_TYPE = "tpex"
-    
-    @staticmethod
-    def _standardize_columns(df: pd.DataFrame) -> pd.DataFrame:
-        """Standardize column names and values."""
-        df.columns = df.columns.str.strip()
-        df = df.rename(columns=config.COLUMN_RENAME_SETTING)
-        
-        df["名稱"] = df["名稱"].astype(str).str.strip()
-        df["代號"] = df["代號"].astype(str).str.strip()
-        
-        # Exclude non-regular stocks such as ETFs
-        df = df[df["代號"].str.match(r"^[1-9]\d{3}$")]
-        
-        return df
 
     @classmethod
     def process_data(cls, data_type: DataType, df: pd.DataFrame) -> pd.DataFrame:
