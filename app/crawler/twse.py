@@ -1,18 +1,21 @@
 # Standard library imports
 import datetime
+import warnings
 from dataclasses import dataclass
 from io import StringIO
-from typing import Dict, Callable, Optional
+from typing import Dict, List, Callable, Optional
 
 # Third-party imports
 import pandas as pd
 import requests
 
 # Local imports
-from app.crawler.common.base import DataFetcher, DataProcessor, ApiEndpointConfig
-from app.crawler.common.decorator import retry_on_failure
+from app.crawler.common.base import ApiEndpointConfig, DataFetcher, DataProcessor, DataAggregator
+from app.crawler.common.decorator import retry_on_failure, log_execution_time
 from config import config, logger
 from model.data_type import DataType
+
+warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
 @dataclass
@@ -127,7 +130,57 @@ class TWSEDataProcessor(DataProcessor):
         return df.sort_values(by=["代號"]).reset_index(drop=True)
 
 
-def fetch_and_process_twse_data(data_type: DataType, data_date: datetime.date) -> pd.DataFrame:
-    """Fetch and process TWSE data."""
-    df = TWSEDataFetcher.fetch_data(data_type, data_date)
-    return TWSEDataProcessor.process_data(data_type, df)
+class TWSEDataAggregator(DataAggregator):
+    """Class to handle TWSE data aggregating for different data types."""
+    
+    # Class-level configuration
+    MERGE_KEYS = ["代號", "名稱", "股票類型"]
+    DATA_TYPES = [
+        DataType.PRICE,
+        DataType.FUNDAMENTAL,
+        DataType.MARGIN_TRADING,
+        DataType.INSTITUTIONAL,
+    ]
+    
+    @classmethod
+    def _fetch_and_process_data(cls, data_type: DataType, data_date: datetime.date) -> pd.DataFrame:
+        """Fetch and process TWSE data for a specific type and date."""
+        df = TWSEDataFetcher.fetch_data(data_type, data_date)
+        return TWSEDataProcessor.process_data(data_type, df)
+
+    @classmethod
+    def _retrieve_all_dataframes(cls, data_date: datetime.date) -> List[pd.DataFrame]:
+        """Retrieve all required dataframes for a given date."""
+        return [cls._fetch_and_process_data(data_type, data_date) 
+                for data_type in cls.DATA_TYPES]
+
+    @classmethod
+    def _fill_missing_values(cls, df: pd.DataFrame) -> pd.DataFrame:
+        """Fill missing values for all data types after merging."""
+        # Fill missing values for institutional data
+        institutional_columns = df.columns.intersection(config.COLUMN_KEEP_SETTING[DataType.INSTITUTIONAL])
+        df[institutional_columns] = df[institutional_columns].fillna(value=0)
+        return df
+    
+    @classmethod
+    @log_execution_time(log_message="取得上市資料表花費時間")
+    def aggregate_data(cls, data_date: datetime.date) -> Optional[pd.DataFrame]:
+        """Aggregate all TWSE data for a given date."""
+        # Retrieve dataframes for all data types
+        dfs = cls._retrieve_all_dataframes(data_date)
+        
+        # Combine dataframes
+        df = cls._combine_dataframes(dfs)
+        
+        # Fill missing values for all data types
+        df = cls._fill_missing_values(df)
+            
+        # Set index
+        df = df.set_index("代號")
+        
+        return df
+
+
+def get_twse_data(data_date: datetime.date) -> Optional[pd.DataFrame]:
+    """Get final aggregated TWSE data for a given date."""
+    return TWSEDataAggregator.aggregate_data(data_date)

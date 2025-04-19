@@ -10,7 +10,9 @@ from bs4 import BeautifulSoup
 from config import logger
 
 
-def _clean_title(title):
+def _clean_title(title: str) -> str:
+    """Clean and standardize event titles."""
+    # Map simplified Chinese terms to traditional Chinese terms
     title_mapping = {
         "講話": "發言",
         "特朗普": "川普",
@@ -21,9 +23,12 @@ def _clean_title(title):
     return title
 
 
-def fetch_economic_calendar(date_from: str, date_to: str) -> str:
+def _fetch_economic_calendar(date_from: str, date_to: str) -> str:
+    """Fetch economic calendar data from Investing.com for a specified date range."""
+    # API endpoint
     url = "https://hk.investing.com/economic-calendar/Service/getCalendarFilteredData"
 
+    # Headers to mimic browser request
     headers = {
         'accept': '*/*',
         'accept-language': 'zh-TW,zh;q=0.9,en-US;q=0.8,en;q=0.7',
@@ -34,16 +39,17 @@ def fetch_economic_calendar(date_from: str, date_to: str) -> str:
         'x-requested-with': 'XMLHttpRequest'
     }
 
+    # Request parameters for filtering economic events
     payload = {
-        'country[]': ['46', '5'],  # TW and US
+        'country[]': ['46', '5'],  # 46: Taiwan, 5: United States
         'category[]': [
             '_employment', '_economicActivity', '_inflation',
             '_centralBanks', '_confidenceIndex', '_Bonds'
         ],
-        'importance[]': '3',  # most important events
+        'importance[]': '3',  # Filter for high importance events only
         'dateFrom': date_from,
         'dateTo': date_to,
-        'timeZone': '28',  # UTC+8
+        'timeZone': '28',  # UTC+8 timezone
         'timeFilter': 'timeRemain',
         'currentTab': 'custom',
         'limit_from': '0',
@@ -60,19 +66,22 @@ def fetch_economic_calendar(date_from: str, date_to: str) -> str:
         return ""
 
 
-def parse_events_from_calendar(html_content: str) -> list:
+def _parse_events_from_calendar(html_content: str) -> list:
+    """Parse economic events from the HTML content of the calendar."""
     soup = BeautifulSoup(html_content, "html.parser")
     rows = soup.select("tr.js-event-item")
     events = []
 
     for row in rows:
         try:
+            # Extract event details from each row
             date = row.get("data-event-datetime", "").strip()
             country = row.select_one("td.flagCur > span").get("title", "").strip() if row.select_one("td.flagCur > span") else "N/A"
             title = row.select_one("td.event").text.strip() if row.select_one("td.event") else "N/A"
 
+            # Format date and clean title
             date = datetime.strptime(date, "%Y/%m/%d %H:%M:%S").strftime("%m/%d %H:%M")
-            title = re.sub(r"\s*\(.*?\)", "", title).strip()
+            title = re.sub(r"\s*\(.*?\)", "", title).strip()  # Remove text in parentheses
             title = _clean_title(title)
 
             event = {
@@ -81,6 +90,7 @@ def parse_events_from_calendar(html_content: str) -> list:
                 "title": title,
             }
 
+            # Avoid duplicate events
             if event not in events:
                 events.append(event)
 
@@ -89,4 +99,31 @@ def parse_events_from_calendar(html_content: str) -> list:
             continue
 
     logger.info(f"Parsed {len(events)} events from the economic calendar.")
+    return events
+
+
+def get_economic_events(date_from: str, date_to: str) -> list:
+    """
+    Get economic events from Investing.com calendar for a specified date range.
+    
+    This function fetches and parses economic calendar data, including important
+    economic indicators, central bank meetings, and other significant financial events.
+    
+    Args:
+        date_from (str): Start date in format 'YYYY-MM-DD'
+        date_to (str): End date in format 'YYYY-MM-DD'
+        
+    Returns:
+        list: List of dictionaries containing economic events
+              Each event contains:
+              - date: Event date and time (MM/DD HH:MM)
+              - country: Country where the event occurs
+              - title: Event title/description
+    """
+    # Fetch the economic calendar data
+    economic_calendar = _fetch_economic_calendar(date_from, date_to)
+    if not economic_calendar:
+        return []
+    # Parse the events from the fetched data
+    events = _parse_events_from_calendar(economic_calendar)
     return events

@@ -1,7 +1,7 @@
 # Standard library imports
 import datetime
 import json
-import re
+import warnings
 from dataclasses import dataclass
 from typing import Dict, List, Any, Optional
 
@@ -12,11 +12,13 @@ from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
 # Local imports
-from app.crawler.common.base import DataFetcher, DataProcessor, ApiEndpointConfig
-from app.crawler.common.decorator import retry_on_failure
+from app.crawler.common.base import ApiEndpointConfig, DataFetcher, DataProcessor, DataAggregator
+from app.crawler.common.decorator import retry_on_failure, log_execution_time
 from app.utils import convert_milliseconds_to_date
 from config import config, logger
 from model.data_type import DataType
+
+warnings.simplefilter(action="ignore", category=FutureWarning)
 
 
 @dataclass
@@ -279,3 +281,44 @@ def fetch_and_process_technical_indicators(reference_df: pd.DataFrame, data_date
     # Convert results to DataFrame
     result_df = pd.DataFrame(all_results) if all_results else pd.DataFrame(columns=result_columns)
     return result_df.sort_values(by=["代號"]).reset_index(drop=True)
+
+
+class OtherDataAggregator(DataAggregator):
+    """Class to handle other data aggregating for different data types."""
+    
+    # Class-level configuration
+    MERGE_KEYS = ["代號", "名稱"]
+    
+    @classmethod
+    def _retrieve_all_dataframes(cls, data_date: datetime.date) -> List[pd.DataFrame]:
+        """Retrieve all required dataframes for a given date."""
+        # Get industry category data
+        industry_category_df = fetch_and_process_industry_category(DataType.INDUSTRY_CATEGORY)
+        
+        # Get MoM/YoY data
+        mom_yoy_df = fetch_and_process_mom_yoy(DataType.MOM_YOY)
+        
+        # Get technical indicators data
+        technical_indicators_df = fetch_and_process_technical_indicators(industry_category_df, data_date)
+        
+        return [industry_category_df, mom_yoy_df, technical_indicators_df]
+    
+    @classmethod
+    @log_execution_time(log_message="取得其他資料表花費時間")
+    def aggregate_data(cls, data_date: datetime.date) -> Optional[pd.DataFrame]:
+        """Aggregate all other data for a given date."""
+        # Retrieve dataframes for all data types
+        dfs = cls._retrieve_all_dataframes(data_date)
+            
+        # Combine dataframes
+        df = cls._combine_dataframes(dfs)
+            
+        # Set index
+        df = df.set_index("代號")
+        
+        return df
+
+
+def get_other_data(data_date: datetime.date) -> Optional[pd.DataFrame]:
+    """Get final aggregated other data for a given date."""
+    return OtherDataAggregator.aggregate_data(data_date)
