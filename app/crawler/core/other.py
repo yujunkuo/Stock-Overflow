@@ -13,7 +13,7 @@ from fake_useragent import UserAgent
 
 # Local imports
 from app.crawler.common.base import ApiEndpointConfig, DataFetcher, DataProcessor, DataAggregator
-from app.crawler.common.decorator import retry_on_failure, log_execution_time
+from app.crawler.common.decorators import retry_on_failure, log_execution_time
 from app.utils import convert_milliseconds_to_date
 from config import config, logger
 from model.data_type import DataType
