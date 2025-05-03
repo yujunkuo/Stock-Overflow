@@ -80,4 +80,42 @@ class RuleFactory:
         except TypeError as e:
             # Handle the case where the rule constructor doesn't match the parameters
             print(f"Error creating rule: {e}")
-            return None 
+            return None
+
+
+def create_rule_factory() -> RuleFactory:
+    """
+    Create and initialize a RuleFactory with all available rule types.
+    
+    Returns:
+        An initialized RuleFactory
+    """
+    factory = RuleFactory()
+    
+    # Register all rule types
+    rule_mapping = {
+        # # Fundamental rules
+        # "PERangeRule": PERangeRule,
+        # "PBRangeRule": PBRangeRule,
+        # "DividendYieldRangeRule": DividendYieldRangeRule,
+        
+        # # Technical rules
+        # "SMARule": SMARule,
+        # "CrossAboveRule": CrossAboveRule,
+        # "CrossBelowRule": CrossBelowRule,
+        # "RSIRule": RSIRule,
+        # "MACDRule": MACDRule,
+        # "BollingerBandsRule": BollingerBandsRule,
+        # "VolumeRule": VolumeRule,
+        
+        # # Chip rules
+        # "ForeignInvestorsRule": ForeignInvestorsRule,
+        # "InvestmentTrustRule": InvestmentTrustRule,
+        # "DealersRule": DealersRule,
+        # "MarginTradingRule": MarginTradingRule,
+        # "ShortSellingRule": ShortSellingRule,
+    }
+    
+    factory.register_rule_types(rule_mapping)
+    
+    return factory 
