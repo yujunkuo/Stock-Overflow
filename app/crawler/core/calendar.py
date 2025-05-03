@@ -7,7 +7,7 @@ import requests
 from bs4 import BeautifulSoup
 
 # Local imports
-from config import logger
+from app.core import logger
 
 
 def _clean_title(title: str) -> str:

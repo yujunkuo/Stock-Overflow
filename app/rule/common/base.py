@@ -6,7 +6,7 @@ from typing import Optional
 import pandas as pd
 
 # Local imports
-from app.rule.common.types import ComparisonType
+from app.model.enums import ComparisonType
 
 
 class Rule(ABC):

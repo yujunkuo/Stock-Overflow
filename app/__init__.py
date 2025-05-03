@@ -5,7 +5,7 @@ import os
 from flask import Flask
 
 # Local imports
-from config import config
+from app.core import config
 from app.route import register_all_blueprints
 from app.rule import create_rule_factory
 from app.strategy import StrategyService

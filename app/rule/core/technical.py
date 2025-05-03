@@ -14,7 +14,7 @@ import pandas as pd
 # from ta.trend import PSARIndicator
 
 # Local imports
-from config import logger
+from app.core import logger
 from app.rule.common.utils import get_last_n_days_data
 from app.rule.common.base import OneIndicatorRule, TwoIndicatorsRule, ThreeIndicatorsRule
 

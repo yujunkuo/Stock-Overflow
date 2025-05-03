@@ -8,8 +8,8 @@ from typing import List, Optional
 import pandas as pd
 
 # Local imports
-from config import config
-from model.data_type import DataType
+from app.core import config
+from app.model.enums import DataType
 
 
 @dataclass

@@ -10,4 +10,9 @@ class DataType(Enum):
     # Other API
     INDUSTRY_CATEGORY = "industry_category"
     MOM_YOY = "mom_yoy"
-    
+
+
+class ComparisonType(Enum):
+    LESS_THAN = "less_than"
+    GREATER_THAN = "greater_than" 
+    BETWEEN = "between"

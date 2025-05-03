@@ -9,7 +9,7 @@ from flask import Blueprint, Response, current_app, request
 from linebot.exceptions import InvalidSignatureError
 
 # Local imports
-from config import logger
+from app.core import logger
 from app.views import update_and_broadcast
 
 

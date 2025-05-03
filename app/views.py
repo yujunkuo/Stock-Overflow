@@ -9,7 +9,7 @@ from linebot.models import TextSendMessage
 
 # Local imports
 from app.rule.core import chip
-from config import logger
+from app.core import logger
 from app.crawler import get_economic_events, get_other_data, get_tpex_data, get_twse_data
 from app.rule.core import technical
 from app.utils import df_mask_helper, is_weekday

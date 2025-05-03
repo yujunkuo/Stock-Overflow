@@ -12,8 +12,8 @@ import requests
 # Local imports
 from app.crawler.common.base import ApiEndpointConfig, DataFetcher, DataProcessor, DataAggregator
 from app.crawler.common.decorators import retry_on_failure, log_execution_time
-from config import config, logger
-from model.data_type import DataType
+from app.core import config, logger
+from app.model.enums import DataType
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 

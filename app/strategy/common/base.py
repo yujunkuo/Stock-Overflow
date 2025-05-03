@@ -7,7 +7,7 @@ import pandas as pd
 
 # Local imports
 from app.rule.common.base import Rule
-from app.rule.common.types import ComparisonType
+from app.model.enums import ComparisonType
 
 
 class Strategy:

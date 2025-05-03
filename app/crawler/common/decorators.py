@@ -4,7 +4,7 @@ import functools
 import time
 
 # Local imports
-from config import logger
+from app.core import logger
 
 
 def retry_on_failure(max_retries=3, delay=3, fallback=None):

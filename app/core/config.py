@@ -5,7 +5,7 @@ import os
 from linebot import LineBotApi, WebhookHandler
 
 # Local imports
-from model.data_type import DataType
+from app.model.enums import DataType
 
 # TODO: We need more complicated configuration settings
 # TODO: add typing and comment language unification
