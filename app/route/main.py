@@ -10,7 +10,7 @@ from linebot.exceptions import InvalidSignatureError
 
 # Local imports
 from config import logger
-from .views import update_and_broadcast
+from app.views import update_and_broadcast
 
 
 bp = Blueprint("main", __name__)
@@ -53,7 +53,7 @@ def callback():
     # Extracting signature and body from request
     signature = request.headers.get("X-Line-Signature")
     body = request.get_data(as_text=True)
-    app.logger.info(f"Request body: {body}")
+    logger.info(f"Request body: {body}")
     try:
         handler = current_app.config["WEBHOOK_HANDLER"]
         handler.handle(body, signature)

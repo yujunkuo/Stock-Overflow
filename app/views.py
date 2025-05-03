@@ -8,11 +8,11 @@ from flask import current_app
 from linebot.models import TextSendMessage
 
 # Local imports
-from .rule.core import chip
+from app.rule.core import chip
 from config import logger
-from .crawler import get_economic_events, get_other_data, get_tpex_data, get_twse_data
-from .rule.core import technical
-from .utils import df_mask_helper, is_weekday
+from app.crawler import get_economic_events, get_other_data, get_tpex_data, get_twse_data
+from app.rule.core import technical
+from app.utils import df_mask_helper, is_weekday
 
 
 # Update and broadcast the recommendation list
