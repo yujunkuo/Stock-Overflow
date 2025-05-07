@@ -1,6 +1,6 @@
 # Standard library imports
 import datetime
-from functools import partial
+from functools import reduce, partial
 
 # Third-party imports
 import pandas as pd
@@ -12,7 +12,19 @@ from app.rule.core import chip
 from app.core import logger
 from app.crawler import get_economic_events, get_other_data, get_tpex_data, get_twse_data
 from app.rule.core import technical
-from app.utils import df_mask_helper, is_weekday
+
+
+# Filter dataframe with multiple conditions in mask_list
+def _df_mask_helper(df, mask_list):
+    return df[reduce(lambda x, y: (x & y), mask_list)]
+
+
+# Check if the input date is a weekday
+def _is_weekday(check_date=None):
+    check_date = check_date if check_date else datetime.date.today()
+    # Weekday count: Monday=0, Tuesday=1, ..., Sunday=6
+    weekday_count = check_date.weekday()
+    return False if weekday_count in [5, 6] else True
 
 
 # Update and broadcast the recommendation list
@@ -21,7 +33,7 @@ def update_and_broadcast(app, target_date=None, need_broadcast=False):
         if not target_date:
             target_date = datetime.date.today()
         logger.info(f"資料日期 {str(target_date)}")
-        if not is_weekday(target_date):
+        if not _is_weekday(target_date):
             logger.info("假日不進行更新與推播")
         else:
             market_data_df = _update_market_data(target_date)
@@ -85,7 +97,7 @@ def _update_watch_list(market_data_df, strategy_func, other_funcs=None) -> pd.Da
     # Get the strategy
     fundamental_mask, technical_mask, chip_mask = strategy_func(market_data_df)
     # Combine all the filters
-    watch_list_df = df_mask_helper(market_data_df, fundamental_mask + technical_mask + chip_mask)
+    watch_list_df = _df_mask_helper(market_data_df, fundamental_mask + technical_mask + chip_mask)
     watch_list_df = watch_list_df.sort_values(by=["產業別"], ascending=False)
     if other_funcs:
         for func in other_funcs:

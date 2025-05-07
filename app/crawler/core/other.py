@@ -12,11 +12,11 @@ from bs4 import BeautifulSoup
 from fake_useragent import UserAgent
 
 # Local imports
-from app.crawler.common.base import ApiEndpointConfig, DataFetcher, DataProcessor, DataAggregator
-from app.crawler.common.decorators import retry_on_failure, log_execution_time
-from app.utils import convert_milliseconds_to_date
 from app.core import config, logger
 from app.model.enums import DataType
+from app.crawler.common.base import ApiEndpointConfig, DataFetcher, DataProcessor, DataAggregator
+from app.crawler.common.decorators import retry_on_failure, log_execution_time
+from app.crawler.common.utils import convert_milliseconds_to_date
 
 warnings.simplefilter(action="ignore", category=FutureWarning)
 
