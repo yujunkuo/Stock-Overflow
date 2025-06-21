@@ -463,6 +463,15 @@ def _get_strategy_3(market_data_df) -> tuple:
             threshold=1,
             days=1,
         ),
+        # 今天 MA20 > 昨天 MA20
+        technical.technical_indicator_greater_or_less_two_day_check_df(
+            market_data_df,
+            indicator_1="mean20",
+            indicator_2="mean20",
+            direction="more",
+            threshold=1,
+            days=1,
+        ),
         # 今天 MA60 > 昨天 MA60
         technical.technical_indicator_greater_or_less_two_day_check_df(
             market_data_df,
@@ -510,6 +519,12 @@ def _get_strategy_3(market_data_df) -> tuple:
     ]
     # Chip strategy filters
     chip_mask = [
+        # 成交量 > 200 張
+        technical.volume_greater_check_df(
+            market_data_df,
+            shares_threshold=200,
+            days=1,
+        ),
         # 今天成交量 < 昨天成交量
         technical.technical_indicator_greater_or_less_two_day_check_df(
             market_data_df,
