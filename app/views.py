@@ -196,13 +196,13 @@ def _get_strategy_1(market_data_df) -> tuple:
         # technical.technical_indicator_difference_greater_two_day_check_df(market_data_df, indicator_1="k9", indicator_2="d9", days=1),
         # # MA5 趨勢向上
         # technical.technical_indicator_greater_or_less_two_day_check_df(market_data_df, indicator_1="mean5", indicator_2="mean5", direction="more", threshold=1, days=1),
-        # 今天收盤 > 1.03 * 昨天收盤 (漲幅 3% 以上)
+        # 今天收盤 > 1.02 * 昨天收盤 (漲幅 2% 以上)
         technical.technical_indicator_greater_or_less_two_day_check_df(
             market_data_df,
             indicator_1="收盤",
             indicator_2="收盤",
             direction="more",
-            threshold=1.03,
+            threshold=1.02,
             days=1,
         ),
         # 不能連續兩天漲幅都超過 5%
