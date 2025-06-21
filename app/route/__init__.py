@@ -1,5 +1,6 @@
-from importlib import import_module
+# Standard library imports
 import pkgutil
+from importlib import import_module
 
 def register_all_blueprints(app):
     """Register all blueprints in the route directory"""

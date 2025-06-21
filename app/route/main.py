@@ -10,7 +10,7 @@ from linebot.exceptions import InvalidSignatureError
 
 # Local imports
 from app.core import logger
-from app.views import update_and_broadcast
+from app.service.views import update_and_broadcast
 
 
 bp = Blueprint("main", __name__)
@@ -100,17 +100,17 @@ def update():
     elif request.headers["API-Access-Token"] != current_app.config["API_ACCESS_TOKEN"]:
         return Response("Invalid API-Access-Token", status=401)
     else:
+        # Check the format of Target-Date
         target_date = request.headers.get("Target-Date", None)  # with format "YYYY-MM-DD"
-        
         if target_date:
             try:
                 target_date = datetime.datetime.strptime(target_date, "%Y-%m-%d").date()
             except ValueError:
                 return Response("Invalid Target-Date format", status=400)
-            
+        # Check if Need-Broadcast is provided
         need_broadcast = request.headers.get("Need-Broadcast", "false").lower() == "true"
-        logger.info("開始進行推薦")
         # Assign update and broadcast
+        logger.info("開始進行推薦")
         app = current_app._get_current_object()
         update_and_broadcast_thread = threading.Thread(target=update_and_broadcast, args=(app, target_date, need_broadcast))
         update_and_broadcast_thread.start()
