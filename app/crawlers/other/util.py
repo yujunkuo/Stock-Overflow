@@ -4,7 +4,7 @@ import requests
 import pandas as pd
 
 from bs4 import BeautifulSoup
-from functools import lru_cache
+# from functools import lru_cache
 from fake_useragent import UserAgent
 from models.data_type import DataType
 from app.utils import convert_milliseconds_to_date
@@ -155,7 +155,7 @@ def _format_daily_k_list(daily_k_list: list, data_date) -> list:
     return filtered_ks
 
 
-@lru_cache(maxsize=None)
+# @lru_cache(maxsize=None)
 def _request_technical_indicators(stock_id: str):
     for _ in range(MAX_REQUEST_RETRIES):
         try:
