@@ -24,9 +24,9 @@ def update_and_broadcast(app, target_date=None, need_broadcast=False):
                 logger.info("休市不進行更新與推播")
             else:
                 logger.info("開始更新推薦清單")
-                watch_list_df_1 = _update_watch_list(market_data_df, _get_strategy_1, other_funcs=[technical.is_skyrocket])
+                watch_list_df_1 = _update_watch_list(market_data_df, _get_strategy_1)
                 # watch_list_df_2 = _update_watch_list(market_data_df, _get_strategy_2, other_funcs=[technical.is_sar_above_close, partial(technical.is_skyrocket, consecutive_red_no_upper_shadow_days=0)])
-                watch_list_df_3 = _update_watch_list(market_data_df, _get_strategy_3, other_funcs=[partial(technical.is_skyrocket, consecutive_red_no_upper_shadow_days=0)])
+                watch_list_df_3 = _update_watch_list(market_data_df, _get_strategy_3)
                 # combined_watch_list_df = pd.concat([watch_list_df_1, watch_list_df_2]).drop_duplicates(subset=["代號"]).reset_index(drop=True)
                 watch_list_dfs = [watch_list_df_1, watch_list_df_3]
                 logger.info("推薦清單更新完成")
@@ -229,6 +229,13 @@ def _get_strategy_1(market_data_df) -> tuple:
             threshold=0.03,
             indicator_3="收盤",
             days=1,
+        ),
+        # 滿足飆股條件
+        technical.skyrocket_check_df(
+            market_data_df,
+            n_days=10,
+            k_change=0.20,
+            consecutive_red_no_upper_shadow_days=2,
         ),
         # # OSC > 0 (出現強勁漲幅的機會較高)
         # technical.technical_indicator_constant_check_df(market_data_df, indicator="osc", direction="more", threshold=0, days=1),
@@ -515,6 +522,13 @@ def _get_strategy_3(market_data_df) -> tuple:
             direction="more",
             threshold=20,
             days=1,
+        ),
+        # 滿足飆股條件
+        technical.skyrocket_check_df(
+            market_data_df,
+            n_days=10,
+            k_change=0.20,
+            consecutive_red_no_upper_shadow_days=0,
         ),
     ]
     # Chip strategy filters

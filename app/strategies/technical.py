@@ -422,35 +422,47 @@ def _technical_indicator_constant_check_row(row, indicator, direction, threshold
 
 
 # 12. (Public) [twstock] 檢查該股票是否具備飆股特徵 (自定義長短線特徵)
-def is_skyrocket(
-    stock_id, n_days=10, k_change=0.20, consecutive_red_no_upper_shadow_days=2
-):
+def skyrocket_check_df(df, n_days=10, k_change=0.20, consecutive_red_no_upper_shadow_days=2):
+    return df.apply(
+        _skyrocket_check_row,
+        n_days=n_days,
+        k_change=k_change,
+        consecutive_red_no_upper_shadow_days=consecutive_red_no_upper_shadow_days,
+        axis=1,
+    )
+    
+    
+def _skyrocket_check_row(row, n_days, k_change, consecutive_red_no_upper_shadow_days):
     try:
-        time.sleep(5)
-        stock = twstock.Stock(stock_id)
-        six_months_ago = datetime.datetime.now() - datetime.timedelta(days=180)
-        historical_data = stock.fetch_from(six_months_ago.year, six_months_ago.month)[:-5]
-        # 檢查飆股兩個面向特徵
-        long_term_flag, short_term_flag = False, False
-        # 檢查是否有在任意 n_days 內漲幅達 k_change
-        for i in range(len(historical_data) - n_days):
-            start, end = historical_data[i].close, historical_data[i + n_days].close
-            if (end - start) / start >= k_change:
-                long_term_flag = True
-                break
-        # 檢查是否有在任意 consecutive_red_no_upper_shadow_days 內每天都漲幅大於 9% 且收在最高
-        for i in range(len(historical_data) - consecutive_red_no_upper_shadow_days + 1):
-            if all(
-                (d.close == d.high) and (d.close / (d.close - d.change) > 1.09)
-                for d in historical_data[i : i + consecutive_red_no_upper_shadow_days]
-            ):
-                short_term_flag = True
-                break
-        logger.info(f"{stock_id}: [long_term = {long_term_flag} / short_term = {short_term_flag} / data_length = {len(historical_data)}]")
+        daily_k = row["daily_k"]
+        long_term_flag = _check_long_term_surge(daily_k, n_days, k_change)
+        short_term_flag = _check_short_term_surge(daily_k, consecutive_red_no_upper_shadow_days)
         return long_term_flag and short_term_flag
     except:
-        logger.info(f"{stock_id}: [取得歷史資料失敗]")
+        logger.error(f"Skyrocket check failed")
         return False
+
+
+def _check_long_term_surge(daily_k, n_days, k_change):
+    # 檢查是否有在任意 n_days 內漲幅達 k_change
+    for i in range(len(daily_k) - n_days):
+        start_price = daily_k[i][1]["收盤"]
+        end_price = daily_k[i + n_days][1]["收盤"]
+        if (end_price - start_price) / start_price >= k_change:
+            return True
+    return False
+
+
+def _check_short_term_surge(daily_k, consecutive_red_no_upper_shadow_days):
+    # 檢查是否有在任意 consecutive_red_no_upper_shadow_days 內每天都漲幅大於 9% 且收在最高
+    for i in range(1, len(daily_k) - consecutive_red_no_upper_shadow_days + 1):
+        if all(
+            daily_k[j][1]["收盤"] == daily_k[j][1]["最高"] and
+            daily_k[j][1]["收盤"] / daily_k[j - 1][1]["收盤"] > 1.09
+            for j in range(i, i + consecutive_red_no_upper_shadow_days)
+        ):
+            return True
+    return False
 
 
 # 13. (Public) [twstock] 檢查該股票 SAR 是否大於收盤價
