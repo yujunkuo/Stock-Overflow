@@ -13,7 +13,7 @@ class BasicConfig:
     YEAR = "2025"
 
     # Version number
-    VERSION = "v5.3"
+    VERSION = "v5.4"
 
     # Line Bot settings
     LINE_BOT_API = LineBotApi(os.getenv("CHANNEL_ACCESS_TOKEN", "default_channel_access_token"))
