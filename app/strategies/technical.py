@@ -439,7 +439,6 @@ def _skyrocket_check_row(row, n_days, k_change, consecutive_red_no_upper_shadow_
         short_term_flag = _check_short_term_surge(daily_k, consecutive_red_no_upper_shadow_days)
         return long_term_flag and short_term_flag
     except:
-        logger.error(f"Skyrocket check failed")
         return False
 
 
