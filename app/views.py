@@ -82,6 +82,9 @@ def _update_watch_list(market_data_df, strategy_func, other_funcs=None) -> pd.Da
     # Combine all the filters
     watch_list_df = df_mask_helper(market_data_df, fundamental_mask + technical_mask + chip_mask)
     watch_list_df = watch_list_df.sort_values(by=["產業別"], ascending=False)
+    # Exclude biotech/medical industry
+    watch_list_df = watch_list_df[watch_list_df["產業別"] != "生技醫療業"]
+    # Apply other custom filters
     if other_funcs:
         for func in other_funcs:
             watch_list_df = watch_list_df[watch_list_df.index.to_series().apply(func)]
